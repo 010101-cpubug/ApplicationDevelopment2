@@ -128,7 +128,7 @@ async function loadFinancialSummary() {
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
         // Get all transactions for current month
-        const allTransactions = await appwriteService.getTransactions(userId, 500);
+        const allTransactions = await appwriteService.getAllUserTransactions(userId);
 
         const currentMonthTransactions = allTransactions.filter(t => {
             if (!t.transaction_date) return false;
@@ -212,10 +212,10 @@ async function loadRecentTransactions() {
 async function loadBudgets() {
     try {
         const userId = dashboardState.user.$id;
-        const budgets = await appwriteService.getBudgets(userId);
+        const budgets = await appwriteService.getAllUserBudgets(userId);
 
         // Calculate actual spent amount from transactions
-        const transactions = await appwriteService.getTransactions(userId, 500);
+        const transactions = await appwriteService.getAllUserTransactions(userId);
 
         // Update budgets with actual spent amounts
         const updatedBudgets = budgets.map(budget => {
@@ -252,7 +252,7 @@ async function loadBudgets() {
 async function loadSavingsGoals() {
     try {
         const userId = dashboardState.user.$id;
-        const goals = await appwriteService.getSavingsGoals(userId);
+        const goals = await appwriteService.getAllUserSavingsGoals(userId);
         dashboardState.savingsGoals = goals;
 
         if (goals.length > 0) {
@@ -452,7 +452,7 @@ async function updateSpendingChart(days = 30) {
         startDate.setHours(0, 0, 0, 0);
         endDate.setHours(23, 59, 59, 999);
 
-        const allTransactions = await appwriteService.getTransactions(userId, 1000);
+        const allTransactions = await appwriteService.getAllUserTransactions(userId);
 
         // Filter expenses for the period
         const periodExpenses = allTransactions.filter(t => {
@@ -608,7 +608,7 @@ function createEmptyChart() {
 async function updateCategoryBreakdown() {
     try {
         const userId = dashboardState.user.$id;
-        const allTransactions = await appwriteService.getTransactions(userId, 500);
+        const allTransactions = await appwriteService.getAllUserTransactions(userId);
 
         // Calculate spending by category
         const categorySpending = {};

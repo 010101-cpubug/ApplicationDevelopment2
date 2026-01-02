@@ -253,7 +253,7 @@ async function loadCategoriesFromDB() {
         }
 
         // Load categories
-        const categoriesData = await appwriteService.getCategories(user.$id);
+        const categoriesData = await appwriteService.getAllUserCategories(user.$id);
         categories = categoriesData.map(c => ({
             id: c.$id,
             category_name: c.category_name,
@@ -266,7 +266,7 @@ async function loadCategoriesFromDB() {
 
         // Load transactions for usage statistics
         try {
-            transactions = await appwriteService.getTransactions(user.$id, 1000);
+            transactions = await appwriteService.getAllUserTransactions(user.$id);
         } catch (error) {
             console.error('Error loading transactions for category stats:', error);
             transactions = [];

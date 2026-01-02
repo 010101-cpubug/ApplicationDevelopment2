@@ -156,13 +156,12 @@ async function loadBudgetsFromDB() {
         }
 
         // Get all budgets for the user
-        const budgetsData = await appwriteService.getBudgets(user.$id);
+        const budgetsData = await appwriteService.getAllUserBudgets(user.$id);
 
         // Calculate spent amount for each budget
         budgets = await Promise.all(budgetsData.map(async (b) => {
             // Get transactions for this budget
-            const transactions = await appwriteService.databases.listDocuments(
-                appwriteService.config.databaseId,
+            const transactions = await appwriteService.fetchAllDocuments(
                 appwriteService.config.collections.TRANSACTIONS,
                 [
                     appwriteService.Query.equal('user_id', user.$id),
@@ -171,7 +170,7 @@ async function loadBudgetsFromDB() {
                 ]
             );
 
-            const spentAmount = transactions.documents.reduce((sum, tx) => sum + tx.amount, 0);
+            const spentAmount = transactions.reduce((sum, tx) => sum + tx.amount, 0);
 
             return {
                 id: b.$id,

@@ -117,7 +117,7 @@ async function loadTransactionsFromDB() {
 async function loadAllTransactions() {
     try {
         const userId = transactionsState.user.$id;
-        const transactions = await appwriteService.getTransactions(userId, 1000);
+        const transactions = await appwriteService.getAllUserTransactions(userId);
 
         // Map to frontend format (schema fields only)
         transactionsState.allTransactions = transactions.map(t => ({
@@ -144,7 +144,7 @@ async function loadAllTransactions() {
 async function loadCategories() {
     try {
         const userId = transactionsState.user.$id;
-        const categories = await appwriteService.getCategories(userId);
+        const categories = await appwriteService.getAllUserCategories(userId);
         transactionsState.categories = categories;
 
         // Create map for quick lookup
@@ -166,7 +166,7 @@ async function loadCategories() {
 async function loadBudgets() {
     try {
         const userId = transactionsState.user.$id;
-        const budgets = await appwriteService.getBudgets(userId);
+        const budgets = await appwriteService.getAllUserBudgets(userId);
         transactionsState.budgets = budgets;
 
         // Create map for quick lookup

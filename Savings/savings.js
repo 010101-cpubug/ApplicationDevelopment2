@@ -240,7 +240,7 @@ async function saveGoal() {
 // Load goals from Appwrite
 async function loadGoals() {
     try {
-        goals = await appwriteService.getSavingsGoals(currentUser.$id);
+        goals = await appwriteService.getAllUserSavingsGoals(currentUser.$id);
         updateOverviewStats();
         renderGoalsTable();
         renderProgressCircles();
