@@ -1,4 +1,5 @@
-﻿const menuToggle = document.getElementById('menuToggle');
+﻿// DOM Elements
+const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.querySelector('.sidebar');
 const overlay = document.getElementById('overlay');
 const addCategoryBtn = document.getElementById('addCategoryBtn');
@@ -18,19 +19,23 @@ const selectedIconPreview = document.getElementById('selectedIconPreview');
 const categoryIcon = document.getElementById('categoryIcon');
 const logoutBtn = document.getElementById('logoutBtn');
 
+// Category data
 let categories = [];
 let transactions = [];
 
+// Toggle mobile menu
 menuToggle.addEventListener('click', () => {
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
 });
 
+// Close mobile menu when clicking overlay
 overlay.addEventListener('click', () => {
     sidebar.classList.remove('active');
     overlay.classList.remove('active');
 });
 
+// Category type selection
 typeExpense.addEventListener('click', () => {
     categoryType.value = 'expense';
     typeExpense.classList.add('bg-purple-900/30', 'text-purple-400');
@@ -47,36 +52,43 @@ typeIncome.addEventListener('click', () => {
     typeExpense.classList.remove('bg-purple-900/30', 'text-purple-400');
 });
 
+// Color selection
 document.querySelectorAll('.color-option').forEach(option => {
     option.addEventListener('click', () => {
         const color = option.getAttribute('data-color');
         categoryColor.value = color;
         selectedColorPreview.style.backgroundColor = color;
 
+        // Remove selected class from all options
         document.querySelectorAll('.color-option').forEach(opt => {
             opt.classList.remove('ring-2', 'ring-white', 'ring-offset-1', 'ring-offset-gray-900');
         });
 
+        // Add selected class to clicked option
         option.classList.add('ring-2', 'ring-white', 'ring-offset-1', 'ring-offset-gray-900');
     });
 });
 
+// Icon selection
 document.querySelectorAll('.icon-option').forEach(option => {
     option.addEventListener('click', () => {
         const icon = option.getAttribute('data-icon');
         categoryIcon.value = icon;
         selectedIconPreview.innerHTML = `<i class="fas ${icon}"></i>`;
 
+        // Remove selected class from all options
         document.querySelectorAll('.icon-option').forEach(opt => {
             opt.classList.remove('bg-purple-900/50', 'border', 'border-purple-500');
             opt.classList.add('bg-gray-900/50');
         });
 
+        // Add selected class to clicked option
         option.classList.remove('bg-gray-900/50');
         option.classList.add('bg-purple-900/50', 'border', 'border-purple-500');
     });
 });
 
+// Logout handler
 logoutBtn.addEventListener('click', async () => {
     try {
         await appwriteService.logout();
@@ -86,11 +98,13 @@ logoutBtn.addEventListener('click', async () => {
     }
 });
 
+// Open add category modal
 addCategoryBtn.addEventListener('click', () => {
     openCategoryModal();
 });
 
 
+// Close modal
 closeModal.addEventListener('click', () => {
     categoryModal.classList.add('hidden');
 });
@@ -99,6 +113,7 @@ cancelCategory.addEventListener('click', () => {
     categoryModal.classList.add('hidden');
 });
 
+// Open category modal for adding/editing
 function openCategoryModal(category = null) {
     if (category) {
         document.getElementById('modalTitle').textContent = 'Edit Category';
@@ -107,16 +122,20 @@ function openCategoryModal(category = null) {
         document.getElementById('categoryColor').value = category.color;
         document.getElementById('categoryIcon').value = category.icon;
 
+        // Set color preview
         selectedColorPreview.style.backgroundColor = category.color;
 
+        // Set icon preview
         selectedIconPreview.innerHTML = `<i class="fas ${category.icon}"></i>`;
 
+        // Set type (default to expense if not specified)
         if (category.type === 'income') {
             typeIncome.click();
         } else {
             typeExpense.click();
         }
 
+        // Highlight selected color
         document.querySelectorAll('.color-option').forEach(opt => {
             opt.classList.remove('ring-2', 'ring-white', 'ring-offset-1', 'ring-offset-gray-900');
             if (opt.getAttribute('data-color') === category.color) {
@@ -124,6 +143,7 @@ function openCategoryModal(category = null) {
             }
         });
 
+        // Highlight selected icon
         document.querySelectorAll('.icon-option').forEach(opt => {
             opt.classList.remove('bg-purple-900/50', 'border', 'border-purple-500');
             opt.classList.add('bg-gray-900/50');
@@ -142,6 +162,7 @@ function openCategoryModal(category = null) {
         categoryIcon.value = 'fa-shopping-cart';
         selectedIconPreview.innerHTML = '<i class="fas fa-shopping-cart"></i>';
 
+        // Reset selections
         document.querySelectorAll('.color-option').forEach(opt => {
             opt.classList.remove('ring-2', 'ring-white', 'ring-offset-1', 'ring-offset-gray-900');
         });
@@ -150,6 +171,7 @@ function openCategoryModal(category = null) {
             opt.classList.add('bg-gray-900/50');
         });
 
+        // Highlight default color and icon
         const defaultColorOption = document.querySelector('.color-option[data-color="#8b5cf6"]');
         if (defaultColorOption) {
             defaultColorOption.classList.add('ring-2', 'ring-white', 'ring-offset-1', 'ring-offset-gray-900');
@@ -165,6 +187,7 @@ function openCategoryModal(category = null) {
     categoryModal.classList.remove('hidden');
 }
 
+// Handle category form submission
 categoryForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -190,6 +213,7 @@ categoryForm.addEventListener('submit', async (e) => {
         const categoryId = document.getElementById('categoryId').value;
 
         if (categoryId) {
+            // Update existing category
             await appwriteService.databases.updateDocument(
                 appwriteService.config.databaseId,
                 appwriteService.config.collections.CATEGORIES,
@@ -203,6 +227,7 @@ categoryForm.addEventListener('submit', async (e) => {
             );
             showToast('Category updated successfully!', 'success');
         } else {
+            // Create new category
             await appwriteService.createCategory(user.$id, categoryData);
             showToast('Category created successfully!', 'success');
         }
@@ -218,6 +243,7 @@ categoryForm.addEventListener('submit', async (e) => {
     }
 });
 
+// Load categories from Appwrite
 async function loadCategoriesFromDB() {
     try {
         const user = await appwriteService.getCurrentUser();
@@ -226,6 +252,7 @@ async function loadCategoriesFromDB() {
             return;
         }
 
+        // Load categories
         const categoriesData = await appwriteService.getAllUserCategories(user.$id);
         categories = categoriesData.map(c => ({
             id: c.$id,
@@ -237,6 +264,7 @@ async function loadCategoriesFromDB() {
             user_id: c.user_id
         }));
 
+        // Load transactions for usage statistics
         try {
             transactions = await appwriteService.getAllUserTransactions(user.$id);
         } catch (error) {
@@ -252,14 +280,17 @@ async function loadCategoriesFromDB() {
     }
 }
 
+// Update dashboard statistics
 function updateDashboard() {
     const totalCategories = categories.length;
     const customCategories = categories.filter(c => !c.is_default).length;
 
+    // Update counts
     document.getElementById('totalCategories').textContent = totalCategories;
     document.getElementById('totalCategoriesCount').textContent = totalCategories;
     document.getElementById('customCategories').textContent = customCategories;
 
+    // Calculate most used category
     if (transactions.length > 0) {
         const categoryCounts = {};
 
@@ -269,6 +300,7 @@ function updateDashboard() {
             }
         });
 
+        // Find category with most transactions
         let mostUsedCategory = null;
         let maxCount = 0;
 
@@ -293,12 +325,14 @@ function updateDashboard() {
     }
 }
 
+// Render categories table
 function renderCategoriesTable(categoriesToRender) {
     categoriesTableBody.innerHTML = '';
 
     const filterValue = categoryFilter.value;
     let filteredCategories = [...categoriesToRender];
 
+    // Apply filter
     if (filterValue === 'default') {
         filteredCategories = filteredCategories.filter(c => c.is_default);
     } else if (filterValue === 'custom') {
@@ -322,6 +356,7 @@ function renderCategoriesTable(categoriesToRender) {
         return;
     }
 
+    // Count transactions per category
     const transactionCounts = {};
     if (transactions.length > 0) {
         transactions.forEach(transaction => {
@@ -385,6 +420,7 @@ function renderCategoriesTable(categoriesToRender) {
     });
 }
 
+// Edit category
 async function editCategory(categoryId) {
     const category = categories.find(c => c.id === categoryId);
     if (category) {
@@ -392,6 +428,7 @@ async function editCategory(categoryId) {
     }
 }
 
+// Delete category
 async function deleteCategory(categoryId) {
     if (confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
         try {
@@ -410,14 +447,18 @@ async function deleteCategory(categoryId) {
     }
 }
 
+// Filter categories
 categoryFilter.addEventListener('change', () => {
     renderCategoriesTable(categories);
 });
 
+// Show toast notification
 function showToast(message, type = 'info') {
+    // Remove existing toasts
     const existingToasts = document.querySelectorAll('.toast');
     existingToasts.forEach(toast => toast.remove());
 
+    // Create toast
     const toast = document.createElement('div');
     toast.className = `toast fixed top-4 right-4 z-50 glass-card glow-border rounded-xl p-4 flex items-center gap-3 fade-in`;
 
@@ -434,12 +475,14 @@ function showToast(message, type = 'info') {
 
     document.body.appendChild(toast);
 
+    // Remove toast after 3 seconds
     setTimeout(() => {
         toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
 
+// Load user profile
 async function loadUserProfile() {
     try {
         const user = await appwriteService.getCurrentUser();
@@ -453,6 +496,7 @@ async function loadUserProfile() {
             document.getElementById('userName').textContent = profile.full_name || user.name;
             document.getElementById('userEmail').textContent = profile.email || user.email;
 
+            // Set user avatar initials
             const avatar = document.getElementById('userAvatar');
             const name = profile.full_name || user.name;
             if (name && name !== 'Loading...') {
@@ -470,6 +514,7 @@ async function loadUserProfile() {
     }
 }
 
+// Initialize page
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await appwriteService.initialize();
@@ -481,5 +526,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Make functions available globally
 window.editCategory = editCategory;
 window.deleteCategory = deleteCategory;

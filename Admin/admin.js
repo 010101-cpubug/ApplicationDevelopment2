@@ -12,9 +12,9 @@
     currencySymbols: {
         'PKR': 'Rs',
         'USD': '$',
-        'EUR': 'â‚¬',
-        'GBP': 'Â£',
-        'JPY': 'Â¥'
+        'EUR': '€',
+        'GBP': '£',
+        'JPY': '¥'
     }
 };
 
@@ -126,7 +126,7 @@ function convertAmountForDisplay(amount, fromCurrency) {
         original: amount,
         fromCurrency: fromCurrency,
         toCurrency: adminState.adminCurrency,
-        conversionText: `${fromCurrency} â†’ ${adminState.adminCurrency}`
+        conversionText: `${fromCurrency} → ${adminState.adminCurrency}`
     };
 }
 
@@ -149,7 +149,7 @@ function formatConvertedAmount(conversionResult, showOriginal = true) {
                 ${formatted}
                 <div class="conversion-tooltip">
                     ${originalFormatted} ${conversionResult.fromCurrency}<br>
-                    â†’ ${formatted} ${conversionResult.toCurrency}
+                    → ${formatted} ${conversionResult.toCurrency}
                 </div>
             </div>
         `;
@@ -462,7 +462,7 @@ function updateRecentActivity() {
                     <div class="text-sm text-gray-400 truncate">${activity.description}</div>
                     <div class="text-xs text-gray-500 mt-1">
                         ${getCurrencySymbol(activity.fromCurrency)} ${activity.originalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${activity.fromCurrency}
-                        <span class="mx-1">â†’</span>
+                        <span class="mx-1">→</span>
                         ${getCurrencySymbol(activity.toCurrency)} ${activity.convertedAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${activity.toCurrency}
                     </div>
                 </div>
@@ -534,7 +534,7 @@ function renderUsersTable() {
                     <div class="min-w-0">
                         <div class="font-medium truncate">${user.full_name}</div>
                         <div class="text-xs text-gray-500 truncate">${user.email}</div>
-                        <div class="text-xs text-gray-500 lg:hidden">${user.currency} â€¢ ${new Date(user.created_at).toLocaleDateString()}</div>
+                        <div class="text-xs text-gray-500 lg:hidden">${user.currency} • ${new Date(user.created_at).toLocaleDateString()}</div>
                     </div>
                 </div>
             </td>
@@ -545,7 +545,7 @@ function renderUsersTable() {
                 <span class="text-xs px-3 py-1 bg-gray-900/50 rounded-full border border-gray-700">
                     ${user.currency}
                     ${user.currency !== adminState.adminCurrency ?
-                `<span class="ml-1 text-gray-400">â†’ ${adminState.adminCurrency}</span>` : ''}
+                `<span class="ml-1 text-gray-400">→ ${adminState.adminCurrency}</span>` : ''}
                 </span>
             </td>
             <td class="py-4 px-4 lg:px-6 text-sm text-gray-400">
@@ -621,7 +621,7 @@ function renderTransactionsTable() {
             <td class="py-4 px-4 lg:px-6">
                 <div class="font-medium truncate">${tx.description || 'No description'}</div>
                 <div class="text-xs text-gray-500 truncate">${userName}</div>
-                <div class="text-xs text-gray-500 lg:hidden">${tx.type} â€¢ ${new Date(tx.transaction_date).toLocaleDateString()}</div>
+                <div class="text-xs text-gray-500 lg:hidden">${tx.type} • ${new Date(tx.transaction_date).toLocaleDateString()}</div>
             </td>
             <td class="py-4 px-4 lg:px-6 mobile-hidden">
                 <div class="flex items-center gap-2">
@@ -710,7 +710,7 @@ function renderBudgetsTable() {
                 <div class="font-medium truncate">${budget.budget_name}</div>
                 <div class="text-xs text-gray-500 truncate">${userName}</div>
                 <div class="text-xs text-gray-500 lg:hidden">
-                    ${formatConvertedAmount(totalConversion, false)} â€¢ ${percentage}%
+                    ${formatConvertedAmount(totalConversion, false)} • ${percentage}%
                 </div>
             </td>
             <td class="py-4 px-4 lg:px-6 mobile-hidden">
@@ -811,7 +811,7 @@ function renderSavingsTable() {
                 <div class="font-medium truncate">${goal.goal_name}</div>
                 <div class="text-xs text-gray-500 truncate">${userName}</div>
                 <div class="text-xs text-gray-500 lg:hidden">
-                    ${formatConvertedAmount(targetConversion, false)} â€¢ ${percentage}%
+                    ${formatConvertedAmount(targetConversion, false)} • ${percentage}%
                 </div>
             </td>
             <td class="py-4 px-4 lg:px-6 mobile-hidden">
@@ -898,7 +898,7 @@ function renderCategoriesTable() {
             <td class="py-4 px-4 lg:px-6">
                 <div class="font-medium truncate">${category.category_name}</div>
                 <div class="text-xs text-gray-500 truncate">${userName}</div>
-                <div class="text-xs text-gray-500 lg:hidden">${category.type} â€¢ ${category.is_default ? 'Default' : 'Custom'}</div>
+                <div class="text-xs text-gray-500 lg:hidden">${category.type} • ${category.is_default ? 'Default' : 'Custom'}</div>
             </td>
             <td class="py-4 px-4 lg:px-6 mobile-hidden">
                 <div class="flex items-center gap-2">
@@ -909,7 +909,7 @@ function renderCategoriesTable() {
                 </div>
             </td>
             <td class="py-4 px-4 lg:px-6 mobile-hidden text-2xl">
-                ${category.icon || 'ðŸ’°'}
+                ${category.icon || '💰'}
             </td>
             <td class="py-4 px-4 lg:px-6 mobile-hidden">
                 <div class="flex items-center gap-3">
@@ -1483,7 +1483,7 @@ async function editCategory(categoryId) {
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium mb-2">Icon</label>
-                        <input type="text" name="icon" value="${category.icon || 'ðŸ’°'}" 
+                        <input type="text" name="icon" value="${category.icon || '💰'}" 
                                class="glass-card w-full px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
                     </div>
                     
@@ -1861,7 +1861,7 @@ function setupEventListeners() {
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium mb-2">Icon</label>
-                                <input type="text" name="icon" value="ðŸ’°" 
+                                <input type="text" name="icon" value="💰" 
                                        class="glass-card w-full px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
                             </div>
                             
@@ -1992,11 +1992,13 @@ window.addEventListener('load', () => {
     }
 });
 
+// -- New Feature Implementations --
 
 function renderGeneralLedger() {
     const container = document.getElementById('ledgerTableBody');
     if (!container) return;
 
+    // Sort transactions by date ascending for the ledger
     const sortedTransactions = [...adminState.transactions].sort((a, b) =>
         new Date(a.transaction_date) - new Date(b.transaction_date)
     );
@@ -2016,6 +2018,7 @@ function renderGeneralLedger() {
         return;
     }
 
+    // Render logic
     const fragment = document.createDocumentFragment();
 
     sortedTransactions.forEach(tx => {
@@ -2024,6 +2027,7 @@ function renderGeneralLedger() {
         const conversion = convertAmountForDisplay(tx.amount, userCurrency);
         const amount = conversion.converted;
 
+        // Ledger Logic: Income increases balance (Credit), Expense decreases balance (Debit)
         let debit = 0;
         let credit = 0;
 
@@ -2046,7 +2050,7 @@ function renderGeneralLedger() {
             </td>
             <td class="py-3 px-4">
                 <div class="font-medium text-sm text-gray-200">${tx.description || 'Transaction'}</div>
-                <div class="text-xs text-gray-500">${user?.name || 'Unknown User'} â€¢ ${tx.type}</div>
+                <div class="text-xs text-gray-500">${user?.name || 'Unknown User'} • ${tx.type}</div>
             </td>
             <td class="py-3 px-4 text-right font-mono text-sm ${debit > 0 ? 'text-red-400' : 'text-gray-700'}">
                 ${debit > 0 ? formatConvertedAmount({ converted: debit }, false) : '-'}
@@ -2133,9 +2137,11 @@ let payablesChartInstance = null;
 let cashFlowChartInstance = null;
 let financialPeriod = 'all';
 
+// Financial period filter
 function setFinancialPeriod(period) {
     financialPeriod = period;
 
+    // Update filter button states
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.period === period) {
@@ -2146,6 +2152,7 @@ function setFinancialPeriod(period) {
     renderFinancials();
 }
 
+// Filter transactions by period
 function filterTransactionsByPeriod(transactions) {
     if (financialPeriod === 'all') return transactions;
 
@@ -2173,16 +2180,20 @@ function filterTransactionsByPeriod(transactions) {
 function renderFinancials() {
     const filteredTransactions = filterTransactionsByPeriod(adminState.transactions);
 
+    // Calculate totals
     let totalIncome = 0;
     let totalExpense = 0;
     const incomeByDescription = {};
     const expenseByDescription = {};
 
+    // Aging buckets
     const now = new Date();
     const aging = { current: 0, d30: 0, d60: 0, d90: 0 };
 
+    // Group transactions by month
     const monthlyData = {};
 
+    // Sort transactions by date
     const sortedTx = [...filteredTransactions].sort((a, b) => new Date(a.transaction_date) - new Date(b.transaction_date));
 
     sortedTx.forEach(tx => {
@@ -2200,6 +2211,7 @@ function renderFinancials() {
             monthlyData[monthLabel].income += amount;
             totalIncome += amount;
 
+            // Track by description
             const desc = tx.description || 'Other Income';
             if (!incomeByDescription[desc]) incomeByDescription[desc] = { count: 0, amount: 0 };
             incomeByDescription[desc].count++;
@@ -2208,6 +2220,7 @@ function renderFinancials() {
             monthlyData[monthLabel].expense += amount;
             totalExpense += amount;
 
+            // Track by description
             const desc = tx.description || 'Other Expense';
             if (!expenseByDescription[desc]) expenseByDescription[desc] = { count: 0, amount: 0 };
             expenseByDescription[desc].count++;
@@ -2215,6 +2228,7 @@ function renderFinancials() {
         }
         monthlyData[monthLabel].net = monthlyData[monthLabel].income - monthlyData[monthLabel].expense;
 
+        // Calculate aging
         const daysDiff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
         if (daysDiff <= 30) {
             aging.current += amount;
@@ -2235,6 +2249,7 @@ function renderFinancials() {
     const netPosition = totalIncome - totalExpense;
     const monthlyAvg = labels.length > 0 ? Math.abs(netPosition) / labels.length : 0;
 
+    // Update metric cards
     const symbol = getCurrencySymbol(adminState.adminCurrency);
 
     const metricReceivables = document.getElementById('metricReceivables');
@@ -2256,11 +2271,13 @@ function renderFinancials() {
         metricMonthlyAvg.textContent = `${symbol} ${monthlyAvg.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
+    // Update aging analysis
     document.getElementById('aging0').textContent = `${symbol} ${aging.current.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     document.getElementById('aging30').textContent = `${symbol} ${aging.d30.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     document.getElementById('aging60').textContent = `${symbol} ${aging.d60.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     document.getElementById('aging90').textContent = `${symbol} ${aging.d90.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+    // Update top income table
     const topIncomeTable = document.getElementById('topIncomeTable');
     if (topIncomeTable) {
         const sortedIncome = Object.entries(incomeByDescription)
@@ -2280,6 +2297,7 @@ function renderFinancials() {
         }
     }
 
+    // Update top expense table
     const topExpenseTable = document.getElementById('topExpenseTable');
     if (topExpenseTable) {
         const sortedExpense = Object.entries(expenseByDescription)
@@ -2299,6 +2317,7 @@ function renderFinancials() {
         }
     }
 
+    // Chart options
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -2329,6 +2348,7 @@ function renderFinancials() {
         }
     };
 
+    // Receivables Chart
     const receivablesCtx = document.getElementById('receivablesChart');
     if (receivablesCtx) {
         if (receivablesChartInstance) receivablesChartInstance.destroy();
@@ -2354,6 +2374,7 @@ function renderFinancials() {
         });
     }
 
+    // Payables Chart
     const payablesCtx = document.getElementById('payablesChart');
     if (payablesCtx) {
         if (payablesChartInstance) payablesChartInstance.destroy();
@@ -2379,6 +2400,7 @@ function renderFinancials() {
         });
     }
 
+    // Cash Flow Chart
     const cashFlowCtx = document.getElementById('cashFlowChart');
     if (cashFlowCtx) {
         if (cashFlowChartInstance) cashFlowChartInstance.destroy();
@@ -2428,6 +2450,7 @@ function renderFinancials() {
     }
 }
 
+// Password strength calculator
 function calculatePasswordStrength(password) {
     let strength = 0;
 
@@ -2444,6 +2467,7 @@ function calculatePasswordStrength(password) {
 }
 
 function setupSettings() {
+    // Fill current values
     const nameInput = document.getElementById('settingAdminName');
     const settingsInitials = document.getElementById('settingsAdminInitials');
     const settingsDisplayName = document.getElementById('settingsAdminDisplayName');
@@ -2459,6 +2483,7 @@ function setupSettings() {
         if (settingsEmail) settingsEmail.textContent = userEmail;
     }
 
+    // Password strength indicator
     const newPasswordInput = document.getElementById('newPassword');
     const strengthContainer = document.getElementById('passwordStrengthContainer');
     const strengthFill = document.getElementById('passwordStrengthFill');
@@ -2482,6 +2507,7 @@ function setupSettings() {
         });
     }
 
+    // Password match validation
     const confirmPasswordInput = document.getElementById('confirmPassword');
     const passwordMatchError = document.getElementById('passwordMatchError');
 
@@ -2498,6 +2524,7 @@ function setupSettings() {
         });
     }
 
+    // Profile form submission
     const profileForm = document.getElementById('adminProfileForm');
     if (profileForm) {
         const newProfileForm = profileForm.cloneNode(true);
@@ -2516,6 +2543,7 @@ function setupSettings() {
                 if (newName && newName !== adminState.user.name) {
                     await appwriteService.account.updateName(newName);
 
+                    // Update UI immediately
                     adminState.user.name = newName;
                     document.getElementById('adminName').textContent = newName;
                     document.getElementById('adminInitials').textContent = newName.charAt(0).toUpperCase();
@@ -2537,11 +2565,13 @@ function setupSettings() {
         });
     }
 
+    // Password change form submission
     const passwordForm = document.getElementById('passwordChangeForm');
     if (passwordForm) {
         const newPasswordForm = passwordForm.cloneNode(true);
         passwordForm.parentNode.replaceChild(newPasswordForm, passwordForm);
 
+        // Re-attach event listeners after cloning
         const newPassInput = newPasswordForm.querySelector('#newPassword');
         const confirmPassInput = newPasswordForm.querySelector('#confirmPassword');
         const strengthCont = newPasswordForm.querySelector('#passwordStrengthContainer');
@@ -2589,6 +2619,7 @@ function setupSettings() {
             const newPass = newPassInput.value;
             const confirmPass = confirmPassInput.value;
 
+            // Validation
             if (!currentPass) {
                 showToast('Please enter your current password', 'error');
                 return;
@@ -2613,6 +2644,7 @@ function setupSettings() {
                 await appwriteService.account.updatePassword(newPass, currentPass);
                 showToast('Password changed successfully!', 'success');
 
+                // Clear form
                 newPasswordForm.querySelector('#currentPassword').value = '';
                 newPassInput.value = '';
                 confirmPassInput.value = '';
@@ -2642,6 +2674,7 @@ async function exportSystemData(format) {
     const exportSuccess = document.getElementById('exportSuccess');
     const exportSuccessMessage = document.getElementById('exportSuccessMessage');
 
+    // Show progress
     if (exportProgress) {
         exportProgress.style.display = 'block';
         exportSuccess.style.display = 'none';
@@ -2693,10 +2726,12 @@ async function exportSystemData(format) {
             mimeType = 'application/json';
             extension = 'json';
         } else if (format === 'csv') {
+            // Create comprehensive CSV with multiple sections
             let csvContent = '# BAREERA ADMIN DATA EXPORT\n';
             csvContent += `# Exported: ${new Date().toISOString()}\n`;
             csvContent += `# Currency: ${adminState.adminCurrency}\n\n`;
 
+            // Transactions section
             csvContent += '## TRANSACTIONS\n';
             csvContent += 'ID,Date,User,Description,Type,Amount,Currency,Category\n';
             adminState.transactions.forEach(tx => {
@@ -2771,12 +2806,14 @@ async function exportSystemData(format) {
 
         updateProgress(100, 'Export complete!');
 
+        // Show success message
         if (exportProgress) {
             setTimeout(() => {
                 exportProgress.style.display = 'none';
                 exportSuccess.style.display = 'block';
                 exportSuccessMessage.textContent = `Successfully exported ${adminState.transactions.length} transactions, ${adminState.users.length} users, ${adminState.budgets.length} budgets, and ${adminState.savings.length} savings goals as ${format.toUpperCase()}.`;
 
+                // Hide success after 5 seconds
                 setTimeout(() => {
                     exportSuccess.style.display = 'none';
                 }, 5000);
@@ -2792,5 +2829,6 @@ async function exportSystemData(format) {
     }
 }
 
+// Make setFinancialPeriod available globally
 window.setFinancialPeriod = setFinancialPeriod;
 window.exportSystemData = exportSystemData;
