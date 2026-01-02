@@ -1,4 +1,4 @@
-const menuToggle = document.getElementById('menuToggle');
+﻿const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.querySelector('.sidebar');
 const overlay = document.getElementById('overlay');
 const saveProfileBtn = document.getElementById('saveProfileBtn');

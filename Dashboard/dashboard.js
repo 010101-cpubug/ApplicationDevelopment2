@@ -1,5 +1,4 @@
-// Dashboard State
-const dashboardState = {
+﻿const dashboardState = {
     user: null,
     userProfile: null,
     currency: 'PKR',
@@ -18,7 +17,6 @@ const dashboardState = {
     }
 };
 
-// DOM Elements
 const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.querySelector('.sidebar');
 const overlay = document.getElementById('overlay');
@@ -29,7 +27,6 @@ const confirmLogout = document.getElementById('confirmLogout');
 const recentTransactions = document.getElementById('recentTransactions');
 const chartPeriod = document.getElementById('chartPeriod');
 
-// ========== AUTHENTICATION ==========
 async function checkAuth() {
     try {
         await appwriteService.initialize();
@@ -46,14 +43,12 @@ async function checkAuth() {
     }
 }
 
-// ========== CURRENCY CONVERSION ==========
 function convertCurrency(amount, fromCurrency, toCurrency) {
     if (fromCurrency === toCurrency) return amount;
 
     const fromRate = dashboardState.exchangeRates[fromCurrency] || 1;
     const toRate = dashboardState.exchangeRates[toCurrency] || 1;
 
-    // Convert to base currency (PKR) first, then to target currency
     const baseAmount = amount / fromRate;
     return baseAmount * toRate;
 }
@@ -64,7 +59,6 @@ function formatCurrencyWithConversion(amount, fromCurrency = 'PKR') {
     return appwriteService.formatCurrency(convertedAmount, targetCurrency);
 }
 
-// ========== DASHBOARD DATA LOADING ==========
 async function loadDashboardData() {
     try {
         dashboardState.isLoading = true;
@@ -74,19 +68,15 @@ async function loadDashboardData() {
 
         dashboardState.user = user;
 
-        // Load user profile
         dashboardState.userProfile = await appwriteService.getUserProfile(user.$id);
         if (dashboardState.userProfile) {
             dashboardState.currency = dashboardState.userProfile.currency || 'PKR';
         }
 
-        // Update UI with user info
         updateUserInfo();
 
-        // Load categories first (needed for transactions)
         await loadCategories();
 
-        // Load all other data
         await Promise.all([
             loadFinancialSummary(),
             loadRecentTransactions(),
@@ -94,7 +84,6 @@ async function loadDashboardData() {
             loadSavingsGoals()
         ]);
 
-        // Load chart data after other data is loaded
         await loadSpendingData();
 
         updateLastUpdated();
@@ -114,7 +103,6 @@ async function loadCategories() {
         dashboardState.categories = await appwriteService.getCategories(userId);
     } catch (error) {
         console.error('Error loading categories:', error);
-        // Categories may fail, but we can continue
     }
 }
 
@@ -123,11 +111,9 @@ async function loadFinancialSummary() {
         const userId = dashboardState.user.$id;
         const now = new Date();
 
-        // Get current month dates
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-        // Get all transactions for current month
         const allTransactions = await appwriteService.getAllUserTransactions(userId);
 
         const currentMonthTransactions = allTransactions.filter(t => {
@@ -136,7 +122,6 @@ async function loadFinancialSummary() {
             return date >= startOfMonth && date <= endOfMonth;
         });
 
-        // Calculate totals
         const monthlyIncome = currentMonthTransactions
             .filter(t => t.type === 'income')
             .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
@@ -145,7 +130,6 @@ async function loadFinancialSummary() {
             .filter(t => t.type === 'expense')
             .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
 
-        // Get last month for comparison
         const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
@@ -163,7 +147,6 @@ async function loadFinancialSummary() {
             .filter(t => t.type === 'expense')
             .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
 
-        // Calculate changes
         const incomeChange = lastMonthIncome > 0
             ? ((monthlyIncome - lastMonthIncome) / lastMonthIncome * 100)
             : (monthlyIncome > 0 ? 100 : 0);
@@ -172,10 +155,8 @@ async function loadFinancialSummary() {
             ? ((monthlyExpenses - lastMonthExpenses) / lastMonthExpenses * 100)
             : (monthlyExpenses > 0 ? 100 : 0);
 
-        // Current balance (simplified calculation)
         const currentBalance = monthlyIncome - monthlyExpenses;
 
-        // Update UI with converted currency
         document.getElementById('monthlyIncome').textContent =
             formatCurrencyWithConversion(monthlyIncome);
         document.getElementById('monthlyExpenses').textContent =
@@ -183,7 +164,6 @@ async function loadFinancialSummary() {
         document.getElementById('currentBalance').textContent =
             formatCurrencyWithConversion(currentBalance);
 
-        // Update change indicators
         updateChangeIndicator('incomeChange', incomeChange);
         updateChangeIndicator('expensesChange', expensesChange);
         updateChangeIndicator('balanceChange', currentBalance > 0 ? 1 : -1);
@@ -214,10 +194,8 @@ async function loadBudgets() {
         const userId = dashboardState.user.$id;
         const budgets = await appwriteService.getAllUserBudgets(userId);
 
-        // Calculate actual spent amount from transactions
         const transactions = await appwriteService.getAllUserTransactions(userId);
 
-        // Update budgets with actual spent amounts
         const updatedBudgets = budgets.map(budget => {
             const budgetStart = new Date(budget.start_date);
             const budgetEnd = new Date(budget.end_date);
@@ -288,7 +266,6 @@ async function loadSpendingData() {
     }
 }
 
-// ========== UI UPDATES ==========
 function updateUserInfo() {
     if (dashboardState.user) {
         const userName = dashboardState.user.name || 'User';
@@ -301,12 +278,10 @@ function updateUserInfo() {
         document.getElementById('dashboardSubtitle').textContent =
             `Welcome back! Here's your financial overview in ${dashboardState.currency}`;
 
-        // Set user initials
         const initials = appwriteService.getUserInitials(userName);
         document.getElementById('userInitials').textContent = initials;
     }
 
-    // Set current date
     const now = new Date();
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     document.getElementById('headerDate').textContent = now.toLocaleDateString('en-US', options);
@@ -358,7 +333,6 @@ function displayTransactions(transactions) {
         const iconBg = isExpense ? 'bg-red-900/30' : 'bg-green-900/30';
         const iconColor = isExpense ? 'text-red-400' : 'text-green-400';
 
-        // Get category name
         const category = dashboardState.categories.find(c => c.$id === transaction.category_id);
         const categoryName = category ? category.category_name : 'Uncategorized';
 
@@ -381,7 +355,7 @@ function displayTransactions(transactions) {
                 </div>
                 <div class="max-w-[200px]">
                     <div class="font-medium truncate">${transaction.description || categoryName}</div>
-                    <div class="text-sm text-gray-500">${dateString} • ${categoryName}</div>
+                    <div class="text-sm text-gray-500">${dateString} â€¢ ${categoryName}</div>
                 </div>
             </div>
             <div class="font-bold ${amountClass} text-right">
@@ -440,7 +414,6 @@ function displayBudgets(budgets) {
     });
 }
 
-// ========== CHART FUNCTIONALITY ==========
 async function updateSpendingChart(days = 30) {
     try {
         const userId = dashboardState.user.$id;
@@ -448,13 +421,11 @@ async function updateSpendingChart(days = 30) {
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - days);
 
-        // Set time to beginning and end of day for proper comparison
         startDate.setHours(0, 0, 0, 0);
         endDate.setHours(23, 59, 59, 999);
 
         const allTransactions = await appwriteService.getAllUserTransactions(userId);
 
-        // Filter expenses for the period
         const periodExpenses = allTransactions.filter(t => {
             if (!t.transaction_date || t.type !== 'expense') return false;
 
@@ -462,18 +433,15 @@ async function updateSpendingChart(days = 30) {
             return transactionDate >= startDate && transactionDate <= endDate;
         });
 
-        // Group by date
         const dailyData = {};
         const currentDate = new Date(startDate);
 
-        // Initialize all dates in period
         while (currentDate <= endDate) {
             const dateKey = currentDate.toISOString().split('T')[0];
             dailyData[dateKey] = 0;
             currentDate.setDate(currentDate.getDate() + 1);
         }
 
-        // Sum expenses by date
         periodExpenses.forEach(transaction => {
             if (!transaction.transaction_date) return;
 
@@ -485,11 +453,9 @@ async function updateSpendingChart(days = 30) {
             }
         });
 
-        // Prepare chart data
         const labels = Object.keys(dailyData).map(date => {
             const d = new Date(date);
             if (days <= 7) {
-                // Show day name for week view
                 return d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
             } else if (days <= 30) {
                 return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -610,10 +576,8 @@ async function updateCategoryBreakdown() {
         const userId = dashboardState.user.$id;
         const allTransactions = await appwriteService.getAllUserTransactions(userId);
 
-        // Calculate spending by category
         const categorySpending = {};
 
-        // Initialize with known categories
         dashboardState.categories.forEach(cat => {
             categorySpending[cat.$id] = {
                 name: cat.category_name,
@@ -622,14 +586,12 @@ async function updateCategoryBreakdown() {
             };
         });
 
-        // Add uncategorized
         categorySpending['uncategorized'] = {
             name: 'Uncategorized',
             amount: 0,
             color: '#6B7280'
         };
 
-        // Sum expenses by category
         allTransactions
             .filter(t => t.type === 'expense')
             .forEach(transaction => {
@@ -641,7 +603,6 @@ async function updateCategoryBreakdown() {
                 }
             });
 
-        // Get top 4 categories
         const topCategories = Object.values(categorySpending)
             .filter(cat => cat.amount > 0)
             .sort((a, b) => b.amount - a.amount)
@@ -681,7 +642,6 @@ async function updateCategoryBreakdown() {
     }
 }
 
-// ========== UTILITY FUNCTIONS ==========
 function hideSkeletons() {
     document.querySelectorAll('.skeleton').forEach(el => {
         el.classList.remove('skeleton');
@@ -695,7 +655,6 @@ function updateLastUpdated() {
 }
 
 function showError(message) {
-    // Create error toast
     const toast = document.createElement('div');
     toast.className = 'fixed top-4 right-4 glass-card glow-border p-4 rounded-xl text-red-300 fade-in z-50';
     toast.innerHTML = `
@@ -707,7 +666,6 @@ function showError(message) {
 
     document.body.appendChild(toast);
 
-    // Remove after 5 seconds
     setTimeout(() => {
         toast.remove();
     }, 5000);
@@ -727,7 +685,6 @@ function displayErrorState(element, message) {
     `;
 }
 
-// ========== EVENT LISTENERS ==========
 menuToggle.addEventListener('click', (e) => {
     e.stopPropagation();
     sidebar.classList.toggle('active');
@@ -784,20 +741,15 @@ chartPeriod.addEventListener('change', () => {
     updateCategoryBreakdown();
 });
 
-// ========== INITIALIZATION ==========
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // Check auth first
         const user = await checkAuth();
         if (!user) return;
 
-        // Initialize Appwrite
         await appwriteService.initialize();
 
-        // Load dashboard data
         await loadDashboardData();
 
-        // Refresh data every 30 seconds
         setInterval(async () => {
             if (!dashboardState.isLoading && document.visibilityState === 'visible') {
                 await loadDashboardData();
@@ -810,7 +762,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Refresh on visibility change
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && dashboardState.user) {
         loadDashboardData();
