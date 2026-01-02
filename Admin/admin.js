@@ -34,7 +34,28 @@ const tabs = {
     transactions: document.getElementById('transactionsTab'),
     budgets: document.getElementById('budgetsTab'),
     savings: document.getElementById('savingsTab'),
-    categories: document.getElementById('categoriesTab')
+    categories: document.getElementById('categoriesTab'),
+    ledger: document.getElementById('ledgerTab'),
+    payables: document.getElementById('payablesTab'),
+    receivables: document.getElementById('receivablesTab'),
+    budgeting: document.getElementById('budgetingTab'),
+    settings: document.getElementById('settingsTab')
+};
+
+// ... existing code ...
+
+const titles = {
+    dashboard: 'Admin Dashboard',
+    users: 'User Management',
+    transactions: 'Transaction History',
+    budgets: 'Budget Management',
+    savings: 'Savings Goals',
+    categories: 'Category Management',
+    ledger: 'General Ledger',
+    payables: 'Accounts Payable',
+    receivables: 'Accounts Receivable',
+    budgeting: 'Advanced Budgeting',
+    settings: 'Admin Settings'
 };
 
 async function initializeAdminPanel() {
@@ -296,6 +317,271 @@ function loadTabData(tabName) {
         case 'categories':
             renderCategoriesTable();
             break;
+        case 'ledger':
+            renderLedgerTable();
+            break;
+        case 'payables':
+            renderPayablesTable();
+            break;
+        case 'receivables':
+            renderReceivablesTable();
+            break;
+        case 'budgeting':
+            renderBudgetingGrid();
+            break;
+        case 'settings':
+            setupSettingsListeners();
+            break;
+    }
+}
+
+function renderLedgerTable() {
+    const container = document.getElementById('ledgerTableBody');
+    if (!container) return;
+
+    // Sort by date desc
+    const sortedDetails = [...adminState.transactions].sort((a, b) => new Date(b.transaction_date) - new Date(a.transaction_date));
+
+    container.innerHTML = '';
+
+    if (sortedDetails.length === 0) {
+        container.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">No transactions found</td></tr>`;
+        return;
+    }
+
+    let runningBalance = 0; // In a real ledger, balance is historical. Here just for display.
+
+    sortedDetails.forEach(tx => {
+        const user = adminState.userMap.get(tx.user_id);
+        const userCurrency = user?.currency || 'PKR';
+        const conversion = convertAmountForDisplay(tx.amount, userCurrency);
+        const amount = conversion.converted;
+
+        const isIncome = tx.type === 'income';
+        const debit = isIncome ? 0 : amount;
+        const credit = isIncome ? amount : 0;
+
+        // Find category name
+        const category = adminState.categories.find(c => c.$id === tx.category_id);
+        const accountName = category ? category.category_name : 'Uncategorized';
+
+        const row = document.createElement('tr');
+        row.className = 'table-row hover:bg-gray-900/30 border-b border-gray-800';
+        row.innerHTML = `
+            <td class="py-4 px-6 text-sm text-gray-300">${new Date(tx.transaction_date).toLocaleDateString()}</td>
+            <td class="py-4 px-6 text-sm text-gray-300 font-medium">${tx.description}</td>
+            <td class="py-4 px-6 text-sm text-gray-400">${accountName}</td>
+            <td class="py-4 px-6 text-sm text-right text-gray-300">${debit > 0 ? getCurrencySymbol(adminState.adminCurrency) + ' ' + debit.toLocaleString() : '-'}</td>
+            <td class="py-4 px-6 text-sm text-right text-gray-300">${credit > 0 ? getCurrencySymbol(adminState.adminCurrency) + ' ' + credit.toLocaleString() : '-'}</td>
+            <td class="py-4 px-6 text-sm text-right text-gray-500">-</td>
+        `;
+        container.appendChild(row);
+    });
+}
+
+function renderPayablesTable() {
+    const container = document.getElementById('payablesTableBody');
+    if (!container) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const payables = adminState.transactions.filter(t =>
+        t.type === 'expense' && new Date(t.transaction_date) > today
+    ).sort((a, b) => new Date(a.transaction_date) - new Date(b.transaction_date));
+
+    container.innerHTML = '';
+
+    if (payables.length === 0) {
+        container.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">No upcoming payables found</td></tr>`;
+        return;
+    }
+
+    payables.forEach(tx => {
+        const user = adminState.userMap.get(tx.user_id);
+        const userCurrency = user?.currency || 'PKR';
+        const conversion = convertAmountForDisplay(tx.amount, userCurrency);
+
+        const category = adminState.categories.find(c => c.$id === tx.category_id);
+
+        const row = document.createElement('tr');
+        row.className = 'table-row hover:bg-gray-900/30 border-b border-gray-800';
+        row.innerHTML = `
+            <td class="py-4 px-6 text-sm text-yellow-400 font-medium">${new Date(tx.transaction_date).toLocaleDateString()}</td>
+            <td class="py-4 px-6 text-sm text-gray-300">${tx.description}</td>
+            <td class="py-4 px-6 text-sm text-gray-400">${category ? category.category_name : 'General'}</td>
+            <td class="py-4 px-6 text-sm text-gray-400">${user?.name || 'Unknown'}</td>
+            <td class="py-4 px-6 text-sm text-right font-bold text-red-400">${getCurrencySymbol(adminState.adminCurrency)} ${conversion.converted.toLocaleString()}</td>
+            <td class="py-4 px-6 text-sm text-right"><span class="px-2 py-1 rounded text-xs bg-yellow-900/30 text-yellow-500">Pending</span></td>
+        `;
+        container.appendChild(row);
+    });
+}
+
+function renderReceivablesTable() {
+    const container = document.getElementById('receivablesTableBody');
+    if (!container) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const receivables = adminState.transactions.filter(t =>
+        t.type === 'income' && new Date(t.transaction_date) > today
+    ).sort((a, b) => new Date(a.transaction_date) - new Date(b.transaction_date));
+
+    container.innerHTML = '';
+
+    if (receivables.length === 0) {
+        container.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">No upcoming receivables found</td></tr>`;
+        return;
+    }
+
+    receivables.forEach(tx => {
+        const user = adminState.userMap.get(tx.user_id);
+        const userCurrency = user?.currency || 'PKR';
+        const conversion = convertAmountForDisplay(tx.amount, userCurrency);
+
+        const category = adminState.categories.find(c => c.$id === tx.category_id);
+
+        const row = document.createElement('tr');
+        row.className = 'table-row hover:bg-gray-900/30 border-b border-gray-800';
+        row.innerHTML = `
+            <td class="py-4 px-6 text-sm text-green-400 font-medium">${new Date(tx.transaction_date).toLocaleDateString()}</td>
+            <td class="py-4 px-6 text-sm text-gray-300">${tx.description}</td>
+            <td class="py-4 px-6 text-sm text-gray-400">${category ? category.category_name : 'General'}</td>
+            <td class="py-4 px-6 text-sm text-gray-400">${user?.name || 'Unknown'}</td>
+            <td class="py-4 px-6 text-sm text-right font-bold text-green-400">${getCurrencySymbol(adminState.adminCurrency)} ${conversion.converted.toLocaleString()}</td>
+            <td class="py-4 px-6 text-sm text-right"><span class="px-2 py-1 rounded text-xs bg-blue-900/30 text-blue-400">Expected</span></td>
+        `;
+        container.appendChild(row);
+    });
+}
+
+function renderBudgetingGrid() {
+    const container = document.getElementById('budgetingGrid');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (adminState.budgets.length === 0) {
+        container.innerHTML = `<div class="col-span-3 text-center text-gray-500 py-8">No budgets found</div>`;
+        return;
+    }
+
+    adminState.budgets.forEach(budget => {
+        const user = adminState.userMap.get(budget.user_id);
+        const userCurrency = user?.currency || 'PKR';
+        const total = convertAmountForDisplay(budget.total_amount, userCurrency);
+        const spent = convertAmountForDisplay(budget.spent_amount || 0, userCurrency);
+        const percentage = Math.min(100, Math.round(((budget.spent_amount || 0) / budget.total_amount) * 100));
+
+        const card = document.createElement('div');
+        card.className = 'glass-card glow-border rounded-2xl p-6 flex flex-col gap-4';
+        card.innerHTML = `
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="font-bold text-lg">${budget.budget_name}</h3>
+                    <div class="text-sm text-gray-400">${user?.name}</div>
+                </div>
+                <span class="px-2 py-1 rounded text-xs ${budget.is_active ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'}">
+                    ${budget.is_active ? 'Active' : 'Inactive'}
+                </span>
+            </div>
+            
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-400">Progress</span>
+                    <span class="font-medium ${percentage > 90 ? 'text-red-400' : 'text-green-400'}">${percentage}%</span>
+                </div>
+                <div class="progress-bar bg-gray-800 h-2 rounded-full overflow-hidden">
+                    <div class="h-full ${percentage > 80 ? 'bg-red-500' : 'bg-green-500'}" style="width: ${percentage}%"></div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 pt-2 border-t border-gray-800">
+                <div>
+                    <div class="text-xs text-gray-500">Budget Limit</div>
+                    <div class="font-semibold text-white">${getCurrencySymbol(adminState.adminCurrency)} ${total.converted.toLocaleString()}</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs text-gray-500">Spent</div>
+                    <div class="font-semibold text-white">${getCurrencySymbol(adminState.adminCurrency)} ${spent.converted.toLocaleString()}</div>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function setupSettingsListeners() {
+    const updateNameBtn = document.getElementById('updateNameBtn');
+    const updatePassBtn = document.getElementById('updatePassBtn');
+    const exportAllBtn = document.getElementById('exportAllBtn');
+
+    if (updateNameBtn) {
+        updateNameBtn.onclick = async () => {
+            const newName = document.getElementById('adminNameInput').value;
+            if (!newName) return showToast('Please enter a name', 'warning');
+
+            try {
+                // Update profile in database
+                const profile = await appwriteService.getUserProfile(adminState.user.$id);
+                if (profile) {
+                    await appwriteService.updateUserProfile(profile.$id, { full_name: newName });
+                    showToast('Admin name updated', 'success');
+                    document.getElementById('adminName').textContent = newName;
+                }
+                // Try to update auth account name too if possible
+                if (appwriteService.account) {
+                    await appwriteService.account.updateName(newName);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Error updating name', 'error');
+            }
+        };
+    }
+
+    if (updatePassBtn) {
+        updatePassBtn.onclick = async () => {
+            const newPass = document.getElementById('adminNewPass').value;
+            const confirmPass = document.getElementById('adminConfirmPass').value;
+
+            if (!newPass || !confirmPass) return showToast('Please enter password', 'warning');
+            if (newPass !== confirmPass) return showToast('Passwords do not match', 'error');
+
+            try {
+                if (appwriteService.account) {
+                    await appwriteService.account.updatePassword(newPass);
+                    showToast('Password updated successfully', 'success');
+                    document.getElementById('adminNewPass').value = '';
+                    document.getElementById('adminConfirmPass').value = '';
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Error updating password: ' + e.message, 'error');
+            }
+        };
+    }
+
+    if (exportAllBtn) {
+        exportAllBtn.onclick = () => {
+            const data = {
+                users: adminState.users,
+                transactions: adminState.transactions,
+                budgets: adminState.budgets,
+                categories: adminState.categories,
+                savings: adminState.savings
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "admin_data_export.json");
+            document.body.appendChild(downloadAnchorNode); // required for firefox
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        };
     }
 }
 
@@ -1603,8 +1889,8 @@ function showToast(message, type = 'info') {
 
     const toast = document.createElement('div');
     toast.className = `toast px-4 py-3 rounded-xl flex items-center gap-3 slide-in border-l-4 ${type === 'success' ? 'border-green-500' :
-            type === 'error' ? 'border-red-500' :
-                'border-blue-500'
+        type === 'error' ? 'border-red-500' :
+            'border-blue-500'
         }`;
 
     const icon = type === 'success' ? 'fa-check-circle' :

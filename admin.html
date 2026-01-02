@@ -112,6 +112,38 @@
                         <i class="fas fa-tags w-5 text-center"></i>
                         <span>Categories</span>
                     </button>
+
+                    <div class="border-t border-gray-800 my-2"></div>
+
+                    <button data-tab="ledger"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-book w-5 text-center"></i>
+                        <span>General Ledger</span>
+                    </button>
+
+                    <button data-tab="payables"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-file-invoice-dollar w-5 text-center"></i>
+                        <span>Accounts Payable</span>
+                    </button>
+
+                    <button data-tab="receivables"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-hand-holding-usd w-5 text-center"></i>
+                        <span>Accounts Receivable</span>
+                    </button>
+
+                    <button data-tab="budgeting"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-calculator w-5 text-center"></i>
+                        <span>Budgeting</span>
+                    </button>
+
+                    <button data-tab="settings"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-cog w-5 text-center"></i>
+                        <span>Settings</span>
+                    </button>
                 </div>
             </div>
 
@@ -500,6 +532,162 @@
                                 <!-- Categories loaded here -->
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- General Ledger Tab -->
+            <div id="ledgerTab" class="hidden">
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <h2 class="text-xl font-bold mb-2">General Ledger</h2>
+                        <div class="text-sm text-gray-400">Complete record of financial transactions</div>
+                    </div>
+                    <div class="table-container max-h-[600px] overflow-y-auto">
+                        <table class="w-full">
+                            <thead class="table-header sticky top-0">
+                                <tr>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Date</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Description</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Account
+                                        (Category)</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Debit</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Credit</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledgerTableBody">
+                                <!-- Ledger entries loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accounts Payable Tab -->
+            <div id="payablesTab" class="hidden">
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <h2 class="text-xl font-bold mb-2">Accounts Payable</h2>
+                        <div class="text-sm text-gray-400">Track pending payments and future expenses</div>
+                    </div>
+                    <div class="table-container">
+                        <table class="w-full">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Due Date</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Description</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Vendor/Category
+                                    </th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">User</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Amount</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payablesTableBody">
+                                <!-- Payables loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accounts Receivable Tab -->
+            <div id="receivablesTab" class="hidden">
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <h2 class="text-xl font-bold mb-2">Accounts Receivable</h2>
+                        <div class="text-sm text-gray-400">Track expected income and pending invoices</div>
+                    </div>
+                    <div class="table-container">
+                        <table class="w-full">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Expected Date
+                                    </th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Description</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Source/Category
+                                    </th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">User</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Amount</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="receivablesTableBody">
+                                <!-- Receivables loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budgeting Tab (Advanced) -->
+            <div id="budgetingTab" class="hidden">
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mobile-stack">
+                            <div>
+                                <h2 class="text-xl font-bold">Advanced Budgeting</h2>
+                                <div class="text-sm text-gray-400">Create and manage budgets for users</div>
+                            </div>
+                            <button id="addBudgetBtn"
+                                class="glass-card px-4 py-2 rounded-xl border border-gray-700 hover:border-purple-500 transition flex items-center gap-2">
+                                <i class="fas fa-plus"></i> New Budget
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="budgetingGrid">
+                            <!-- Budget cards will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="hidden">
+                <div class="max-w-2xl mx-auto space-y-6">
+                    <!-- Profile Settings -->
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-4">Admin Profile</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Display Name</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="adminNameInput"
+                                        class="flex-1 glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <button id="updateNameBtn"
+                                        class="glass-card px-4 py-2 rounded-xl border border-gray-700 hover:border-purple-500">Update</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Change Password</label>
+                                <div class="space-y-2">
+                                    <input type="password" id="adminNewPass" placeholder="New Password"
+                                        class="w-full glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <input type="password" id="adminConfirmPass" placeholder="Confirm Password"
+                                        class="w-full glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <button id="updatePassBtn"
+                                        class="w-full glass-card px-4 py-2 rounded-xl border border-gray-700 hover:border-purple-500">Change
+                                        Password</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Export -->
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-4">System Data</h2>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-medium">Export All Data</div>
+                                <div class="text-sm text-gray-400">Download a complete backup of all system data</div>
+                            </div>
+                            <button id="exportAllBtn"
+                                class="glass-card px-4 py-2 rounded-xl border border-gray-700 hover:border-purple-500 flex items-center gap-2">
+                                <i class="fas fa-download"></i> Export CSV
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
