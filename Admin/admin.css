@@ -363,7 +363,7 @@ body {
     }
 }
 
-/* ===== Enhanced Settings Panel Styles ===== */
+
 
 .settings-container {
     max-width: 800px;
@@ -389,7 +389,7 @@ body {
     color: var(--primary-purple);
 }
 
-/* Form Groups */
+
 .form-group {
     margin-bottom: 1.25rem;
 }
@@ -430,7 +430,7 @@ body {
     margin-top: 0.375rem;
 }
 
-/* Password Strength Indicator */
+
 .password-strength-container {
     margin-top: 0.5rem;
 }
@@ -481,7 +481,7 @@ body {
     color: #10b981;
 }
 
-/* Export Options */
+
 .export-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -557,7 +557,7 @@ body {
     }
 }
 
-/* ===== Enhanced Financials Dashboard Styles ===== */
+
 
 .financials-header {
     display: flex;
@@ -596,7 +596,7 @@ body {
     color: var(--primary-purple);
 }
 
-/* Metric Cards */
+
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -666,7 +666,7 @@ body {
     color: #9ca3af;
 }
 
-/* Aging Analysis */
+
 .aging-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -730,7 +730,7 @@ body {
     color: #ef4444;
 }
 
-/* Financial Tables */
+
 .financial-table {
     width: 100%;
     border-collapse: collapse;
@@ -766,7 +766,7 @@ body {
     font-weight: 600;
 }
 
-/* Charts Container Enhancement */
+
 .chart-container {
     position: relative;
     height: 280px;
@@ -786,7 +786,7 @@ body {
     color: var(--primary-purple);
 }
 
-/* Split View for Tables */
+
 .financial-split {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

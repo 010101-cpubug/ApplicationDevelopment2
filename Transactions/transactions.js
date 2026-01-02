@@ -1,4 +1,4 @@
-﻿// Transactions State
+﻿
 const transactionsState = {
     user: null,
     userProfile: null,
@@ -21,7 +21,7 @@ const transactionsState = {
     isLoading: false
 };
 
-// DOM Elements
+
 const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.querySelector('.sidebar');
 const overlay = document.getElementById('overlay');
@@ -55,7 +55,7 @@ const transactionCategory = document.getElementById('transactionCategory');
 const transactionBudget = document.getElementById('transactionBudget');
 const transactionTimeDisplay = document.getElementById('transactionTimeDisplay');
 
-// ========== AUTHENTICATION ==========
+
 async function checkAuth() {
     try {
         await appwriteService.initialize();
@@ -72,7 +72,7 @@ async function checkAuth() {
     }
 }
 
-// ========== DATA LOADING ==========
+
 async function loadTransactionsFromDB() {
     try {
         transactionsState.isLoading = true;
@@ -82,7 +82,7 @@ async function loadTransactionsFromDB() {
 
         transactionsState.user = user;
 
-        // Load user profile
+        
         transactionsState.userProfile = await appwriteService.getUserProfile(user.$id);
         if (transactionsState.userProfile) {
             transactionsState.currency = transactionsState.userProfile.currency || 'PKR';
@@ -90,20 +90,20 @@ async function loadTransactionsFromDB() {
             updateCurrencyDisplay();
         }
 
-        // Update UI with user info
+        
         updateUserInfo();
 
-        // Load all data in parallel
+        
         await Promise.all([
             loadAllTransactions(),
             loadCategories(),
             loadBudgets(),
         ]);
 
-        // Update monthly transaction count
+        
         updateMonthlyTransactionCount();
 
-        // Apply initial filters and render
+        
         applyCurrentFilters();
 
     } catch (error) {
@@ -119,7 +119,7 @@ async function loadAllTransactions() {
         const userId = transactionsState.user.$id;
         const transactions = await appwriteService.getAllUserTransactions(userId);
 
-        // Map to frontend format (schema fields only)
+        
         transactionsState.allTransactions = transactions.map(t => ({
             $id: t.$id,
             description: t.description || 'Transaction',
@@ -136,7 +136,7 @@ async function loadAllTransactions() {
 
     } catch (error) {
         console.error('Error loading transactions:', error);
-        // Fallback to empty array
+        
         transactionsState.allTransactions = [];
     }
 }
@@ -147,13 +147,13 @@ async function loadCategories() {
         const categories = await appwriteService.getAllUserCategories(userId);
         transactionsState.categories = categories;
 
-        // Create map for quick lookup
+        
         transactionsState.categoriesMap = {};
         categories.forEach(cat => {
             transactionsState.categoriesMap[cat.$id] = cat;
         });
 
-        // Populate category filters
+        
         populateCategoryFilters();
 
     } catch (error) {
@@ -169,13 +169,13 @@ async function loadBudgets() {
         const budgets = await appwriteService.getAllUserBudgets(userId);
         transactionsState.budgets = budgets;
 
-        // Create map for quick lookup
+        
         transactionsState.budgetsMap = {};
         budgets.forEach(budget => {
             transactionsState.budgetsMap[budget.$id] = budget;
         });
 
-        // Populate budget filters
+        
         populateBudgetFilters();
 
     } catch (error) {
@@ -185,40 +185,40 @@ async function loadBudgets() {
     }
 }
 
-// ========== FILTERS & SORTING ==========
+
 function applyCurrentFilters() {
     let filtered = [...transactionsState.allTransactions];
 
-    // Apply date filter
+    
     filtered = applyDateFilter(filtered, transactionsState.currentFilters.date);
 
-    // Apply type filter
+    
     if (transactionsState.currentFilters.type !== 'all') {
         filtered = filtered.filter(t => t.type === transactionsState.currentFilters.type);
     }
 
-    // Apply category filter
+    
     if (transactionsState.currentFilters.category !== 'all') {
         filtered = filtered.filter(t => t.category_id === transactionsState.currentFilters.category);
     }
 
-    // Apply budget filter
+    
     if (transactionsState.currentFilters.budget !== 'all') {
         filtered = filtered.filter(t => t.budget_id === transactionsState.currentFilters.budget);
     }
 
-    // Apply sorting
+    
     filtered = applySorting(filtered, sortBy.value);
 
     transactionsState.filteredTransactions = filtered;
 
-    // Update summary
+    
     updateTransactionSummary(filtered);
 
-    // Update pagination
+    
     updatePagination();
 
-    // Render table
+    
     renderTransactionsTable();
 }
 
@@ -292,7 +292,7 @@ function applySorting(transactions, sortValue) {
     });
 }
 
-// ========== UI UPDATES ==========
+
 function updateUserInfo() {
     if (transactionsState.user) {
         document.getElementById('userName').textContent = transactionsState.user.name || 'User';
@@ -303,7 +303,7 @@ function updateUserInfo() {
 function updateCurrencyDisplay() {
     document.getElementById('currencySymbol').textContent = transactionsState.currencySymbol;
 
-    // Update all displayed amounts
+    
     document.querySelectorAll('.currency-amount').forEach(el => {
         const amount = parseFloat(el.dataset.amount) || 0;
         el.textContent = formatCurrency(amount);
@@ -324,7 +324,7 @@ function updateMonthlyTransactionCount() {
 }
 
 function updateTransactionSummary(transactions) {
-    // Calculate totals
+    
     const totalIncome = transactions
         .filter(t => t.type === 'income')
         .reduce((sum, t) => sum + t.amount, 0);
@@ -335,15 +335,15 @@ function updateTransactionSummary(transactions) {
 
     const netBalance = totalIncome - totalExpenses;
 
-    // Update UI with formatted currency
+    
     document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
     document.getElementById('totalExpenses').textContent = formatCurrency(totalExpenses);
     document.getElementById('netBalance').textContent = formatCurrency(netBalance);
 
-    // Update transaction count
+    
     document.getElementById('transactionCount').textContent = transactions.length;
 
-    // Calculate changes from last month (simplified)
+    
     updateChangeIndicators(transactions);
 }
 
@@ -352,7 +352,7 @@ function updateChangeIndicators(transactions) {
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    // Current month transactions
+    
     const currentMonthTransactions = transactions.filter(t => {
         const date = new Date(t.transaction_date);
         return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
@@ -366,7 +366,7 @@ function updateChangeIndicators(transactions) {
         .filter(t => t.type === 'expense')
         .reduce((sum, t) => sum + t.amount, 0);
 
-    // Last month transactions
+    
     const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
     const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
 
@@ -383,7 +383,7 @@ function updateChangeIndicators(transactions) {
         .filter(t => t.type === 'expense')
         .reduce((sum, t) => sum + t.amount, 0);
 
-    // Calculate percentage changes
+    
     const incomeChange = lastMonthIncome > 0
         ? ((currentMonthIncome - lastMonthIncome) / lastMonthIncome * 100).toFixed(1)
         : currentMonthIncome > 0 ? 100 : 0;
@@ -394,7 +394,7 @@ function updateChangeIndicators(transactions) {
 
     const balanceChange = (currentMonthIncome - currentMonthExpenses) - (lastMonthIncome - lastMonthExpenses);
 
-    // Update change indicators
+    
     updateChangeIndicator('incomeChange', incomeChange, 'income');
     updateChangeIndicator('expensesChange', expensesChange, 'expense');
     updateChangeIndicator('balanceChange', balanceChange, 'balance');
@@ -434,7 +434,7 @@ function updateChangeIndicator(elementId, change, type) {
 }
 
 function populateCategoryFilters() {
-    // Clear existing options except "All Categories"
+    
     while (categoryFilter.options.length > 1) {
         categoryFilter.remove(1);
     }
@@ -443,7 +443,7 @@ function populateCategoryFilters() {
         transactionCategory.remove(1);
     }
 
-    // Add categories to both filters
+    
     transactionsState.categories.forEach(category => {
         const option1 = document.createElement('option');
         option1.value = category.$id;
@@ -458,7 +458,7 @@ function populateCategoryFilters() {
 }
 
 function populateBudgetFilters() {
-    // Clear existing options except "All Budgets" and "No Budget"
+    
     while (budgetFilter.options.length > 1) {
         budgetFilter.remove(1);
     }
@@ -467,7 +467,7 @@ function populateBudgetFilters() {
         transactionBudget.remove(1);
     }
 
-    // Add budgets to both filters
+    
     transactionsState.budgets.forEach(budget => {
         const option1 = document.createElement('option');
         option1.value = budget.$id;
@@ -481,7 +481,7 @@ function populateBudgetFilters() {
     });
 }
 
-// ========== TABLE RENDERING ==========
+
 function renderTransactionsTable() {
     const filtered = transactionsState.filteredTransactions;
     const totalTransactions = filtered.length;
@@ -490,18 +490,18 @@ function renderTransactionsTable() {
     const endIndex = Math.min(startIndex + transactionsState.itemsPerPage, totalTransactions);
     const paginatedTransactions = filtered.slice(startIndex, endIndex);
 
-    // Update pagination info
+    
     document.getElementById('totalTransactions').textContent = totalTransactions;
     document.getElementById('showingFrom').textContent = totalTransactions > 0 ? startIndex + 1 : 0;
     document.getElementById('showingTo').textContent = endIndex;
     document.getElementById('currentPage').textContent = transactionsState.currentPage;
     document.getElementById('totalPages').textContent = totalPages || 1;
 
-    // Update pagination buttons
+    
     prevPage.disabled = transactionsState.currentPage === 1;
     nextPage.disabled = transactionsState.currentPage === totalPages || totalPages === 0;
 
-    // Clear table
+    
     transactionsTableBody.innerHTML = '';
 
     if (paginatedTransactions.length === 0) {
@@ -517,7 +517,7 @@ function renderTransactionsTable() {
         return;
     }
 
-    // Render each transaction
+    
     paginatedTransactions.forEach((transaction, index) => {
         const isExpense = transaction.type === 'expense';
         const amountClass = isExpense ? 'text-red-400' : 'text-green-400';
@@ -530,13 +530,13 @@ function renderTransactionsTable() {
         const dateString = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         const timeString = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-        // Get category name
+        
         let categoryName = 'Uncategorized';
         if (transaction.category_id && transactionsState.categoriesMap[transaction.category_id]) {
             categoryName = transactionsState.categoriesMap[transaction.category_id].category_name;
         }
 
-        // Get budget name
+        
         let budgetName = '-';
         if (transaction.budget_id && transactionsState.budgetsMap[transaction.budget_id]) {
             budgetName = transactionsState.budgetsMap[transaction.budget_id].budget_name;
@@ -588,7 +588,7 @@ function updatePagination() {
     }
 }
 
-// ========== TRANSACTION CRUD ==========
+
 async function editTransaction(transactionId) {
     try {
         const transaction = transactionsState.allTransactions.find(t => t.$id === transactionId);
@@ -621,16 +621,16 @@ async function saveTransactionToDB(transactionData) {
         const transactionId = document.getElementById('transactionId').value;
 
         if (transactionId && transactionId !== '') {
-            // Update existing transaction
+            
             await appwriteService.updateTransaction(transactionId, transactionData);
             showToast('Transaction updated successfully!', 'success');
         } else {
-            // Create new transaction
+            
             await appwriteService.createTransaction(user.$id, transactionData);
             showToast('Transaction created successfully!', 'success');
         }
 
-        // Reload data
+        
         await loadTransactionsFromDB();
         return true;
 
@@ -657,7 +657,7 @@ async function deleteTransactionFromDB(transactionId) {
 
         showToast('Transaction deleted successfully!', 'success');
 
-        // Reload data
+        
         await loadTransactionsFromDB();
 
     } catch (error) {
@@ -673,17 +673,17 @@ async function deleteTransactionFromDB(transactionId) {
     }
 }
 
-// ========== MODAL FUNCTIONS ==========
+
 function openTransactionModal(transaction = null) {
-    // Set default date to today
+    
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('transactionDate').value = today;
 
-    // Get current time
+    
     const now = new Date();
     const currentTime = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-    // Update time display
+    
     transactionTimeDisplay.textContent = currentTime;
     document.getElementById('transactionTime').value = currentTime;
 
@@ -693,7 +693,7 @@ function openTransactionModal(transaction = null) {
         document.getElementById('transactionDescription').value = transaction.description;
         document.getElementById('transactionAmount').value = transaction.amount;
 
-        // Parse date and time from transaction_date
+        
         const transactionDate = new Date(transaction.transaction_date);
         const dateString = transactionDate.toISOString().split('T')[0];
         const timeString = transactionDate.getHours().toString().padStart(2, '0') + ':' +
@@ -704,17 +704,17 @@ function openTransactionModal(transaction = null) {
         document.getElementById('transactionTime').value = timeString;
         document.getElementById('transactionNotes').value = '';
 
-        // Set category
+        
         if (transaction.category_id) {
             document.getElementById('transactionCategory').value = transaction.category_id;
         }
 
-        // Set budget
+        
         if (transaction.budget_id) {
             document.getElementById('transactionBudget').value = transaction.budget_id;
         }
 
-        // Set type
+        
         if (transaction.type === 'income') {
             typeIncome.click();
         } else {
@@ -734,7 +734,7 @@ function openTransactionModal(transaction = null) {
     transactionModal.classList.remove('hidden');
 }
 
-// ========== EXPORT FUNCTIONALITY ==========
+
 async function exportTransactions() {
     try {
         const filtered = transactionsState.filteredTransactions;
@@ -744,7 +744,7 @@ async function exportTransactions() {
             return;
         }
 
-        // Prepare data for CSV (schema fields only)
+        
         const exportData = filtered.map(transaction => {
             const date = new Date(transaction.transaction_date);
             const dateString = date.toLocaleDateString('en-US');
@@ -768,7 +768,7 @@ async function exportTransactions() {
             };
         });
 
-        // Add summary row
+        
         const totalIncome = filtered.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
         const totalExpenses = filtered.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
         const netBalance = totalIncome - totalExpenses;
@@ -791,10 +791,10 @@ async function exportTransactions() {
             Amount: formatCurrency(netBalance, false)
         });
 
-        // Convert to CSV
+        
         const csv = Papa.unparse(exportData);
 
-        // Create download link
+        
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
@@ -813,7 +813,7 @@ async function exportTransactions() {
     }
 }
 
-// ========== UTILITY FUNCTIONS ==========
+
 function formatCurrency(amount, withSymbol = true) {
     return appwriteService.formatCurrency(amount, transactionsState.currency);
 }
@@ -830,11 +830,11 @@ function getCurrencySymbol(currency) {
 }
 
 function showToast(message, type = 'info') {
-    // Remove existing toasts
+    
     const existingToasts = document.querySelectorAll('.toast');
     existingToasts.forEach(toast => toast.remove());
 
-    // Create toast
+    
     const toast = document.createElement('div');
     toast.className = `toast fixed top-4 right-4 z-50 glass-card glow-border rounded-xl p-4 flex items-center gap-3 fade-in`;
 
@@ -852,30 +852,30 @@ function showToast(message, type = 'info') {
 
     document.body.appendChild(toast);
 
-    // Remove toast after 3 seconds
+    
     setTimeout(() => {
         toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
 
-// Helper function to combine date and time into ISO string
+
 function combineDateTime(dateString, timeString) {
-    // Create date object from date string
+    
     const date = new Date(dateString);
 
-    // Parse time
+    
     const [hours, minutes] = timeString.split(':').map(Number);
 
-    // Set time
+    
     date.setHours(hours, minutes, 0, 0);
 
-    // Return ISO string
+    
     return date.toISOString();
 }
 
-// ========== EVENT LISTENERS ==========
-// Mobile menu toggle
+
+
 menuToggle.addEventListener('click', (e) => {
     e.stopPropagation();
     sidebar.classList.toggle('active');
@@ -908,7 +908,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Transaction type selection
+
 typeIncome.addEventListener('click', () => {
     transactionType.value = 'income';
     typeIncome.classList.add('income-bg', 'text-green-400');
@@ -925,7 +925,7 @@ typeExpense.addEventListener('click', () => {
     typeIncome.classList.remove('income-bg', 'text-green-400');
 });
 
-// Modal controls
+
 addTransactionBtn.addEventListener('click', () => {
     openTransactionModal();
 });
@@ -938,7 +938,7 @@ cancelTransaction.addEventListener('click', () => {
     transactionModal.classList.add('hidden');
 });
 
-// Transaction form submission
+
 transactionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -948,19 +948,19 @@ transactionForm.addEventListener('submit', async (e) => {
     saveSpinner.classList.remove('hidden');
     saveButtonText.textContent = 'Saving...';
 
-    // Get date and time values
+    
     const dateValue = document.getElementById('transactionDate').value;
     const timeValue = document.getElementById('transactionTime').value;
 
-    // Combine date and time into ISO string
+    
     const transactionDateTime = combineDateTime(dateValue, timeValue);
 
-    // Get form data (schema fields only)
+    
     const transactionData = {
         description: document.getElementById('transactionDescription').value,
         amount: parseInt(document.getElementById('transactionAmount').value, 10),
         type: document.getElementById('transactionType').value,
-        transaction_date: transactionDateTime, // Use combined date-time
+        transaction_date: transactionDateTime, 
         category_id: document.getElementById('transactionCategory').value || null,
         budget_id: document.getElementById('transactionBudget').value || null
     };
@@ -975,7 +975,7 @@ transactionForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Delete modal
+
 cancelDelete.addEventListener('click', () => {
     deleteModal.classList.add('hidden');
 });
@@ -985,7 +985,7 @@ confirmDelete.addEventListener('click', async () => {
     await deleteTransactionFromDB(transactionId);
 });
 
-// Logout
+
 logoutBtn.addEventListener('click', () => {
     logoutModal.classList.remove('hidden');
 });
@@ -1004,7 +1004,7 @@ confirmLogout.addEventListener('click', async () => {
     }
 });
 
-// Filters
+
 applyFilters.addEventListener('click', () => {
     transactionsState.currentFilters.date = dateFilter.value;
     transactionsState.currentFilters.type = typeFilter.value;
@@ -1030,7 +1030,7 @@ clearFilters.addEventListener('click', () => {
     applyCurrentFilters();
 });
 
-// Pagination
+
 prevPage.addEventListener('click', () => {
     if (transactionsState.currentPage > 1) {
         transactionsState.currentPage--;
@@ -1048,31 +1048,31 @@ nextPage.addEventListener('click', () => {
     }
 });
 
-// Sort
+
 sortBy.addEventListener('change', () => {
     applyCurrentFilters();
 });
 
-// Export
+
 exportBtn.addEventListener('click', () => {
     exportTransactions();
 });
 
-// ========== INITIALIZATION ==========
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize with a slight delay for better UX
+    
     setTimeout(() => {
         loadTransactionsFromDB();
     }, 300);
 
-    // Refresh data every 60 seconds
+    
     setInterval(() => {
         if (!transactionsState.isLoading && document.visibilityState === 'visible') {
             loadTransactionsFromDB();
         }
     }, 60000);
 
-    // Refresh on visibility change
+    
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
             loadTransactionsFromDB();
@@ -1080,6 +1080,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Export functions to global scope
+
 window.editTransaction = editTransaction;
 window.deleteTransaction = deleteTransaction;

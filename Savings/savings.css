@@ -111,7 +111,7 @@ body {
     text-align: center;
 }
 
-/* Toast notification styles */
+
 .toast {
     animation: fadeIn 0.3s ease-in;
 }

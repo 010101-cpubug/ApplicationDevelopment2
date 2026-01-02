@@ -12,7 +12,7 @@
 </head>
 
 <body class="text-gray-200">
-    <!-- Mobile Menu Toggle -->
+    
     <div class="lg:hidden fixed top-4 left-4 z-50">
         <button id="menuToggle"
             class="glass-card w-12 h-12 rounded-xl flex items-center justify-center hover:scale-105 transition-transform">
@@ -20,13 +20,13 @@
         </button>
     </div>
 
-    <!-- Overlay for mobile -->
+    
     <div id="overlay" class="overlay"></div>
 
     <div class="flex min-h-screen">
-        <!-- Sidebar Navigation -->
+        
         <div class="sidebar glass-card flex flex-col">
-            <!-- Logo -->
+            
             <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center gap-3">
                     <div
@@ -41,7 +41,7 @@
                 <div class="text-xs text-gray-500 mt-1">System Management</div>
             </div>
 
-            <!-- Admin Profile -->
+            
             <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center gap-3 mb-4">
                     <div
@@ -61,7 +61,7 @@
                 </div>
             </div>
 
-            <!-- Currency Selector -->
+            
             <div class="p-4 border-b border-gray-800">
                 <label class="block text-sm font-medium mb-2 text-gray-300">Display Currency</label>
                 <select id="currencySelector"
@@ -75,7 +75,7 @@
                 <div class="text-xs text-gray-500 mt-2">All amounts will be converted to this currency</div>
             </div>
 
-            <!-- Navigation Links -->
+            
             <div class="flex-1 p-4 overflow-y-auto">
                 <div class="space-y-2">
                     <button data-tab="dashboard"
@@ -140,7 +140,7 @@
                 </div>
             </div>
 
-            <!-- Logout Button -->
+            
             <div class="p-6 border-t border-gray-800">
                 <button id="logoutBtn"
                     class="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-gray-900/50 hover:bg-gray-800 transition">
@@ -150,9 +150,9 @@
             </div>
         </div>
 
-        <!-- Main Content -->
+        
         <div class="main-content p-4 lg:p-8 overflow-x-hidden">
-            <!-- Header -->
+            
             <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8">
                 <div class="mb-4 lg:mb-0">
                     <h1 class="text-2xl lg:text-3xl font-bold truncate" id="pageTitle">Admin Dashboard</h1>
@@ -177,7 +177,7 @@
                 </div>
             </div>
 
-            <!-- Loading State -->
+            
             <div id="loadingState" class="flex items-center justify-center h-96">
                 <div class="text-center">
                     <div class="w-16 h-16 loading-spinner mx-auto mb-4"></div>
@@ -185,9 +185,9 @@
                 </div>
             </div>
 
-            <!-- Dashboard Tab -->
+            
             <div id="dashboardTab" class="space-y-8 hidden">
-                <!-- Stats Grid -->
+                
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 stats-grid">
                     <div class="glass-card glow-border rounded-2xl p-6 fade-in">
                         <div class="flex items-center justify-between mb-4">
@@ -250,7 +250,7 @@
                     </div>
                 </div>
 
-                <!-- Financial Overview -->
+                
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                     <div class="glass-card glow-border rounded-2xl p-6">
                         <h2 class="text-xl font-bold mb-6">Platform Statistics</h2>
@@ -317,7 +317,7 @@
                 </div>
             </div>
 
-            <!-- Users Tab -->
+            
             <div id="usersTab" class="hidden">
                 <div class="glass-card glow-border rounded-2xl overflow-hidden">
                     <div class="p-4 lg:p-6 border-b border-gray-800">
@@ -352,14 +352,14 @@
                                 </tr>
                             </thead>
                             <tbody id="usersTableBody">
-                                <!-- Users loaded here -->
+                                
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Transactions Tab -->
+            
             <div id="transactionsTab" class="hidden">
                 <div class="glass-card glow-border rounded-2xl overflow-hidden">
                     <div class="p-4 lg:p-6 border-b border-gray-800">
@@ -394,14 +394,14 @@
                                 </tr>
                             </thead>
                             <tbody id="transactionsTableBody">
-                                <!-- Transactions loaded here -->
+                                
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Budgets Tab -->
+            
             <div id="budgetsTab" class="hidden">
                 <div class="glass-card glow-border rounded-2xl overflow-hidden">
                     <div class="p-4 lg:p-6 border-b border-gray-800">
@@ -435,14 +435,14 @@
                                 </tr>
                             </thead>
                             <tbody id="budgetsTableBody">
-                                <!-- Budgets loaded here -->
+                                
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Savings Tab -->
+            
             <div id="savingsTab" class="hidden">
                 <div class="glass-card glow-border rounded-2xl overflow-hidden">
                     <div class="p-4 lg:p-6 border-b border-gray-800">
@@ -476,14 +476,14 @@
                                 </tr>
                             </thead>
                             <tbody id="savingsTableBody">
-                                <!-- Savings goals loaded here -->
+                                
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Categories Tab -->
+            
             <div id="categoriesTab" class="hidden">
                 <div class="glass-card glow-border rounded-2xl overflow-hidden">
                     <div class="p-4 lg:p-6 border-b border-gray-800">
@@ -522,14 +522,14 @@
                                 </tr>
                             </thead>
                             <tbody id="categoriesTableBody">
-                                <!-- Categories loaded here -->
+                                
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- General Ledger Tab -->
+            
             <div id="general-ledgerTab" class="hidden">
                 <div class="glass-card glow-border rounded-2xl overflow-hidden">
                     <div class="p-4 lg:p-6 border-b border-gray-800">
@@ -554,16 +554,16 @@
                                 </tr>
                             </thead>
                             <tbody id="ledgerTableBody">
-                                <!-- Ledger entries loaded here -->
+                                
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Financials (AP/AR) Tab -->
+            
             <div id="financialsTab" class="hidden">
-                <!-- Header with Filters -->
+                
                 <div class="financials-header glass-card glow-border rounded-2xl p-4 mb-6">
                     <div>
                         <h2 class="text-lg font-bold">Financial Overview</h2>
@@ -581,7 +581,7 @@
                     </div>
                 </div>
 
-                <!-- Summary Metrics -->
+                
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <div class="metric-card-header">
@@ -632,7 +632,7 @@
                     </div>
                 </div>
 
-                <!-- Charts Row -->
+                
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     <div class="glass-card glow-border rounded-2xl p-6">
                         <div class="chart-title">
@@ -654,7 +654,7 @@
                     </div>
                 </div>
 
-                <!-- Cash Flow Chart -->
+                
                 <div class="glass-card glow-border rounded-2xl p-6 mb-6">
                     <div class="chart-title">
                         <i class="fas fa-money-bill-wave"></i>
@@ -665,7 +665,7 @@
                     </div>
                 </div>
 
-                <!-- Aging Analysis -->
+                
                 <div class="glass-card glow-border rounded-2xl p-6 mb-6">
                     <div class="chart-title mb-4">
                         <i class="fas fa-clock"></i>
@@ -692,7 +692,7 @@
                     </div>
                 </div>
 
-                <!-- Detailed Breakdown Tables -->
+                
                 <div class="financial-split">
                     <div class="glass-card glow-border rounded-2xl p-6">
                         <div class="chart-title mb-4">
@@ -738,7 +738,7 @@
                 </div>
             </div>
 
-            <!-- Budget Analytics Tab -->
+            
             <div id="budget-analyticsTab" class="hidden">
                 <div class="grid grid-cols-1 gap-6 mb-6">
                     <div class="glass-card glow-border rounded-2xl p-6">
@@ -763,7 +763,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="budgetVarianceBody">
-                                    <!-- Rows -->
+                                    
                                 </tbody>
                             </table>
                         </div>
@@ -771,17 +771,17 @@
                 </div>
             </div>
 
-            <!-- Settings Tab -->
+            
             <div id="settingsTab" class="hidden">
                 <div class="settings-container">
-                    <!-- Profile Settings Section -->
+                    
                     <div class="glass-card glow-border rounded-2xl p-6 settings-section">
                         <h2 class="settings-section-title">
                             <i class="fas fa-user-circle"></i>
                             Admin Profile
                         </h2>
 
-                        <!-- Profile Header -->
+                        
                         <div class="flex items-center gap-6 mb-6 pb-6 border-b border-gray-800">
                             <div
                                 class="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg">
@@ -819,7 +819,7 @@
                         </form>
                     </div>
 
-                    <!-- Security Section -->
+                    
                     <div class="glass-card glow-border rounded-2xl p-6 settings-section">
                         <h2 class="settings-section-title">
                             <i class="fas fa-lock"></i>
@@ -871,7 +871,7 @@
                         </form>
                     </div>
 
-                    <!-- Data Management Section -->
+                    
                     <div class="glass-card glow-border rounded-2xl p-6 settings-section">
                         <h2 class="settings-section-title">
                             <i class="fas fa-database"></i>
@@ -923,19 +923,19 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    
     <div id="modal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="modal-content rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div class="p-4 lg:p-6">
-                <!-- Modal content will be injected here -->
+                
             </div>
         </div>
     </div>
 
-    <!-- Toast Container -->
+    
     <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 max-w-md w-full md:w-auto"></div>
 
-    <!-- Logout Modal -->
+    
     <div id="logoutModal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="modal-content rounded-2xl max-w-md w-full mx-4">
             <div class="p-6 lg:p-8">

@@ -1992,13 +1992,13 @@ window.addEventListener('load', () => {
     }
 });
 
-// -- New Feature Implementations --
+
 
 function renderGeneralLedger() {
     const container = document.getElementById('ledgerTableBody');
     if (!container) return;
 
-    // Sort transactions by date ascending for the ledger
+    
     const sortedTransactions = [...adminState.transactions].sort((a, b) =>
         new Date(a.transaction_date) - new Date(b.transaction_date)
     );
@@ -2018,7 +2018,7 @@ function renderGeneralLedger() {
         return;
     }
 
-    // Render logic
+    
     const fragment = document.createDocumentFragment();
 
     sortedTransactions.forEach(tx => {
@@ -2027,7 +2027,7 @@ function renderGeneralLedger() {
         const conversion = convertAmountForDisplay(tx.amount, userCurrency);
         const amount = conversion.converted;
 
-        // Ledger Logic: Income increases balance (Credit), Expense decreases balance (Debit)
+        
         let debit = 0;
         let credit = 0;
 
@@ -2137,11 +2137,11 @@ let payablesChartInstance = null;
 let cashFlowChartInstance = null;
 let financialPeriod = 'all';
 
-// Financial period filter
+
 function setFinancialPeriod(period) {
     financialPeriod = period;
 
-    // Update filter button states
+    
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.period === period) {
@@ -2152,7 +2152,7 @@ function setFinancialPeriod(period) {
     renderFinancials();
 }
 
-// Filter transactions by period
+
 function filterTransactionsByPeriod(transactions) {
     if (financialPeriod === 'all') return transactions;
 
@@ -2180,20 +2180,20 @@ function filterTransactionsByPeriod(transactions) {
 function renderFinancials() {
     const filteredTransactions = filterTransactionsByPeriod(adminState.transactions);
 
-    // Calculate totals
+    
     let totalIncome = 0;
     let totalExpense = 0;
     const incomeByDescription = {};
     const expenseByDescription = {};
 
-    // Aging buckets
+    
     const now = new Date();
     const aging = { current: 0, d30: 0, d60: 0, d90: 0 };
 
-    // Group transactions by month
+    
     const monthlyData = {};
 
-    // Sort transactions by date
+    
     const sortedTx = [...filteredTransactions].sort((a, b) => new Date(a.transaction_date) - new Date(b.transaction_date));
 
     sortedTx.forEach(tx => {
@@ -2211,7 +2211,7 @@ function renderFinancials() {
             monthlyData[monthLabel].income += amount;
             totalIncome += amount;
 
-            // Track by description
+            
             const desc = tx.description || 'Other Income';
             if (!incomeByDescription[desc]) incomeByDescription[desc] = { count: 0, amount: 0 };
             incomeByDescription[desc].count++;
@@ -2220,7 +2220,7 @@ function renderFinancials() {
             monthlyData[monthLabel].expense += amount;
             totalExpense += amount;
 
-            // Track by description
+            
             const desc = tx.description || 'Other Expense';
             if (!expenseByDescription[desc]) expenseByDescription[desc] = { count: 0, amount: 0 };
             expenseByDescription[desc].count++;
@@ -2228,7 +2228,7 @@ function renderFinancials() {
         }
         monthlyData[monthLabel].net = monthlyData[monthLabel].income - monthlyData[monthLabel].expense;
 
-        // Calculate aging
+        
         const daysDiff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
         if (daysDiff <= 30) {
             aging.current += amount;
@@ -2249,7 +2249,7 @@ function renderFinancials() {
     const netPosition = totalIncome - totalExpense;
     const monthlyAvg = labels.length > 0 ? Math.abs(netPosition) / labels.length : 0;
 
-    // Update metric cards
+    
     const symbol = getCurrencySymbol(adminState.adminCurrency);
 
     const metricReceivables = document.getElementById('metricReceivables');
@@ -2271,13 +2271,13 @@ function renderFinancials() {
         metricMonthlyAvg.textContent = `${symbol} ${monthlyAvg.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
-    // Update aging analysis
+    
     document.getElementById('aging0').textContent = `${symbol} ${aging.current.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     document.getElementById('aging30').textContent = `${symbol} ${aging.d30.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     document.getElementById('aging60').textContent = `${symbol} ${aging.d60.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     document.getElementById('aging90').textContent = `${symbol} ${aging.d90.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-    // Update top income table
+    
     const topIncomeTable = document.getElementById('topIncomeTable');
     if (topIncomeTable) {
         const sortedIncome = Object.entries(incomeByDescription)
@@ -2297,7 +2297,7 @@ function renderFinancials() {
         }
     }
 
-    // Update top expense table
+    
     const topExpenseTable = document.getElementById('topExpenseTable');
     if (topExpenseTable) {
         const sortedExpense = Object.entries(expenseByDescription)
@@ -2317,7 +2317,7 @@ function renderFinancials() {
         }
     }
 
-    // Chart options
+    
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -2348,7 +2348,7 @@ function renderFinancials() {
         }
     };
 
-    // Receivables Chart
+    
     const receivablesCtx = document.getElementById('receivablesChart');
     if (receivablesCtx) {
         if (receivablesChartInstance) receivablesChartInstance.destroy();
@@ -2374,7 +2374,7 @@ function renderFinancials() {
         });
     }
 
-    // Payables Chart
+    
     const payablesCtx = document.getElementById('payablesChart');
     if (payablesCtx) {
         if (payablesChartInstance) payablesChartInstance.destroy();
@@ -2400,7 +2400,7 @@ function renderFinancials() {
         });
     }
 
-    // Cash Flow Chart
+    
     const cashFlowCtx = document.getElementById('cashFlowChart');
     if (cashFlowCtx) {
         if (cashFlowChartInstance) cashFlowChartInstance.destroy();
@@ -2450,7 +2450,7 @@ function renderFinancials() {
     }
 }
 
-// Password strength calculator
+
 function calculatePasswordStrength(password) {
     let strength = 0;
 
@@ -2467,7 +2467,7 @@ function calculatePasswordStrength(password) {
 }
 
 function setupSettings() {
-    // Fill current values
+    
     const nameInput = document.getElementById('settingAdminName');
     const settingsInitials = document.getElementById('settingsAdminInitials');
     const settingsDisplayName = document.getElementById('settingsAdminDisplayName');
@@ -2483,7 +2483,7 @@ function setupSettings() {
         if (settingsEmail) settingsEmail.textContent = userEmail;
     }
 
-    // Password strength indicator
+    
     const newPasswordInput = document.getElementById('newPassword');
     const strengthContainer = document.getElementById('passwordStrengthContainer');
     const strengthFill = document.getElementById('passwordStrengthFill');
@@ -2507,7 +2507,7 @@ function setupSettings() {
         });
     }
 
-    // Password match validation
+    
     const confirmPasswordInput = document.getElementById('confirmPassword');
     const passwordMatchError = document.getElementById('passwordMatchError');
 
@@ -2524,7 +2524,7 @@ function setupSettings() {
         });
     }
 
-    // Profile form submission
+    
     const profileForm = document.getElementById('adminProfileForm');
     if (profileForm) {
         const newProfileForm = profileForm.cloneNode(true);
@@ -2543,7 +2543,7 @@ function setupSettings() {
                 if (newName && newName !== adminState.user.name) {
                     await appwriteService.account.updateName(newName);
 
-                    // Update UI immediately
+                    
                     adminState.user.name = newName;
                     document.getElementById('adminName').textContent = newName;
                     document.getElementById('adminInitials').textContent = newName.charAt(0).toUpperCase();
@@ -2565,13 +2565,13 @@ function setupSettings() {
         });
     }
 
-    // Password change form submission
+    
     const passwordForm = document.getElementById('passwordChangeForm');
     if (passwordForm) {
         const newPasswordForm = passwordForm.cloneNode(true);
         passwordForm.parentNode.replaceChild(newPasswordForm, passwordForm);
 
-        // Re-attach event listeners after cloning
+        
         const newPassInput = newPasswordForm.querySelector('#newPassword');
         const confirmPassInput = newPasswordForm.querySelector('#confirmPassword');
         const strengthCont = newPasswordForm.querySelector('#passwordStrengthContainer');
@@ -2619,7 +2619,7 @@ function setupSettings() {
             const newPass = newPassInput.value;
             const confirmPass = confirmPassInput.value;
 
-            // Validation
+            
             if (!currentPass) {
                 showToast('Please enter your current password', 'error');
                 return;
@@ -2644,7 +2644,7 @@ function setupSettings() {
                 await appwriteService.account.updatePassword(newPass, currentPass);
                 showToast('Password changed successfully!', 'success');
 
-                // Clear form
+                
                 newPasswordForm.querySelector('#currentPassword').value = '';
                 newPassInput.value = '';
                 confirmPassInput.value = '';
@@ -2674,7 +2674,7 @@ async function exportSystemData(format) {
     const exportSuccess = document.getElementById('exportSuccess');
     const exportSuccessMessage = document.getElementById('exportSuccessMessage');
 
-    // Show progress
+    
     if (exportProgress) {
         exportProgress.style.display = 'block';
         exportSuccess.style.display = 'none';
@@ -2726,12 +2726,12 @@ async function exportSystemData(format) {
             mimeType = 'application/json';
             extension = 'json';
         } else if (format === 'csv') {
-            // Create comprehensive CSV with multiple sections
+            
             let csvContent = '# BAREERA ADMIN DATA EXPORT\n';
             csvContent += `# Exported: ${new Date().toISOString()}\n`;
             csvContent += `# Currency: ${adminState.adminCurrency}\n\n`;
 
-            // Transactions section
+            
             csvContent += '## TRANSACTIONS\n';
             csvContent += 'ID,Date,User,Description,Type,Amount,Currency,Category\n';
             adminState.transactions.forEach(tx => {
@@ -2806,14 +2806,14 @@ async function exportSystemData(format) {
 
         updateProgress(100, 'Export complete!');
 
-        // Show success message
+        
         if (exportProgress) {
             setTimeout(() => {
                 exportProgress.style.display = 'none';
                 exportSuccess.style.display = 'block';
                 exportSuccessMessage.textContent = `Successfully exported ${adminState.transactions.length} transactions, ${adminState.users.length} users, ${adminState.budgets.length} budgets, and ${adminState.savings.length} savings goals as ${format.toUpperCase()}.`;
 
-                // Hide success after 5 seconds
+                
                 setTimeout(() => {
                     exportSuccess.style.display = 'none';
                 }, 5000);
@@ -2829,6 +2829,6 @@ async function exportSystemData(format) {
     }
 }
 
-// Make setFinancialPeriod available globally
+
 window.setFinancialPeriod = setFinancialPeriod;
 window.exportSystemData = exportSystemData;
