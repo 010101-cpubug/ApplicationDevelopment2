@@ -20,9 +20,8 @@ body {
 .glow-border {
     border: 1px solid transparent;
     background: linear-gradient(var(--glass-bg), var(--glass-bg)) padding-box,
-                linear-gradient(135deg, var(--primary-purple), transparent) border-box;
+        linear-gradient(135deg, var(--primary-purple), transparent) border-box;
 }
-
 
 .btn-primary {
     background: linear-gradient(135deg, var(--primary-purple), #7c3aed);
@@ -48,12 +47,12 @@ body {
         top: 0;
         left: 0;
     }
-    
+
     .sidebar.active {
         transform: translateX(0);
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
     }
-    
+
     .overlay {
         display: none;
         position: fixed;
@@ -62,7 +61,7 @@ body {
         z-index: 30;
         backdrop-filter: blur(3px);
     }
-    
+
     .overlay.active {
         display: block;
         animation: fadeIn 0.3s ease;
@@ -102,8 +101,15 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .slide-in {
@@ -111,8 +117,15 @@ body {
 }
 
 @keyframes slideIn {
-    from { transform: translateX(-20px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 .chart-container {
@@ -127,12 +140,17 @@ body {
 }
 
 .skeleton {
-    background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 75%);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.1) 75%);
     background-size: 200% 100%;
     animation: skeleton-loading 1.5s infinite;
 }
 
 @keyframes skeleton-loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
 }

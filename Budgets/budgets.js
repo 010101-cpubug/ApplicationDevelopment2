@@ -1,3 +1,4 @@
+// DOM Elements
 const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.querySelector('.sidebar');
 const overlay = document.getElementById('overlay');
@@ -13,22 +14,25 @@ const budgetsTableBody = document.getElementById('budgetsTableBody');
 const budgetFilter = document.getElementById('budgetFilter');
 const logoutBtn = document.getElementById('logoutBtn');
 
+// Global variables
 let budgets = [];
 let userCurrency = 'PKR';
 let userCurrencySymbol = 'Rs';
 let chart = null;
 
+// Toggle mobile menu
 menuToggle.addEventListener('click', () => {
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
-
 });
 
+// Close mobile menu when clicking overlay
 overlay.addEventListener('click', () => {
     sidebar.classList.remove('active');
     overlay.classList.remove('active');
 });
 
+// Set default dates
 const today = new Date();
 const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
 const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
@@ -36,14 +40,17 @@ const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 document.getElementById('budgetStartDate').value = startDate.toISOString().split('T')[0];
 document.getElementById('budgetEndDate').value = endDate.toISOString().split('T')[0];
 
+// Open add budget modal
 addBudgetBtn.addEventListener('click', () => {
     openBudgetModal();
 });
 
+// Open insights modal
 insightsBtn.addEventListener('click', () => {
     openInsightsModal();
 });
 
+// Close modals
 closeModal.addEventListener('click', () => {
     budgetModal.classList.add('hidden');
 });
@@ -56,6 +63,7 @@ cancelBudget.addEventListener('click', () => {
     budgetModal.classList.add('hidden');
 });
 
+// Logout handler
 logoutBtn.addEventListener('click', async () => {
     try {
         await appwriteService.logout();
@@ -65,6 +73,7 @@ logoutBtn.addEventListener('click', async () => {
     }
 });
 
+// Open budget modal for adding/editing
 function openBudgetModal(budget = null) {
     if (budget) {
         document.getElementById('modalTitle').textContent = 'Edit Budget';
@@ -84,6 +93,7 @@ function openBudgetModal(budget = null) {
     budgetModal.classList.remove('hidden');
 }
 
+// Handle budget form submission
 budgetForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -111,6 +121,7 @@ budgetForm.addEventListener('submit', async (e) => {
         const budgetId = document.getElementById('budgetId').value;
 
         if (budgetId) {
+            // Update existing budget
             await appwriteService.databases.updateDocument(
                 appwriteService.config.databaseId,
                 appwriteService.config.collections.BUDGETS,
@@ -119,6 +130,7 @@ budgetForm.addEventListener('submit', async (e) => {
             );
             showToast('Budget updated successfully!', 'success');
         } else {
+            // Create new budget
             await appwriteService.createBudget(user.$id, budgetData);
             showToast('Budget created successfully!', 'success');
         }
@@ -134,6 +146,7 @@ budgetForm.addEventListener('submit', async (e) => {
     }
 });
 
+// Load budgets from Appwrite
 async function loadBudgetsFromDB() {
     try {
         const user = await appwriteService.getCurrentUser();
@@ -142,9 +155,12 @@ async function loadBudgetsFromDB() {
             return;
         }
 
+        // Get all budgets for the user
         const budgetsData = await appwriteService.getBudgets(user.$id);
 
+        // Calculate spent amount for each budget
         budgets = await Promise.all(budgetsData.map(async (b) => {
+            // Get transactions for this budget
             const transactions = await appwriteService.databases.listDocuments(
                 appwriteService.config.databaseId,
                 appwriteService.config.collections.TRANSACTIONS,
@@ -177,6 +193,7 @@ async function loadBudgetsFromDB() {
     }
 }
 
+// Update dashboard statistics
 function updateDashboard() {
     const activeBudgets = budgets.filter(b => b.is_active);
     const totalBudgets = activeBudgets.length;
@@ -184,12 +201,14 @@ function updateDashboard() {
     const totalSpent = activeBudgets.reduce((sum, b) => sum + b.spent_amount, 0);
     const overallPercentage = totalAllocated > 0 ? (totalSpent / totalAllocated) * 100 : 0;
 
+    // Update counts
     document.getElementById('totalBudgets').textContent = totalBudgets;
     document.getElementById('totalAllocated').textContent = appwriteService.formatCurrency(totalAllocated, userCurrency);
     document.getElementById('totalSpent').textContent = appwriteService.formatCurrency(totalSpent, userCurrency);
     document.getElementById('spentPercentage').textContent = overallPercentage.toFixed(0) + '% of allocated amount';
     document.getElementById('activeBudgetsCount').textContent = totalBudgets;
 
+    // Update overall health
     const overallHealth = document.getElementById('overallHealth');
     const overallProgress = document.getElementById('overallProgress');
     const spentText = document.getElementById('spentText');
@@ -237,9 +256,11 @@ function updateDashboard() {
     document.getElementById('overBudgetCount').textContent = overBudget;
     document.getElementById('inactiveCount').textContent = inactive;
 
+    // Update showing count
     document.getElementById('showingBudgets').textContent = activeBudgets.length;
 }
 
+// Render budgets table
 function renderBudgetsTable(budgetsToRender) {
     budgetsTableBody.innerHTML = '';
 
@@ -278,12 +299,14 @@ function renderBudgetsTable(budgetsToRender) {
         const remaining = total - spent;
         const percentage = total > 0 ? (spent / total) * 100 : 0;
 
+        // Apply filter
         if (filterValue !== 'all') {
             if (filterValue === 'ontrack' && percentage >= 75) return;
             if (filterValue === 'atrisk' && (percentage < 75 || percentage >= 90)) return;
             if (filterValue === 'overbudget' && percentage < 90) return;
         }
 
+        // Determine status
         let statusClass = '';
         let statusText = '';
         let progressClass = '';
@@ -306,6 +329,7 @@ function renderBudgetsTable(budgetsToRender) {
             progressClass = 'success-fill';
         }
 
+        // Format dates
         const startDate = new Date(budget.start_date);
         const endDate = new Date(budget.end_date);
         const periodText = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
@@ -355,6 +379,7 @@ function renderBudgetsTable(budgetsToRender) {
     });
 }
 
+// Edit budget
 async function editBudget(budgetId) {
     const budget = budgets.find(b => b.id === budgetId);
     if (budget) {
@@ -362,6 +387,7 @@ async function editBudget(budgetId) {
     }
 }
 
+// Archive budget
 async function archiveBudget(budgetId) {
     if (confirm('Are you sure you want to archive this budget?')) {
         try {
@@ -381,6 +407,7 @@ async function archiveBudget(budgetId) {
     }
 }
 
+// Delete budget
 async function deleteBudget(budgetId) {
     if (confirm('Are you sure you want to delete this budget? This action cannot be undone.')) {
         try {
@@ -399,31 +426,38 @@ async function deleteBudget(budgetId) {
     }
 }
 
+// Filter budgets
 budgetFilter.addEventListener('change', () => {
     renderBudgetsTable(budgets);
 });
 
+// Open insights modal
 async function openInsightsModal() {
     try {
         insightsModal.classList.remove('hidden');
 
+        // Load chart
         setTimeout(() => {
             createBudgetChart();
         }, 100);
 
+        // Update insights lists
         updateInsightsLists();
     } catch (error) {
         console.error('Error opening insights:', error);
     }
 }
 
+// Create budget chart
 function createBudgetChart() {
     const ctx = document.getElementById('budgetChart').getContext('2d');
 
+    // Destroy existing chart
     if (chart) {
         chart.destroy();
     }
 
+    // Prepare data - Budget status distribution
     const activeBudgets = budgets.filter(b => b.is_active);
     const onTrackCount = activeBudgets.filter(b => {
         const percentage = (b.spent_amount / b.total_amount) * 100;
@@ -440,6 +474,7 @@ function createBudgetChart() {
         return percentage >= 90;
     }).length;
 
+    // Create chart
     chart = new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -475,6 +510,7 @@ function createBudgetChart() {
     });
 }
 
+// Update insights lists
 function updateInsightsLists() {
     const atRiskList = document.getElementById('budgetsAtRisk');
     const onTrackList = document.getElementById('budgetsOnTrack');
@@ -490,6 +526,7 @@ function updateInsightsLists() {
         return percentage < 75;
     });
 
+    // Update at risk list
     atRiskList.innerHTML = '';
     if (atRiskBudgets.length === 0) {
         atRiskList.innerHTML = '<li class="text-sm text-gray-400">No budgets at risk</li>';
@@ -506,6 +543,7 @@ function updateInsightsLists() {
         });
     }
 
+    // Update on track list
     onTrackList.innerHTML = '';
     if (onTrackBudgets.length === 0) {
         onTrackList.innerHTML = '<li class="text-sm text-gray-400">No budgets on track</li>';
@@ -523,10 +561,13 @@ function updateInsightsLists() {
     }
 }
 
+// Show toast notification
 function showToast(message, type = 'info') {
+    // Remove existing toasts
     const existingToasts = document.querySelectorAll('.toast');
     existingToasts.forEach(toast => toast.remove());
 
+    // Create toast
     const toast = document.createElement('div');
     toast.className = `toast fixed top-4 right-4 z-50 glass-card glow-border rounded-xl p-4 flex items-center gap-3 fade-in`;
 
@@ -543,12 +584,14 @@ function showToast(message, type = 'info') {
 
     document.body.appendChild(toast);
 
+    // Remove toast after 3 seconds
     setTimeout(() => {
         toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
 
+// Load user profile
 async function loadUserProfile() {
     try {
         const user = await appwriteService.getCurrentUser();
@@ -562,12 +605,22 @@ async function loadUserProfile() {
             document.getElementById('userName').textContent = profile.full_name || user.name;
             document.getElementById('userEmail').textContent = profile.email || user.email;
 
+            // Get user currency
             userCurrency = profile.currency || 'PKR';
 
+            // Update currency symbol in form
             const currencySymbol = document.getElementById('currencySymbol');
-            userCurrencySymbol = appwriteService.getCurrencySymbol(userCurrency);
+            const symbols = {
+                'PKR': 'Rs',
+                'USD': '$',
+                'EUR': '€',
+                'GBP': '£',
+                'JPY': '¥'
+            };
+            userCurrencySymbol = symbols[userCurrency] || userCurrency;
             currencySymbol.textContent = userCurrencySymbol;
 
+            // Set user avatar initials
             const avatar = document.getElementById('userAvatar');
             const name = profile.full_name || user.name;
             if (name && name !== 'Loading...') {
@@ -585,6 +638,7 @@ async function loadUserProfile() {
     }
 }
 
+// Initialize page
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await appwriteService.initialize();
@@ -596,6 +650,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Make functions globally available for inline onclick handlers
 window.editBudget = editBudget;
 window.archiveBudget = archiveBudget;
 window.deleteBudget = deleteBudget;

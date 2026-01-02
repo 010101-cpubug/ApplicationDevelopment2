@@ -1,3 +1,4 @@
+// DOM Elements
 const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.querySelector('.sidebar');
 const overlay = document.getElementById('overlay');
@@ -11,24 +12,34 @@ const goalFilter = document.getElementById('goalFilter');
 const calculateBtn = document.getElementById('calculateBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 
+// State
 let goals = [];
 let userCurrency = 'PKR';
 let userCurrencySymbol = 'Rs';
 let currentUser = null;
 
+// Currency symbols mapping
+const currencySymbols = {
+    'PKR': 'Rs',
+    'USD': '$',
+    'EUR': '€',
+    'GBP': '£',
+    'JPY': '¥'
+};
 
-
-
+// Initialize page
 document.addEventListener('DOMContentLoaded', async () => {
     await initializeAppwrite();
     await checkAuth();
     loadGoals();
     setupEventListeners();
-    calculateBtn.click();
+    calculateBtn.click(); // Calculate initial values
 });
 
+// Initialize Appwrite
 async function initializeAppwrite() {
     try {
+        // Ensure Appwrite is loaded
         if (!window.appwriteService) {
             console.error('Appwrite service not loaded');
             return;
@@ -40,6 +51,7 @@ async function initializeAppwrite() {
     }
 }
 
+// Check authentication
 async function checkAuth() {
     try {
         currentUser = await appwriteService.getCurrentUser();
@@ -48,14 +60,17 @@ async function checkAuth() {
             return;
         }
 
+        // Load user profile
         const profile = await appwriteService.getUserProfile(currentUser.$id);
         if (profile) {
             userCurrency = profile.currency || 'PKR';
-            userCurrencySymbol = appwriteService.getCurrencySymbol(userCurrency);
+            userCurrencySymbol = currencySymbols[userCurrency] || userCurrency;
 
+            // Update UI with user info
             document.getElementById('userName').textContent = profile.full_name || currentUser.name;
             document.getElementById('userEmail').textContent = currentUser.email;
 
+            // Update currency symbols
             updateCurrencySymbols();
         }
 
@@ -65,6 +80,7 @@ async function checkAuth() {
     }
 }
 
+// Update currency symbols in UI
 function updateCurrencySymbols() {
     document.getElementById('currencySymbol').textContent = userCurrencySymbol;
     document.getElementById('modalCurrencySymbol').textContent = userCurrencySymbol;
@@ -72,20 +88,25 @@ function updateCurrencySymbols() {
     document.getElementById('currentAmountSymbol').textContent = userCurrencySymbol;
     document.getElementById('currentAmountSymbolInline').textContent = userCurrencySymbol;
 
+    // Update overview stats formatting
     updateStatsDisplay();
 }
 
+// Setup event listeners
 function setupEventListeners() {
+    // Toggle mobile menu
     menuToggle.addEventListener('click', () => {
         sidebar.classList.toggle('active');
         overlay.classList.toggle('active');
     });
 
+    // Close mobile menu when clicking overlay
     overlay.addEventListener('click', () => {
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
     });
 
+    // Logout
     logoutBtn.addEventListener('click', async () => {
         try {
             await appwriteService.logout();
@@ -96,15 +117,18 @@ function setupEventListeners() {
         }
     });
 
+    // Set default goal deadline (6 months from now)
     const today = new Date();
     const sixMonthsFromNow = new Date(today);
     sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
     document.getElementById('goalDeadline').value = sixMonthsFromNow.toISOString().split('T')[0];
 
+    // Open add goal modal
     addGoalBtn.addEventListener('click', () => {
         openGoalModal();
     });
 
+    // Close modals
     closeModal.addEventListener('click', () => {
         goalModal.classList.add('hidden');
     });
@@ -113,16 +137,20 @@ function setupEventListeners() {
         goalModal.classList.add('hidden');
     });
 
+    // Handle goal form submission
     goalForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         await saveGoal();
     });
 
+    // Calculate contribution
     calculateBtn.addEventListener('click', calculateContribution);
 
+    // Filter goals
     goalFilter.addEventListener('change', loadGoals);
 }
 
+// Open goal modal for adding/editing
 function openGoalModal(goal = null) {
     const modalTitle = document.getElementById('modalTitle');
     const goalId = document.getElementById('goalId');
@@ -143,6 +171,7 @@ function openGoalModal(goal = null) {
             const deadlineDate = new Date(goal.deadline);
             goalDeadline.value = deadlineDate.toISOString().split('T')[0];
         } else {
+            // Set default deadline if none exists
             const sixMonthsFromNow = new Date();
             sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
             goalDeadline.value = sixMonthsFromNow.toISOString().split('T')[0];
@@ -154,6 +183,7 @@ function openGoalModal(goal = null) {
         goalId.value = '';
         goalForm.reset();
 
+        // Set default values
         const sixMonthsFromNow = new Date();
         sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
         goalDeadline.value = sixMonthsFromNow.toISOString().split('T')[0];
@@ -163,6 +193,7 @@ function openGoalModal(goal = null) {
     goalModal.classList.remove('hidden');
 }
 
+// Save goal to Appwrite
 async function saveGoal() {
     const goalId = document.getElementById('goalId').value;
     const goalData = {
@@ -175,6 +206,7 @@ async function saveGoal() {
 
     try {
         if (goalId) {
+            // Update existing goal
             await appwriteService.databases.updateDocument(
                 appwriteService.config.databaseId,
                 appwriteService.config.collections.SAVINGS_GOALS,
@@ -183,8 +215,9 @@ async function saveGoal() {
             );
             showToast('Goal updated successfully!', 'success');
         } else {
+            // Create new goal - add created_at
             goalData.user_id = currentUser.$id;
-            goalData.created_at = new Date().toISOString();
+            goalData.created_at = new Date().toISOString(); // Add current timestamp
 
             await appwriteService.databases.createDocument(
                 appwriteService.config.databaseId,
@@ -204,6 +237,7 @@ async function saveGoal() {
     }
 }
 
+// Load goals from Appwrite
 async function loadGoals() {
     try {
         goals = await appwriteService.getSavingsGoals(currentUser.$id);
@@ -216,6 +250,7 @@ async function loadGoals() {
     }
 }
 
+// Update overview statistics
 function updateOverviewStats() {
     const totalGoals = goals.length;
     const totalTarget = goals.reduce((sum, g) => sum + g.target_amount, 0);
@@ -231,15 +266,21 @@ function updateOverviewStats() {
     document.getElementById('totalProgress').textContent = `${totalProgress.toFixed(1)}% of target amount`;
 }
 
+// Format currency based on user's preference
 function formatCurrency(amount) {
-    return appwriteService.formatCurrency(amount, userCurrency);
+    return `${userCurrencySymbol} ${amount.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })}`;
 }
 
+// Update stats display with correct currency
 function updateStatsDisplay() {
     updateOverviewStats();
     calculateContribution();
 }
 
+// Render goals table
 function renderGoalsTable() {
     const filterValue = goalFilter.value;
     let filteredGoals = [...goals];
@@ -274,6 +315,7 @@ function renderGoalsTable() {
         const today = new Date();
         const daysRemaining = deadline ? Math.ceil((deadline - today) / (1000 * 60 * 60 * 24)) : null;
 
+        // Determine status
         let statusClass = '';
         let statusText = '';
 
@@ -297,6 +339,7 @@ function renderGoalsTable() {
             statusText = 'In Progress';
         }
 
+        // Format date
         const dateString = deadline ?
             deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) :
             'No deadline';
@@ -349,6 +392,7 @@ function renderGoalsTable() {
     });
 }
 
+// Render progress circles
 function renderProgressCircles() {
     const progressContainer = document.getElementById('progressContainer');
 
@@ -362,6 +406,7 @@ function renderProgressCircles() {
         return;
     }
 
+    // Only show first 3 goals in progress overview
     const displayGoals = goals.slice(0, 3);
 
     let progressHTML = '<div class="grid grid-cols-1 md:grid-cols-3 gap-6">';
@@ -370,10 +415,12 @@ function renderProgressCircles() {
         const progress = goal.target_amount > 0 ?
             ((goal.current_amount || 0) / goal.target_amount) * 100 : 0;
 
+        // Calculate stroke dash offset for circle
         const circleRadius = 42;
         const circumference = 2 * Math.PI * circleRadius;
         const strokeDashoffset = circumference - (progress / 100) * circumference;
 
+        // Choose color based on progress
         let strokeColor = 'stroke-purple-500';
         if (progress >= 100) strokeColor = 'stroke-green-500';
         else if (progress >= 75) strokeColor = 'stroke-blue-500';
@@ -404,6 +451,7 @@ function renderProgressCircles() {
     progressContainer.innerHTML = progressHTML;
 }
 
+// Edit goal
 async function editGoal(goalId) {
     const goal = goals.find(g => g.$id === goalId);
     if (goal) {
@@ -411,6 +459,7 @@ async function editGoal(goalId) {
     }
 }
 
+// Delete goal
 async function deleteGoal(goalId) {
     if (confirm('Are you sure you want to delete this savings goal? This action cannot be undone.')) {
         try {
@@ -429,6 +478,7 @@ async function deleteGoal(goalId) {
     }
 }
 
+// Calculate contribution
 function calculateContribution() {
     const goalAmount = parseFloat(document.getElementById('calcGoalAmount').value);
     const months = parseFloat(document.getElementById('calcMonths').value);
@@ -439,13 +489,14 @@ function calculateContribution() {
     }
 
     const monthly = goalAmount / months;
-    const weekly = monthly / 4.33;
+    const weekly = monthly / 4.33; // Average weeks per month
     const daily = weekly / 7;
 
     document.getElementById('monthlyContribution').textContent = formatCurrency(monthly);
     document.getElementById('weeklyContribution').textContent = formatCurrency(weekly);
     document.getElementById('dailyContribution').textContent = formatCurrency(daily);
 
+    // Update savings tip
     let tip = '';
     if (daily < 5) {
         tip = 'This is an easily achievable goal!';
@@ -460,10 +511,13 @@ function calculateContribution() {
     document.getElementById('savingsTip').textContent = tip;
 }
 
+// Show toast notification
 function showToast(message, type = 'info') {
+    // Remove existing toasts
     const existingToasts = document.querySelectorAll('.toast');
     existingToasts.forEach(toast => toast.remove());
 
+    // Create toast
     const toast = document.createElement('div');
     toast.className = `toast fixed top-4 right-4 z-50 glass-card glow-border rounded-xl p-4 flex items-center gap-3 fade-in`;
 
@@ -480,11 +534,13 @@ function showToast(message, type = 'info') {
 
     document.body.appendChild(toast);
 
+    // Remove toast after 3 seconds
     setTimeout(() => {
         toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
 
+// Make functions available globally
 window.editGoal = editGoal;
 window.deleteGoal = deleteGoal;

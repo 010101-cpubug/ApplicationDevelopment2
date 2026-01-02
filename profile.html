@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,33 +9,41 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="UserProfile/profile.css">
 </head>
+
 <body class="text-gray-200">
+    <!-- Mobile Menu Toggle -->
     <div class="lg:hidden fixed top-4 left-4 z-50">
         <button id="menuToggle" class="glass-card w-12 h-12 rounded-xl flex items-center justify-center">
             <i class="fas fa-bars text-xl"></i>
         </button>
     </div>
-    
+
+    <!-- Overlay for mobile -->
     <div id="overlay" class="overlay"></div>
-    
+
     <div class="flex min-h-screen">
+        <!-- Sidebar Navigation -->
         <div class="sidebar glass-card flex flex-col z-40">
+            <!-- Logo -->
             <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
                         <i class="fas fa-chart-line text-white text-xl"></i>
                     </div>
-                    <h1 class="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-300 bg-clip-text text-transparent">
+                    <h1
+                        class="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-300 bg-clip-text text-transparent">
                         Bareera Intl.
                     </h1>
                 </div>
                 <div class="text-xs text-gray-500 mt-1">Financial Intelligence Platform</div>
             </div>
-            
-            
+
+            <!-- User Profile Summary -->
             <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center gap-3 mb-4">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-700 to-pink-600 flex items-center justify-center">
+                    <div
+                        class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-700 to-pink-600 flex items-center justify-center">
                         <i class="fas fa-user text-white"></i>
                     </div>
                     <div>
@@ -49,45 +58,56 @@
                     </div>
                 </div>
             </div>
-            
+
+            <!-- Navigation Links -->
             <div class="flex-1 p-4 overflow-y-auto">
                 <div class="space-y-2">
-                    <a href="dashboard.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                    <a href="dashboard.html"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
                         <i class="fas fa-tachometer-alt w-5 text-center"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="transactions.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                    <a href="transactions.html"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
                         <i class="fas fa-exchange-alt w-5 text-center"></i>
                         <span>Transactions</span>
                     </a>
-                    <a href="budgets.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                    <a href="budgets.html"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
                         <i class="fas fa-wallet w-5 text-center"></i>
                         <span>Budgets</span>
                     </a>
-                    <a href="categories.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                    <a href="categories.html"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
                         <i class="fas fa-tags w-5 text-center"></i>
                         <span>Categories</span>
                     </a>
-                    <a href="savings.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                    <a href="savings.html"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
                         <i class="fas fa-bullseye w-5 text-center"></i>
                         <span>Savings Goals</span>
                     </a>
-                    <a href="profile.html" class="nav-link active flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                    <a href="profile.html"
+                        class="nav-link active flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
                         <i class="fas fa-user-cog w-5 text-center"></i>
                         <span>Profile & Settings</span>
                     </a>
                 </div>
             </div>
-            
+
+            <!-- Logout Button -->
             <div class="p-6 border-t border-gray-800">
-                <button id="logoutBtn" class="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-gray-900/50 hover:bg-gray-800 transition">
+                <button id="logoutBtn"
+                    class="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-gray-900/50 hover:bg-gray-800 transition">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </button>
             </div>
         </div>
-        
+
+        <!-- Main Content -->
         <div class="flex-1 p-4 lg:p-8 overflow-x-hidden">
+            <!-- Header -->
             <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8">
                 <div>
                     <h1 class="text-3xl font-bold">Profile & Settings</h1>
@@ -99,28 +119,34 @@
                     </button>
                 </div>
             </div>
-            
+
+            <!-- Tabs -->
             <div class="flex border-b border-gray-800 mb-8 overflow-x-auto">
-                <button id="profileTab" class="tab-button active px-6 py-3 font-semibold border-b-2 border-transparent whitespace-nowrap">
+                <button id="profileTab"
+                    class="tab-button active px-6 py-3 font-semibold border-b-2 border-transparent whitespace-nowrap">
                     <i class="fas fa-user mr-2"></i> Profile
                 </button>
-                <button id="securityTab" class="tab-button px-6 py-3 font-semibold border-b-2 border-transparent whitespace-nowrap">
+                <button id="securityTab"
+                    class="tab-button px-6 py-3 font-semibold border-b-2 border-transparent whitespace-nowrap">
                     <i class="fas fa-shield-alt mr-2"></i> Security
                 </button>
             </div>
-            
+
+            <!-- Profile Tab Content -->
             <div id="profileContent" class="fade-in">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Profile Card -->
                     <div class="lg:col-span-1">
                         <div class="glass-card glow-border rounded-2xl p-6">
                             <div class="text-center mb-6">
-                                <div class="profile-avatar rounded-full mx-auto mb-4 bg-gradient-to-br from-purple-700 to-pink-600 flex items-center justify-center">
+                                <div
+                                    class="profile-avatar rounded-full mx-auto mb-4 bg-gradient-to-br from-purple-700 to-pink-600 flex items-center justify-center">
                                     <i class="fas fa-user text-4xl text-white"></i>
                                 </div>
                                 <h2 class="text-xl font-bold" id="profileName">Loading...</h2>
                                 <p class="text-gray-400" id="profileEmail">Loading...</p>
                             </div>
-                            
+
                             <div class="space-y-4">
                                 <div class="flex justify-between">
                                     <span class="text-gray-400">Member Since</span>
@@ -128,7 +154,8 @@
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-400">Account ID</span>
-                                    <span class="font-medium text-purple-300 text-xs truncate max-w-[150px]" id="accountId">Loading...</span>
+                                    <span class="font-medium text-purple-300 text-xs truncate max-w-[150px]"
+                                        id="accountId">Loading...</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-400">Default Currency</span>
@@ -140,7 +167,8 @@
                                 </div>
                             </div>
                         </div>
-                        
+
+                        <!-- Account Stats -->
                         <div class="mt-6 glass-card glow-border rounded-2xl p-6">
                             <h3 class="font-bold mb-4">Account Stats</h3>
                             <div class="space-y-3">
@@ -163,31 +191,32 @@
                             </div>
                         </div>
                     </div>
-                    
+
+                    <!-- Edit Profile Form -->
                     <div class="lg:col-span-2">
                         <div class="glass-card glow-border rounded-2xl p-6">
                             <h2 class="text-xl font-bold mb-6">Edit Profile</h2>
-                            
+
                             <form id="profileForm">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                     <div>
                                         <label class="block text-gray-300 mb-2">Full Name *</label>
                                         <input type="text" id="fullName" required
-                                               class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                                               placeholder="Enter your full name">
+                                            class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                            placeholder="Enter your full name">
                                     </div>
-                                    
+
                                     <div>
                                         <label class="block text-gray-300 mb-2">Email Address *</label>
                                         <input type="email" id="email" required
-                                               class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                                               placeholder="your@email.com">
+                                            class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                            placeholder="your@email.com">
                                     </div>
-                                    
+
                                     <div>
                                         <label class="block text-gray-300 mb-2">Currency *</label>
                                         <select id="currency" required
-                                                class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+                                            class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
                                             <option value="PKR">Pakistani Rupee (PKR)</option>
                                             <option value="USD">US Dollar (USD)</option>
                                             <option value="EUR">Euro (EUR)</option>
@@ -198,29 +227,34 @@
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="flex justify-end">
-                                    <button type="button" id="resetProfile" class="px-6 py-2 rounded-xl border border-gray-700 hover:border-gray-500 transition mr-4">
+                                    <button type="button" id="resetProfile"
+                                        class="px-6 py-2 rounded-xl border border-gray-700 hover:border-gray-500 transition mr-4">
                                         Reset
                                     </button>
-                                    <button type="submit" class="px-6 py-2 rounded-xl btn-primary text-white font-semibold">
+                                    <button type="submit"
+                                        class="px-6 py-2 rounded-xl btn-primary text-white font-semibold">
                                         Update Profile
                                     </button>
                                 </div>
                             </form>
                         </div>
-                        
+
+                        <!-- Data Zone -->
                         <div class="mt-6 glass-card glow-border rounded-2xl p-6 border border-yellow-900/30">
                             <h2 class="text-xl font-bold mb-4 text-yellow-400">Data Zone</h2>
                             <p class="text-gray-400 mb-6">Manage your data and exports</p>
-                            
+
                             <div class="space-y-4">
                                 <div class="flex items-center justify-between p-4 bg-yellow-900/10 rounded-xl">
                                     <div>
                                         <div class="font-medium">Export All Data</div>
-                                        <div class="text-sm text-gray-400">Download all your data in JSON format including transactions, budgets, savings goals, and categories</div>
+                                        <div class="text-sm text-gray-400">Download all your data in JSON format
+                                            including transactions, budgets, savings goals, and categories</div>
                                     </div>
-                                    <button id="exportAllDataBtn" class="px-4 py-2 rounded-xl border border-yellow-600 hover:bg-yellow-900/20 text-yellow-400 font-semibold text-sm">
+                                    <button id="exportAllDataBtn"
+                                        class="px-4 py-2 rounded-xl border border-yellow-600 hover:bg-yellow-900/20 text-yellow-400 font-semibold text-sm">
                                         Export Data
                                     </button>
                                 </div>
@@ -229,12 +263,14 @@
                     </div>
                 </div>
             </div>
-            
+
+            <!-- Security Tab Content -->
             <div id="securityContent" class="hidden fade-in">
                 <div class="glass-card glow-border rounded-2xl p-6">
                     <h2 class="text-xl font-bold mb-6">Security Settings</h2>
-                    
+
                     <div class="space-y-8">
+                        <!-- Password Change -->
                         <div>
                             <h3 class="text-lg font-bold mb-4">Change Password</h3>
                             <form id="passwordForm" class="space-y-4">
@@ -242,41 +278,49 @@
                                     <label class="block text-gray-300 mb-2">Current Password</label>
                                     <div class="relative">
                                         <input type="password" id="currentPassword" required
-                                               class="w-full pr-10 py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                                               placeholder="••••••••">
-                                        <button type="button" class="password-toggle absolute inset-y-0 right-0 pr-3 flex items-center" id="toggleCurrentPassword">
+                                            class="w-full pr-10 py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                            placeholder="••••••••">
+                                        <button type="button"
+                                            class="password-toggle absolute inset-y-0 right-0 pr-3 flex items-center"
+                                            id="toggleCurrentPassword">
                                             <i class="fas fa-eye text-gray-500"></i>
                                         </button>
                                     </div>
                                 </div>
-                                
+
                                 <div>
                                     <label class="block text-gray-300 mb-2">New Password</label>
                                     <div class="relative">
                                         <input type="password" id="newPassword" required
-                                               class="w-full pr-10 py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                                               placeholder="••••••••">
-                                        <button type="button" class="password-toggle absolute inset-y-0 right-0 pr-3 flex items-center" id="toggleNewPassword">
+                                            class="w-full pr-10 py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                            placeholder="••••••••">
+                                        <button type="button"
+                                            class="password-toggle absolute inset-y-0 right-0 pr-3 flex items-center"
+                                            id="toggleNewPassword">
                                             <i class="fas fa-eye text-gray-500"></i>
                                         </button>
                                     </div>
-                                    <div class="text-xs text-gray-500 mt-1">Minimum 8 characters with letters and numbers</div>
+                                    <div class="text-xs text-gray-500 mt-1">Minimum 8 characters with letters and
+                                        numbers</div>
                                 </div>
-                                
+
                                 <div>
                                     <label class="block text-gray-300 mb-2">Confirm New Password</label>
                                     <div class="relative">
                                         <input type="password" id="confirmPassword" required
-                                               class="w-full pr-10 py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                                               placeholder="••••••••">
-                                        <button type="button" class="password-toggle absolute inset-y-0 right-0 pr-3 flex items-center" id="toggleConfirmPassword">
+                                            class="w-full pr-10 py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                            placeholder="••••••••">
+                                        <button type="button"
+                                            class="password-toggle absolute inset-y-0 right-0 pr-3 flex items-center"
+                                            id="toggleConfirmPassword">
                                             <i class="fas fa-eye text-gray-500"></i>
                                         </button>
                                     </div>
                                 </div>
-                                
+
                                 <div class="flex justify-end">
-                                    <button type="submit" class="px-6 py-2 rounded-xl btn-primary text-white font-semibold">
+                                    <button type="submit"
+                                        class="px-6 py-2 rounded-xl btn-primary text-white font-semibold">
                                         Update Password
                                     </button>
                                 </div>
@@ -292,4 +336,5 @@
     <script src="AppwriteService/appwrite-config.js"></script>
     <script src="UserProfile/profile.js"></script>
 </body>
+
 </html>

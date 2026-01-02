@@ -11,6 +11,7 @@
 </head>
 
 <body class="text-gray-200">
+    <!-- Mobile Menu Toggle -->
     <div class="lg:hidden fixed top-4 left-4 z-50">
         <button id="menuToggle"
             class="glass-card w-12 h-12 rounded-xl flex items-center justify-center hover:scale-105 transition-transform">
@@ -18,10 +19,13 @@
         </button>
     </div>
 
+    <!-- Overlay for mobile -->
     <div id="overlay" class="overlay"></div>
 
     <div class="flex min-h-screen">
+        <!-- Sidebar Navigation -->
         <div class="sidebar glass-card flex flex-col">
+            <!-- Logo -->
             <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center gap-3">
                     <div
@@ -36,6 +40,7 @@
                 <div class="text-xs text-gray-500 mt-1">System Management</div>
             </div>
 
+            <!-- Admin Profile -->
             <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center gap-3 mb-4">
                     <div
@@ -55,6 +60,7 @@
                 </div>
             </div>
 
+            <!-- Currency Selector -->
             <div class="p-4 border-b border-gray-800">
                 <label class="block text-sm font-medium mb-2 text-gray-300">Display Currency</label>
                 <select id="currencySelector"
@@ -68,6 +74,7 @@
                 <div class="text-xs text-gray-500 mt-2">All amounts will be converted to this currency</div>
             </div>
 
+            <!-- Navigation Links -->
             <div class="flex-1 p-4 overflow-y-auto">
                 <div class="space-y-2">
                     <button data-tab="dashboard"
@@ -81,7 +88,6 @@
                         <i class="fas fa-users w-5 text-center"></i>
                         <span>Users</span>
                     </button>
-
 
                     <button data-tab="transactions"
                         class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
@@ -106,36 +112,10 @@
                         <i class="fas fa-tags w-5 text-center"></i>
                         <span>Categories</span>
                     </button>
-
-                    <div class="my-3 border-t border-gray-800"></div>
-                    <div class="text-xs text-gray-500 px-3 mb-2 uppercase tracking-wider">Admin Tools</div>
-
-                    <button data-tab="adminSettings"
-                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
-                        <i class="fas fa-cog w-5 text-center"></i>
-                        <span>Admin Settings</span>
-                    </button>
-
-                    <button data-tab="generalLedger"
-                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
-                        <i class="fas fa-book w-5 text-center"></i>
-                        <span>General Ledger</span>
-                    </button>
-
-                    <button data-tab="payableReceivable"
-                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
-                        <i class="fas fa-hand-holding-usd w-5 text-center"></i>
-                        <span>Payable/Receivable</span>
-                    </button>
-
-                    <button data-tab="adminBudgeting"
-                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
-                        <i class="fas fa-chart-bar w-5 text-center"></i>
-                        <span>Budgeting</span>
-                    </button>
                 </div>
             </div>
 
+            <!-- Logout Button -->
             <div class="p-6 border-t border-gray-800">
                 <button id="logoutBtn"
                     class="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-gray-900/50 hover:bg-gray-800 transition">
@@ -145,7 +125,9 @@
             </div>
         </div>
 
+        <!-- Main Content -->
         <div class="main-content p-4 lg:p-8 overflow-x-hidden">
+            <!-- Header -->
             <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8">
                 <div class="mb-4 lg:mb-0">
                     <h1 class="text-2xl lg:text-3xl font-bold truncate" id="pageTitle">Admin Dashboard</h1>
@@ -170,6 +152,7 @@
                 </div>
             </div>
 
+            <!-- Loading State -->
             <div id="loadingState" class="flex items-center justify-center h-96">
                 <div class="text-center">
                     <div class="w-16 h-16 loading-spinner mx-auto mb-4"></div>
@@ -177,7 +160,9 @@
                 </div>
             </div>
 
+            <!-- Dashboard Tab -->
             <div id="dashboardTab" class="space-y-8 hidden">
+                <!-- Stats Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 stats-grid">
                     <div class="glass-card glow-border rounded-2xl p-6 fade-in">
                         <div class="flex items-center justify-between mb-4">
@@ -240,6 +225,7 @@
                     </div>
                 </div>
 
+                <!-- Financial Overview -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                     <div class="glass-card glow-border rounded-2xl p-6">
                         <h2 class="text-xl font-bold mb-6">Platform Statistics</h2>
@@ -306,6 +292,7 @@
                 </div>
             </div>
 
+            <!-- Users Tab -->
             <div id="usersTab" class="hidden">
                 <div class="glass-card glow-border rounded-2xl overflow-hidden">
                     <div class="p-4 lg:p-6 border-b border-gray-800">
@@ -340,12 +327,14 @@
                                 </tr>
                             </thead>
                             <tbody id="usersTableBody">
+                                <!-- Users loaded here -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
+            <!-- Transactions Tab -->
             <div id="transactionsTab" class="hidden">
                 <div class="glass-card glow-border rounded-2xl overflow-hidden">
                     <div class="p-4 lg:p-6 border-b border-gray-800">
@@ -380,12 +369,14 @@
                                 </tr>
                             </thead>
                             <tbody id="transactionsTableBody">
+                                <!-- Transactions loaded here -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
+            <!-- Budgets Tab -->
             <div id="budgetsTab" class="hidden">
                 <div class="glass-card glow-border rounded-2xl overflow-hidden">
                     <div class="p-4 lg:p-6 border-b border-gray-800">
@@ -419,12 +410,14 @@
                                 </tr>
                             </thead>
                             <tbody id="budgetsTableBody">
+                                <!-- Budgets loaded here -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
+            <!-- Savings Tab -->
             <div id="savingsTab" class="hidden">
                 <div class="glass-card glow-border rounded-2xl overflow-hidden">
                     <div class="p-4 lg:p-6 border-b border-gray-800">
@@ -458,12 +451,14 @@
                                 </tr>
                             </thead>
                             <tbody id="savingsTableBody">
+                                <!-- Savings goals loaded here -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
+            <!-- Categories Tab -->
             <div id="categoriesTab" class="hidden">
                 <div class="glass-card glow-border rounded-2xl overflow-hidden">
                     <div class="p-4 lg:p-6 border-b border-gray-800">
@@ -502,338 +497,7 @@
                                 </tr>
                             </thead>
                             <tbody id="categoriesTableBody">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="adminSettingsTab" class="hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                    <div class="glass-card glow-border rounded-2xl p-6">
-                        <h2 class="text-xl font-bold mb-6 flex items-center gap-3">
-                            <i class="fas fa-user-cog text-purple-400"></i>
-                            Profile Settings
-                        </h2>
-                        <form id="adminProfileForm" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-2 text-gray-300">Admin Name</label>
-                                <input type="text" id="adminProfileName"
-                                    class="glass-card w-full px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    placeholder="Enter admin name">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-2 text-gray-300">Email</label>
-                                <input type="email" id="adminProfileEmail"
-                                    class="glass-card w-full px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-800/50"
-                                    disabled>
-                                <div class="text-xs text-gray-500 mt-1">Email cannot be changed</div>
-                            </div>
-                            <button type="button" onclick="saveAdminProfile()"
-                                class="btn-primary w-full py-3 rounded-xl text-white font-semibold flex items-center justify-center gap-2">
-                                <i class="fas fa-save"></i>
-                                Save Profile Changes
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="glass-card glow-border rounded-2xl p-6">
-                        <h2 class="text-xl font-bold mb-6 flex items-center gap-3">
-                            <i class="fas fa-key text-yellow-400"></i>
-                            Change Password
-                        </h2>
-                        <form id="passwordChangeForm" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-2 text-gray-300">Current Password</label>
-                                <input type="password" id="currentPassword"
-                                    class="glass-card w-full px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    placeholder="Enter current password">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-2 text-gray-300">New Password</label>
-                                <input type="password" id="newPassword"
-                                    class="glass-card w-full px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    placeholder="Enter new password">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-2 text-gray-300">Confirm New
-                                    Password</label>
-                                <input type="password" id="confirmNewPassword"
-                                    class="glass-card w-full px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    placeholder="Confirm new password">
-                            </div>
-                            <button type="button" onclick="changeAdminPassword()"
-                                class="btn-primary w-full py-3 rounded-xl text-white font-semibold flex items-center justify-center gap-2">
-                                <i class="fas fa-lock"></i>
-                                Update Password
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="glass-card glow-border rounded-2xl p-6 lg:col-span-2">
-                        <h2 class="text-xl font-bold mb-6 flex items-center gap-3">
-                            <i class="fas fa-download text-green-400"></i>
-                            Complete Data Export
-                        </h2>
-                        <p class="text-gray-400 mb-6">Export all platform data including users, transactions,
-                            budgets, savings goals, and categories as a JSON file.</p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-                            <div class="glass-card p-4 rounded-xl text-center">
-                                <div class="text-2xl font-bold text-purple-400" id="exportUserCount">0</div>
-                                <div class="text-sm text-gray-400">Users</div>
-                            </div>
-                            <div class="glass-card p-4 rounded-xl text-center">
-                                <div class="text-2xl font-bold text-blue-400" id="exportTransactionCount">0</div>
-                                <div class="text-sm text-gray-400">Transactions</div>
-                            </div>
-                            <div class="glass-card p-4 rounded-xl text-center">
-                                <div class="text-2xl font-bold text-green-400" id="exportBudgetCount">0</div>
-                                <div class="text-sm text-gray-400">Budgets</div>
-                            </div>
-                            <div class="glass-card p-4 rounded-xl text-center">
-                                <div class="text-2xl font-bold text-yellow-400" id="exportSavingsCount">0</div>
-                                <div class="text-sm text-gray-400">Savings Goals</div>
-                            </div>
-                            <div class="glass-card p-4 rounded-xl text-center">
-                                <div class="text-2xl font-bold text-pink-400" id="exportCategoryCount">0</div>
-                                <div class="text-sm text-gray-400">Categories</div>
-                            </div>
-                        </div>
-                        <button onclick="exportAllData()"
-                            class="btn-primary px-6 py-3 rounded-xl text-white font-semibold flex items-center gap-2">
-                            <i class="fas fa-file-export"></i>
-                            Export All Data as JSON
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="generalLedgerTab" class="hidden">
-                <div class="glass-card glow-border rounded-2xl overflow-hidden">
-                    <div class="p-4 lg:p-6 border-b border-gray-800">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mobile-stack">
-                            <h2 class="text-xl font-bold flex items-center gap-3">
-                                <i class="fas fa-book text-blue-400"></i>
-                                General Ledger
-                            </h2>
-                            <div class="flex flex-wrap gap-3 mobile-stack">
-                                <input type="date" id="ledgerStartDate"
-                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
-                                <input type="date" id="ledgerEndDate"
-                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
-                                <button onclick="filterLedger()"
-                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 hover:border-purple-500 transition flex items-center gap-2 mobile-full-width">
-                                    <i class="fas fa-filter"></i>
-                                    Filter
-                                </button>
-                                <button onclick="exportLedgerCSV()"
-                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 hover:border-green-500 transition flex items-center gap-2 mobile-full-width">
-                                    <i class="fas fa-file-csv"></i>
-                                    Export CSV
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-4 lg:p-6 border-b border-gray-800 bg-gray-900/30">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="glass-card p-4 rounded-xl">
-                                <div class="text-sm text-gray-400 mb-1">Total Debits (Expenses)</div>
-                                <div class="text-xl font-bold text-red-400" id="ledgerTotalDebits">Rs 0.00</div>
-                            </div>
-                            <div class="glass-card p-4 rounded-xl">
-                                <div class="text-sm text-gray-400 mb-1">Total Credits (Income)</div>
-                                <div class="text-xl font-bold text-green-400" id="ledgerTotalCredits">Rs 0.00</div>
-                            </div>
-                            <div class="glass-card p-4 rounded-xl">
-                                <div class="text-sm text-gray-400 mb-1">Net Balance</div>
-                                <div class="text-xl font-bold text-purple-400" id="ledgerNetBalance">Rs 0.00</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="table-container max-h-[600px] overflow-y-auto">
-                        <table class="w-full">
-                            <thead class="table-header sticky top-0">
-                                <tr>
-                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Date</th>
-                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Description
-                                    </th>
-                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300 mobile-hidden">
-                                        User</th>
-                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300 text-red-400">
-                                        Debit</th>
-                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300 text-green-400">
-                                        Credit</th>
-                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Balance
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="ledgerTableBody">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="payableReceivableTab" class="hidden">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 mb-6">
-                    <div class="glass-card glow-border rounded-2xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div
-                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-900/30 to-green-700/20 flex items-center justify-center">
-                                <i class="fas fa-arrow-down text-2xl text-green-400"></i>
-                            </div>
-                            <div class="text-sm text-gray-400">Total Receivables</div>
-                        </div>
-                        <div class="text-3xl font-bold mb-1 text-green-400" id="totalReceivables">Rs 0.00</div>
-                        <div class="text-sm text-gray-400">Total income across all users</div>
-                    </div>
-                    <div class="glass-card glow-border rounded-2xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div
-                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-900/30 to-red-700/20 flex items-center justify-center">
-                                <i class="fas fa-arrow-up text-2xl text-red-400"></i>
-                            </div>
-                            <div class="text-sm text-gray-400">Total Payables</div>
-                        </div>
-                        <div class="text-3xl font-bold mb-1 text-red-400" id="totalPayables">Rs 0.00</div>
-                        <div class="text-sm text-gray-400">Total expenses across all users</div>
-                    </div>
-                    <div class="glass-card glow-border rounded-2xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div
-                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-900/30 to-purple-700/20 flex items-center justify-center">
-                                <i class="fas fa-balance-scale text-2xl text-purple-400"></i>
-                            </div>
-                            <div class="text-sm text-gray-400">Net Position</div>
-                        </div>
-                        <div class="text-3xl font-bold mb-1" id="netPosition">Rs 0.00</div>
-                        <div class="text-sm text-gray-400">Receivables - Payables</div>
-                    </div>
-                </div>
-
-                <div class="glass-card glow-border rounded-2xl overflow-hidden">
-                    <div class="p-4 lg:p-6 border-b border-gray-800">
-                        <h2 class="text-xl font-bold flex items-center gap-3">
-                            <i class="fas fa-users text-purple-400"></i>
-                            User-by-User Breakdown
-                        </h2>
-                    </div>
-                    <div class="table-container">
-                        <table class="w-full">
-                            <thead class="table-header">
-                                <tr>
-                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">User</th>
-                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300 text-green-400">
-                                        Receivables (Income)</th>
-                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300 text-red-400">
-                                        Payables (Expenses)</th>
-                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Net Balance
-                                    </th>
-                                    <th class="py-4 px-4 lg:px-6 text-center font-semibold text-gray-300">Status
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="arTableBody">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="adminBudgetingTab" class="hidden">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
-                    <div class="glass-card glow-border rounded-2xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div
-                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-900/30 to-blue-700/20 flex items-center justify-center">
-                                <i class="fas fa-wallet text-2xl text-blue-400"></i>
-                            </div>
-                        </div>
-                        <div class="text-3xl font-bold mb-1" id="totalBudgeted">Rs 0.00</div>
-                        <div class="text-sm text-gray-400">Total Budgeted</div>
-                    </div>
-                    <div class="glass-card glow-border rounded-2xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div
-                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-900/30 to-yellow-700/20 flex items-center justify-center">
-                                <i class="fas fa-receipt text-2xl text-yellow-400"></i>
-                            </div>
-                        </div>
-                        <div class="text-3xl font-bold mb-1" id="totalSpentBudget">Rs 0.00</div>
-                        <div class="text-sm text-gray-400">Total Spent</div>
-                    </div>
-                    <div class="glass-card glow-border rounded-2xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div
-                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-900/30 to-green-700/20 flex items-center justify-center">
-                                <i class="fas fa-coins text-2xl text-green-400"></i>
-                            </div>
-                        </div>
-                        <div class="text-3xl font-bold mb-1" id="totalRemainingBudget">Rs 0.00</div>
-                        <div class="text-sm text-gray-400">Total Remaining</div>
-                    </div>
-                    <div class="glass-card glow-border rounded-2xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div
-                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-900/30 to-purple-700/20 flex items-center justify-center">
-                                <i class="fas fa-percentage text-2xl text-purple-400"></i>
-                            </div>
-                        </div>
-                        <div class="text-3xl font-bold mb-1" id="avgUtilization">0%</div>
-                        <div class="text-sm text-gray-400">Avg. Utilization</div>
-                    </div>
-                </div>
-
-                <div class="glass-card glow-border rounded-2xl p-6 mb-6" id="budgetAlertsContainer">
-                    <h2 class="text-xl font-bold mb-4 flex items-center gap-3">
-                        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
-                        Budget Alerts
-                    </h2>
-                    <div id="budgetAlertsList" class="space-y-3">
-                        <div class="text-gray-500 text-center py-4">No budget alerts</div>
-                    </div>
-                </div>
-
-                <div class="glass-card glow-border rounded-2xl overflow-hidden">
-                    <div class="p-4 lg:p-6 border-b border-gray-800">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mobile-stack">
-                            <h2 class="text-xl font-bold flex items-center gap-3">
-                                <i class="fas fa-chart-bar text-purple-400"></i>
-                                Budget vs Actual Comparison
-                            </h2>
-                            <div class="flex items-center gap-3 mobile-stack">
-                                <select id="budgetStatusFilter"
-                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
-                                    <option value="all">All Budgets</option>
-                                    <option value="active">Active Only</option>
-                                    <option value="overspent">Overspent</option>
-                                    <option value="warning">Warning (>80%)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="table-container">
-                        <table class="w-full">
-                            <thead class="table-header">
-                                <tr>
-                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Budget</th>
-                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300 mobile-hidden">
-                                        User</th>
-                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Budgeted
-                                    </th>
-                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Actual
-                                        Spent</th>
-                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Variance
-                                    </th>
-                                    <th class="py-4 px-4 lg:px-6 text-center font-semibold text-gray-300">
-                                        Utilization</th>
-                                    <th class="py-4 px-4 lg:px-6 text-center font-semibold text-gray-300">Status
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="budgetComparisonTableBody">
+                                <!-- Categories loaded here -->
                             </tbody>
                         </table>
                     </div>
@@ -842,16 +506,19 @@
         </div>
     </div>
 
-
+    <!-- Modal -->
     <div id="modal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="modal-content rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div class="p-4 lg:p-6">
+                <!-- Modal content will be injected here -->
             </div>
         </div>
     </div>
 
+    <!-- Toast Container -->
     <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 max-w-md w-full md:w-auto"></div>
 
+    <!-- Logout Modal -->
     <div id="logoutModal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="modal-content rounded-2xl max-w-md w-full mx-4">
             <div class="p-6 lg:p-8">

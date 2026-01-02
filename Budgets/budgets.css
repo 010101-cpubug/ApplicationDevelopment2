@@ -17,11 +17,10 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.36);
 }
 
-
 .glow-border {
     border: 1px solid transparent;
     background: linear-gradient(var(--glass-bg), var(--glass-bg)) padding-box,
-                linear-gradient(135deg, var(--primary-purple), transparent) border-box;
+        linear-gradient(135deg, var(--primary-purple), transparent) border-box;
 }
 
 .btn-primary {
@@ -46,11 +45,11 @@ body {
         height: 100vh;
         z-index: 40;
     }
-    
+
     .sidebar.active {
         transform: translateX(0);
     }
-    
+
     .overlay {
         display: none;
         position: fixed;
@@ -58,7 +57,7 @@ body {
         background: rgba(0, 0, 0, 0.7);
         z-index: 30;
     }
-    
+
     .overlay.active {
         display: block;
     }
@@ -109,8 +108,15 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .chart-container {

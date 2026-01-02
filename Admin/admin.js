@@ -8,7 +8,14 @@ const adminState = {
     categories: [],
     loading: true,
     userMap: new Map(),
-    adminCurrency: 'PKR'
+    adminCurrency: 'PKR',
+    currencySymbols: {
+        'PKR': 'Rs',
+        'USD': '$',
+        'EUR': '€',
+        'GBP': '£',
+        'JPY': '¥'
+    }
 };
 
 const menuToggle = document.getElementById('menuToggle');
@@ -27,11 +34,7 @@ const tabs = {
     transactions: document.getElementById('transactionsTab'),
     budgets: document.getElementById('budgetsTab'),
     savings: document.getElementById('savingsTab'),
-    categories: document.getElementById('categoriesTab'),
-    adminSettings: document.getElementById('adminSettingsTab'),
-    generalLedger: document.getElementById('generalLedgerTab'),
-    payableReceivable: document.getElementById('payableReceivableTab'),
-    adminBudgeting: document.getElementById('adminBudgetingTab')
+    categories: document.getElementById('categoriesTab')
 };
 
 async function initializeAdminPanel() {
@@ -124,14 +127,14 @@ function convertAmountForDisplay(amount, fromCurrency) {
 }
 
 function formatConvertedAmount(conversionResult, showOriginal = true) {
-    const symbol = getCurrencySymbol(adminState.adminCurrency);
+    const symbol = adminState.currencySymbols[adminState.adminCurrency] || adminState.adminCurrency;
     const formatted = `${symbol} ${conversionResult.converted.toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     })}`;
 
     if (showOriginal && conversionResult.fromCurrency !== conversionResult.toCurrency) {
-        const originalSymbol = getCurrencySymbol(conversionResult.fromCurrency);
+        const originalSymbol = adminState.currencySymbols[conversionResult.fromCurrency] || conversionResult.fromCurrency;
         const originalFormatted = `${originalSymbol} ${conversionResult.original.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
@@ -152,7 +155,7 @@ function formatConvertedAmount(conversionResult, showOriginal = true) {
 }
 
 function getCurrencySymbol(currencyCode) {
-    return appwriteService.getCurrencySymbol(currencyCode);
+    return adminState.currencySymbols[currencyCode] || currencyCode;
 }
 
 function updateCurrencyDisplay() {
@@ -256,11 +259,7 @@ function switchTab(tabName) {
         transactions: 'Transaction History',
         budgets: 'Budget Management',
         savings: 'Savings Goals',
-        categories: 'Category Management',
-        adminSettings: 'Admin Settings',
-        generalLedger: 'General Ledger',
-        payableReceivable: 'Accounts Payable/Receivable',
-        adminBudgeting: 'Organization Budgeting'
+        categories: 'Category Management'
     };
 
     document.getElementById('pageTitle').textContent = titles[tabName] || 'Dashboard';
@@ -297,21 +296,8 @@ function loadTabData(tabName) {
         case 'categories':
             renderCategoriesTable();
             break;
-        case 'adminSettings':
-            renderAdminSettingsTab();
-            break;
-        case 'generalLedger':
-            renderGeneralLedgerTab();
-            break;
-        case 'payableReceivable':
-            renderPayableReceivableTab();
-            break;
-        case 'adminBudgeting':
-            renderAdminBudgetingTab();
-            break;
     }
 }
-
 
 
 function updateDashboardStats() {
@@ -1617,8 +1603,8 @@ function showToast(message, type = 'info') {
 
     const toast = document.createElement('div');
     toast.className = `toast px-4 py-3 rounded-xl flex items-center gap-3 slide-in border-l-4 ${type === 'success' ? 'border-green-500' :
-        type === 'error' ? 'border-red-500' :
-            'border-blue-500'
+            type === 'error' ? 'border-red-500' :
+                'border-blue-500'
         }`;
 
     const icon = type === 'success' ? 'fa-check-circle' :
@@ -1961,642 +1947,6 @@ async function createNewCategory() {
         showToast('Error creating category: ' + error.message, 'error');
     }
 }
-
-
-function renderAdminSettingsTab() {
-    const adminProfile = adminState.users.find(u => u.user_id === adminState.user?.$id);
-
-    const nameInput = document.getElementById('adminProfileName');
-    const emailInput = document.getElementById('adminProfileEmail');
-
-    if (nameInput) {
-        nameInput.value = adminProfile?.full_name || adminState.user?.name || '';
-    }
-    if (emailInput) {
-        emailInput.value = adminState.user?.email || '';
-    }
-
-    const exportUserCount = document.getElementById('exportUserCount');
-    const exportTransactionCount = document.getElementById('exportTransactionCount');
-    const exportBudgetCount = document.getElementById('exportBudgetCount');
-    const exportSavingsCount = document.getElementById('exportSavingsCount');
-    const exportCategoryCount = document.getElementById('exportCategoryCount');
-
-    if (exportUserCount) exportUserCount.textContent = adminState.users.length;
-    if (exportTransactionCount) exportTransactionCount.textContent = adminState.transactions.length;
-    if (exportBudgetCount) exportBudgetCount.textContent = adminState.budgets.length;
-    if (exportSavingsCount) exportSavingsCount.textContent = adminState.savings.length;
-    if (exportCategoryCount) exportCategoryCount.textContent = adminState.categories.length;
-}
-
-async function saveAdminProfile() {
-    const nameInput = document.getElementById('adminProfileName');
-    if (!nameInput || !nameInput.value.trim()) {
-        showToast('Please enter a valid name', 'error');
-        return;
-    }
-
-    const adminProfile = adminState.users.find(u => u.user_id === adminState.user?.$id);
-    if (!adminProfile) {
-        showToast('Admin profile not found', 'error');
-        return;
-    }
-
-    try {
-        await appwriteService.updateUserProfile(adminProfile.$id, {
-            full_name: nameInput.value.trim()
-        });
-
-        document.getElementById('adminName').textContent = nameInput.value.trim();
-        document.getElementById('adminInitials').textContent = appwriteService.getUserInitials(nameInput.value.trim());
-
-        showToast('Profile updated successfully', 'success');
-        await loadAllData();
-
-    } catch (error) {
-        console.error('Error updating profile:', error);
-        showToast('Error updating profile: ' + error.message, 'error');
-    }
-}
-
-async function changeAdminPassword() {
-    const currentPassword = document.getElementById('currentPassword')?.value;
-    const newPassword = document.getElementById('newPassword')?.value;
-    const confirmNewPassword = document.getElementById('confirmNewPassword')?.value;
-
-    if (!currentPassword || !newPassword || !confirmNewPassword) {
-        showToast('Please fill in all password fields', 'error');
-        return;
-    }
-
-    if (newPassword !== confirmNewPassword) {
-        showToast('New passwords do not match', 'error');
-        return;
-    }
-
-    if (newPassword.length < 8) {
-        showToast('New password must be at least 8 characters long', 'error');
-        return;
-    }
-
-    try {
-        await appwriteService.account.updatePassword(newPassword, currentPassword);
-
-        document.getElementById('currentPassword').value = '';
-        document.getElementById('newPassword').value = '';
-        document.getElementById('confirmNewPassword').value = '';
-
-        showToast('Password updated successfully', 'success');
-
-    } catch (error) {
-        console.error('Error changing password:', error);
-        if (error.code === 401) {
-            showToast('Current password is incorrect', 'error');
-        } else {
-            showToast('Error changing password: ' + error.message, 'error');
-        }
-    }
-}
-
-function exportAllData() {
-    const exportData = {
-        exportDate: new Date().toISOString(),
-        exportedBy: adminState.user?.email || 'Admin',
-        platform: 'Bareera Intl. Finance Manager',
-        displayCurrency: adminState.adminCurrency,
-        statistics: {
-            totalUsers: adminState.users.length,
-            totalTransactions: adminState.transactions.length,
-            totalBudgets: adminState.budgets.length,
-            totalSavingsGoals: adminState.savings.length,
-            totalCategories: adminState.categories.length
-        },
-        users: adminState.users.map(user => ({
-            id: user.user_id,
-            profileId: user.$id,
-            fullName: user.full_name,
-            email: user.email,
-            currency: user.currency,
-            createdAt: user.created_at
-        })),
-        transactions: adminState.transactions.map(tx => {
-            const user = adminState.userMap.get(tx.user_id);
-            return {
-                id: tx.$id,
-                userId: tx.user_id,
-                userName: user?.name || 'Unknown',
-                type: tx.type,
-                amount: tx.amount,
-                userCurrency: user?.currency || 'PKR',
-                description: tx.description,
-                categoryId: tx.category_id,
-                budgetId: tx.budget_id,
-                transactionDate: tx.transaction_date,
-                createdAt: tx.created_at
-            };
-        }),
-        budgets: adminState.budgets.map(budget => {
-            const user = adminState.userMap.get(budget.user_id);
-            return {
-                id: budget.$id,
-                userId: budget.user_id,
-                userName: user?.name || 'Unknown',
-                budgetName: budget.budget_name,
-                totalAmount: budget.total_amount,
-                spentAmount: budget.spent_amount || 0,
-                userCurrency: user?.currency || 'PKR',
-                startDate: budget.start_date,
-                endDate: budget.end_date,
-                isActive: budget.is_active,
-                createdAt: budget.created_at
-            };
-        }),
-        savingsGoals: adminState.savings.map(goal => {
-            const user = adminState.userMap.get(goal.user_id);
-            return {
-                id: goal.$id,
-                userId: goal.user_id,
-                userName: user?.name || 'Unknown',
-                goalName: goal.goal_name,
-                targetAmount: goal.target_amount,
-                currentAmount: goal.current_amount || 0,
-                userCurrency: user?.currency || 'PKR',
-                deadline: goal.deadline,
-                isCompleted: goal.is_completed,
-                description: goal.description,
-                createdAt: goal.created_at
-            };
-        }),
-        categories: adminState.categories.map(cat => {
-            const user = adminState.userMap.get(cat.user_id);
-            return {
-                id: cat.$id,
-                userId: cat.user_id,
-                userName: user?.name || 'System',
-                categoryName: cat.category_name,
-                icon: cat.icon,
-                color: cat.color,
-                type: cat.type,
-                isDefault: cat.is_default
-            };
-        })
-    };
-
-    const jsonString = JSON.stringify(exportData, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `bareera_intl_export_${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    showToast('Data exported successfully', 'success');
-}
-
-
-let ledgerFilterStartDate = null;
-let ledgerFilterEndDate = null;
-
-function renderGeneralLedgerTab() {
-    const container = document.getElementById('ledgerTableBody');
-    if (!container) return;
-
-    let filteredTransactions = [...adminState.transactions];
-
-    if (ledgerFilterStartDate) {
-        filteredTransactions = filteredTransactions.filter(tx => {
-            const txDate = new Date(tx.transaction_date);
-            return txDate >= new Date(ledgerFilterStartDate);
-        });
-    }
-    if (ledgerFilterEndDate) {
-        filteredTransactions = filteredTransactions.filter(tx => {
-            const txDate = new Date(tx.transaction_date);
-            return txDate <= new Date(ledgerFilterEndDate + 'T23:59:59');
-        });
-    }
-
-    filteredTransactions.sort((a, b) => new Date(a.transaction_date) - new Date(b.transaction_date));
-
-    let totalDebits = 0;
-    let totalCredits = 0;
-    let runningBalance = 0;
-
-    container.innerHTML = '';
-
-    if (filteredTransactions.length === 0) {
-        container.innerHTML = `
-            <tr>
-                <td colspan="6" class="py-8 text-center text-gray-500">
-                    <i class="fas fa-book text-xl mb-2"></i>
-                    <div>No ledger entries found</div>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    filteredTransactions.forEach(tx => {
-        const user = adminState.userMap.get(tx.user_id);
-        const userCurrency = user?.currency || 'PKR';
-        const conversion = convertAmountForDisplay(tx.amount, userCurrency);
-
-        let debit = 0;
-        let credit = 0;
-
-        if (tx.type === 'expense') {
-            debit = conversion.converted;
-            totalDebits += debit;
-            runningBalance -= debit;
-        } else {
-            credit = conversion.converted;
-            totalCredits += credit;
-            runningBalance += credit;
-        }
-
-        const row = document.createElement('tr');
-        row.className = 'table-row';
-        row.innerHTML = `
-            <td class="py-4 px-4 lg:px-6 text-sm">
-                ${new Date(tx.transaction_date).toLocaleDateString()}
-            </td>
-            <td class="py-4 px-4 lg:px-6">
-                <div class="font-medium truncate">${tx.description || 'No description'}</div>
-                <div class="text-xs text-gray-500">${tx.type}</div>
-            </td>
-            <td class="py-4 px-4 lg:px-6 mobile-hidden">
-                <div class="text-sm">${user?.name || 'Unknown'}</div>
-                <div class="text-xs text-gray-500">${userCurrency}</div>
-            </td>
-            <td class="py-4 px-4 lg:px-6 text-right ${debit > 0 ? 'text-red-400 font-semibold' : 'text-gray-500'}">
-                ${debit > 0 ? getCurrencySymbol(adminState.adminCurrency) + ' ' + debit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
-            </td>
-            <td class="py-4 px-4 lg:px-6 text-right ${credit > 0 ? 'text-green-400 font-semibold' : 'text-gray-500'}">
-                ${credit > 0 ? getCurrencySymbol(adminState.adminCurrency) + ' ' + credit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
-            </td>
-            <td class="py-4 px-4 lg:px-6 text-right font-bold ${runningBalance >= 0 ? 'text-purple-400' : 'text-red-400'}">
-                ${getCurrencySymbol(adminState.adminCurrency)} ${runningBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </td>
-        `;
-        container.appendChild(row);
-    });
-
-    document.getElementById('ledgerTotalDebits').textContent =
-        `${getCurrencySymbol(adminState.adminCurrency)} ${totalDebits.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    document.getElementById('ledgerTotalCredits').textContent =
-        `${getCurrencySymbol(adminState.adminCurrency)} ${totalCredits.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    document.getElementById('ledgerNetBalance').textContent =
-        `${getCurrencySymbol(adminState.adminCurrency)} ${runningBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-
-function filterLedger() {
-    ledgerFilterStartDate = document.getElementById('ledgerStartDate')?.value || null;
-    ledgerFilterEndDate = document.getElementById('ledgerEndDate')?.value || null;
-    renderGeneralLedgerTab();
-    showToast('Ledger filtered', 'info');
-}
-
-function exportLedgerCSV() {
-    let filteredTransactions = [...adminState.transactions];
-
-    if (ledgerFilterStartDate) {
-        filteredTransactions = filteredTransactions.filter(tx =>
-            new Date(tx.transaction_date) >= new Date(ledgerFilterStartDate)
-        );
-    }
-    if (ledgerFilterEndDate) {
-        filteredTransactions = filteredTransactions.filter(tx =>
-            new Date(tx.transaction_date) <= new Date(ledgerFilterEndDate + 'T23:59:59')
-        );
-    }
-
-    filteredTransactions.sort((a, b) => new Date(a.transaction_date) - new Date(b.transaction_date));
-
-    let runningBalance = 0;
-    let csvContent = 'Date,Description,User,Currency,Debit,Credit,Balance\n';
-
-    filteredTransactions.forEach(tx => {
-        const user = adminState.userMap.get(tx.user_id);
-        const userCurrency = user?.currency || 'PKR';
-        const conversion = convertAmountForDisplay(tx.amount, userCurrency);
-
-        let debit = 0;
-        let credit = 0;
-
-        if (tx.type === 'expense') {
-            debit = conversion.converted;
-            runningBalance -= debit;
-        } else {
-            credit = conversion.converted;
-            runningBalance += credit;
-        }
-
-        const date = new Date(tx.transaction_date).toLocaleDateString();
-        const description = (tx.description || 'No description').replace(/,/g, ';');
-        const userName = (user?.name || 'Unknown').replace(/,/g, ';');
-
-        csvContent += `${date},"${description}","${userName}",${adminState.adminCurrency},${debit.toFixed(2)},${credit.toFixed(2)},${runningBalance.toFixed(2)}\n`;
-    });
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `general_ledger_${new Date().toISOString().split('T')[0]}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    showToast('Ledger exported to CSV', 'success');
-}
-
-
-function renderPayableReceivableTab() {
-    const container = document.getElementById('arTableBody');
-    if (!container) return;
-
-    const userAggregates = new Map();
-
-    adminState.transactions.forEach(tx => {
-        const userId = tx.user_id;
-        const user = adminState.userMap.get(userId);
-        const userCurrency = user?.currency || 'PKR';
-        const conversion = convertAmountForDisplay(tx.amount, userCurrency);
-
-        if (!userAggregates.has(userId)) {
-            userAggregates.set(userId, {
-                userId: userId,
-                userName: user?.name || 'Unknown',
-                userEmail: user?.email || '',
-                userCurrency: userCurrency,
-                receivables: 0,
-                payables: 0
-            });
-        }
-
-        const aggregate = userAggregates.get(userId);
-        if (tx.type === 'income') {
-            aggregate.receivables += conversion.converted;
-        } else {
-            aggregate.payables += conversion.converted;
-        }
-    });
-
-    const userList = Array.from(userAggregates.values());
-    let totalReceivables = 0;
-    let totalPayables = 0;
-
-    userList.forEach(user => {
-        totalReceivables += user.receivables;
-        totalPayables += user.payables;
-    });
-
-    const netPosition = totalReceivables - totalPayables;
-
-    document.getElementById('totalReceivables').textContent =
-        `${getCurrencySymbol(adminState.adminCurrency)} ${totalReceivables.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    document.getElementById('totalPayables').textContent =
-        `${getCurrencySymbol(adminState.adminCurrency)} ${totalPayables.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-    const netPositionEl = document.getElementById('netPosition');
-    if (netPositionEl) {
-        netPositionEl.textContent = `${getCurrencySymbol(adminState.adminCurrency)} ${netPosition.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        netPositionEl.className = `text-3xl font-bold mb-1 ${netPosition >= 0 ? 'text-green-400' : 'text-red-400'}`;
-    }
-
-    container.innerHTML = '';
-
-    if (userList.length === 0) {
-        container.innerHTML = `
-            <tr>
-                <td colspan="5" class="py-8 text-center text-gray-500">
-                    <i class="fas fa-hand-holding-usd text-xl mb-2"></i>
-                    <div>No financial data available</div>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    userList.sort((a, b) => (b.receivables - b.payables) - (a.receivables - a.payables));
-
-    userList.forEach(user => {
-        const netBalance = user.receivables - user.payables;
-        const status = netBalance > 0 ? 'Surplus' : netBalance < 0 ? 'Deficit' : 'Balanced';
-        const statusClass = netBalance > 0 ? 'status-active' : netBalance < 0 ? 'status-inactive' : 'status-completed';
-
-        const row = document.createElement('tr');
-        row.className = 'table-row';
-        row.innerHTML = `
-            <td class="py-4 px-4 lg:px-6">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
-                        <span class="text-white text-xs font-semibold">${appwriteService.getUserInitials(user.userName)}</span>
-                    </div>
-                    <div>
-                        <div class="font-medium truncate">${user.userName}</div>
-                        <div class="text-xs text-gray-500">${user.userCurrency}</div>
-                    </div>
-                </div>
-            </td>
-            <td class="py-4 px-4 lg:px-6 text-right text-green-400 font-semibold">
-                ${getCurrencySymbol(adminState.adminCurrency)} ${user.receivables.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </td>
-            <td class="py-4 px-4 lg:px-6 text-right text-red-400 font-semibold">
-                ${getCurrencySymbol(adminState.adminCurrency)} ${user.payables.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </td>
-            <td class="py-4 px-4 lg:px-6 text-right font-bold ${netBalance >= 0 ? 'text-purple-400' : 'text-red-400'}">
-                ${getCurrencySymbol(adminState.adminCurrency)} ${netBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </td>
-            <td class="py-4 px-4 lg:px-6 text-center">
-                <span class="status-badge ${statusClass}">${status}</span>
-            </td>
-        `;
-        container.appendChild(row);
-    });
-}
-
-
-function renderAdminBudgetingTab() {
-    const container = document.getElementById('budgetComparisonTableBody');
-    const alertsContainer = document.getElementById('budgetAlertsList');
-    if (!container) return;
-
-    const filterStatus = document.getElementById('budgetStatusFilter')?.value || 'all';
-
-    let filteredBudgets = [...adminState.budgets];
-
-    if (filterStatus === 'active') {
-        filteredBudgets = filteredBudgets.filter(b => b.is_active);
-    } else if (filterStatus === 'overspent') {
-        filteredBudgets = filteredBudgets.filter(b => (b.spent_amount || 0) > b.total_amount);
-    } else if (filterStatus === 'warning') {
-        filteredBudgets = filteredBudgets.filter(b => {
-            const utilization = ((b.spent_amount || 0) / b.total_amount) * 100;
-            return utilization >= 80;
-        });
-    }
-
-    let totalBudgeted = 0;
-    let totalSpent = 0;
-    const alerts = [];
-
-    adminState.budgets.forEach(budget => {
-        const user = adminState.userMap.get(budget.user_id);
-        const userCurrency = user?.currency || 'PKR';
-        const totalConversion = convertAmountForDisplay(budget.total_amount, userCurrency);
-        const spentConversion = convertAmountForDisplay(budget.spent_amount || 0, userCurrency);
-
-        totalBudgeted += totalConversion.converted;
-        totalSpent += spentConversion.converted;
-
-        const utilization = ((budget.spent_amount || 0) / budget.total_amount) * 100;
-
-        if (utilization >= 100) {
-            alerts.push({
-                type: 'danger',
-                budget: budget.budget_name,
-                user: user?.name || 'Unknown',
-                message: `Overspent by ${getCurrencySymbol(adminState.adminCurrency)} ${((budget.spent_amount - budget.total_amount) * (spentConversion.converted / budget.spent_amount || 1)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-                utilization: utilization.toFixed(0)
-            });
-        } else if (utilization >= 80) {
-            alerts.push({
-                type: 'warning',
-                budget: budget.budget_name,
-                user: user?.name || 'Unknown',
-                message: `${utilization.toFixed(0)}% utilized - approaching limit`,
-                utilization: utilization.toFixed(0)
-            });
-        }
-    });
-
-    const totalRemaining = totalBudgeted - totalSpent;
-    const avgUtilization = totalBudgeted > 0 ? ((totalSpent / totalBudgeted) * 100).toFixed(0) : 0;
-
-    document.getElementById('totalBudgeted').textContent =
-        `${getCurrencySymbol(adminState.adminCurrency)} ${totalBudgeted.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    document.getElementById('totalSpentBudget').textContent =
-        `${getCurrencySymbol(adminState.adminCurrency)} ${totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    document.getElementById('totalRemainingBudget').textContent =
-        `${getCurrencySymbol(adminState.adminCurrency)} ${totalRemaining.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    document.getElementById('avgUtilization').textContent = `${avgUtilization}%`;
-
-    if (alertsContainer) {
-        if (alerts.length === 0) {
-            alertsContainer.innerHTML = '<div class="text-gray-500 text-center py-4"><i class="fas fa-check-circle text-green-400 mr-2"></i>All budgets are within limits</div>';
-        } else {
-            alertsContainer.innerHTML = alerts.map(alert => `
-                <div class="flex items-center gap-3 p-3 rounded-xl ${alert.type === 'danger' ? 'bg-red-900/20 border border-red-800/50' : 'bg-yellow-900/20 border border-yellow-800/50'}">
-                    <div class="w-10 h-10 rounded-lg ${alert.type === 'danger' ? 'bg-red-900/30' : 'bg-yellow-900/30'} flex items-center justify-center">
-                        <i class="fas ${alert.type === 'danger' ? 'fa-exclamation-circle text-red-400' : 'fa-exclamation-triangle text-yellow-400'}"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div class="font-medium ${alert.type === 'danger' ? 'text-red-400' : 'text-yellow-400'}">${alert.budget}</div>
-                        <div class="text-sm text-gray-400">${alert.user} - ${alert.message}</div>
-                    </div>
-                    <div class="text-sm font-bold ${alert.type === 'danger' ? 'text-red-400' : 'text-yellow-400'}">${alert.utilization}%</div>
-                </div>
-            `).join('');
-        }
-    }
-
-    container.innerHTML = '';
-
-    if (filteredBudgets.length === 0) {
-        container.innerHTML = `
-            <tr>
-                <td colspan="7" class="py-8 text-center text-gray-500">
-                    <i class="fas fa-chart-bar text-xl mb-2"></i>
-                    <div>No budgets found</div>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    filteredBudgets.forEach(budget => {
-        const user = adminState.userMap.get(budget.user_id);
-        const userCurrency = user?.currency || 'PKR';
-        const totalConversion = convertAmountForDisplay(budget.total_amount, userCurrency);
-        const spentConversion = convertAmountForDisplay(budget.spent_amount || 0, userCurrency);
-
-        const variance = totalConversion.converted - spentConversion.converted;
-        const utilization = ((budget.spent_amount || 0) / budget.total_amount) * 100;
-
-        let status, statusClass;
-        if (!budget.is_active) {
-            status = 'Inactive';
-            statusClass = 'status-inactive';
-        } else if (utilization >= 100) {
-            status = 'Overspent';
-            statusClass = 'bg-red-900/30 text-red-400 border border-red-800/50';
-        } else if (utilization >= 80) {
-            status = 'Warning';
-            statusClass = 'bg-yellow-900/30 text-yellow-400 border border-yellow-800/50';
-        } else {
-            status = 'On Track';
-            statusClass = 'status-active';
-        }
-
-        const row = document.createElement('tr');
-        row.className = 'table-row';
-        row.innerHTML = `
-            <td class="py-4 px-4 lg:px-6">
-                <div class="font-medium truncate">${budget.budget_name}</div>
-                <div class="text-xs text-gray-500">${budget.is_active ? 'Active' : 'Inactive'}</div>
-            </td>
-            <td class="py-4 px-4 lg:px-6 mobile-hidden">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
-                        <span class="text-white text-xs font-semibold">${appwriteService.getUserInitials(user?.name || 'U')}</span>
-                    </div>
-                    <div class="font-medium truncate">${user?.name || 'Unknown'}</div>
-                </div>
-            </td>
-            <td class="py-4 px-4 lg:px-6 text-right">
-                ${getCurrencySymbol(adminState.adminCurrency)} ${totalConversion.converted.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </td>
-            <td class="py-4 px-4 lg:px-6 text-right font-semibold ${utilization >= 100 ? 'text-red-400' : utilization >= 80 ? 'text-yellow-400' : 'text-gray-300'}">
-                ${getCurrencySymbol(adminState.adminCurrency)} ${spentConversion.converted.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </td>
-            <td class="py-4 px-4 lg:px-6 text-right font-semibold ${variance >= 0 ? 'text-green-400' : 'text-red-400'}">
-                ${variance >= 0 ? '+' : ''}${getCurrencySymbol(adminState.adminCurrency)} ${variance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </td>
-            <td class="py-4 px-4 lg:px-6">
-                <div class="flex items-center gap-3">
-                    <div class="flex-1">
-                        <div class="progress-bar bg-gray-800">
-                            <div class="progress-fill ${utilization >= 100 ? 'bg-gradient-to-r from-red-500 to-pink-500' : utilization >= 80 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gradient-to-r from-green-500 to-emerald-500'}" 
-                                 style="width: ${Math.min(100, utilization)}%"></div>
-                        </div>
-                    </div>
-                    <span class="text-sm font-semibold w-12 text-right ${utilization >= 100 ? 'text-red-400' : utilization >= 80 ? 'text-yellow-400' : 'text-gray-400'}">${utilization.toFixed(0)}%</span>
-                </div>
-            </td>
-            <td class="py-4 px-4 lg:px-6 text-center">
-                <span class="status-badge ${statusClass}">${status}</span>
-            </td>
-        `;
-        container.appendChild(row);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const budgetStatusFilter = document.getElementById('budgetStatusFilter');
-    if (budgetStatusFilter) {
-        budgetStatusFilter.addEventListener('change', () => {
-            renderAdminBudgetingTab();
-        });
-    }
-});
-
 
 document.addEventListener('keydown', (e) => {
     if (e.ctrlKey || e.metaKey) {
