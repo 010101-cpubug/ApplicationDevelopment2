@@ -12,7 +12,7 @@ class AppwriteService {
         this.isAdmin = false;
         this.adminUserId = null;
 
-        
+
         this.config = {
             endpoint: 'https://sgp.cloud.appwrite.io/v1',
             projectId: '692e7d66003168cf7b8e',
@@ -31,13 +31,13 @@ class AppwriteService {
         if (this.initialized) return;
 
         try {
-            
+
             if (typeof Appwrite === 'undefined') {
                 console.error('❌ Appwrite SDK not loaded. Make sure to include the Appwrite CDN script.');
                 throw new Error('Appwrite SDK not loaded');
             }
 
-            
+
             const { Client, Account, Databases, Query, ID } = Appwrite;
 
             const client = new Client();
@@ -61,14 +61,14 @@ class AppwriteService {
         }
     }
 
-    
+
 
     async createAccount(email, password, name, currency = 'PKR') {
         await this.initialize();
         try {
             console.log('🔄 Creating account for:', email);
 
-            
+
             const user = await this.account.create(
                 this.ID.unique(),
                 email,
@@ -78,19 +78,19 @@ class AppwriteService {
 
             console.log('✅ Auth account created:', user.$id);
 
-            
+
             await this.account.createEmailSession(email, password);
             this.currentUser = user;
 
-            
+
             await this.createUserProfile(user.$id, name, email, currency);
 
-            
+
             await this.createDefaultCategories(user.$id);
 
             console.log('✅ Account creation complete');
 
-            
+
             await this.account.deleteSession('current');
             this.currentUser = null;
             this.userProfile = null;
@@ -109,14 +109,14 @@ class AppwriteService {
             const session = await this.account.createEmailSession(email, password);
             this.currentUser = await this.account.get();
 
-            
+
             this.isAdmin = this.currentUser.$id === "1" && this.currentUser.email.toLowerCase() === 'admin@gmail.com';
             if (this.isAdmin) {
                 this.adminUserId = this.currentUser.$id;
                 console.log('🔑 Admin user detected');
             }
 
-            
+
             await this.getUserProfile(this.currentUser.$id);
 
             console.log('✅ Login successful:', this.currentUser.email);
@@ -149,7 +149,7 @@ class AppwriteService {
         try {
             this.currentUser = await this.account.get();
 
-            
+
             this.isAdmin = this.currentUser.$id === "1" && this.currentUser.email.toLowerCase() === 'admin@gmail.com';
             if (this.isAdmin) {
                 this.adminUserId = this.currentUser.$id;
@@ -157,7 +157,7 @@ class AppwriteService {
 
             return this.currentUser;
         } catch (error) {
-            
+
             if (error.code === 401) {
                 this.currentUser = null;
                 this.userProfile = null;
@@ -170,14 +170,14 @@ class AppwriteService {
         }
     }
 
-    
+
 
     async fetchAllDocuments(collectionId, queries = []) {
         await this.initialize();
         try {
             let allDocuments = [];
             let lastId = null;
-            let limit = 100; 
+            let limit = 100;
 
             while (true) {
                 let currentQueries = [...queries, this.Query.limit(limit)];
@@ -216,20 +216,20 @@ class AppwriteService {
         await this.initialize();
         try {
             if (!this.isAdmin) {
-                
-                
-                
+
+
+
             }
 
-            
-            
-            
+
+
+
             const userProfiles = await this.getAllUserProfiles();
 
-            
+
             const userIds = [...new Set(userProfiles.map(profile => profile.user_id))];
 
-            
+
             const users = userProfiles.map(profile => ({
                 $id: profile.user_id,
                 email: profile.email,
@@ -248,7 +248,7 @@ class AppwriteService {
     }
 
     async listAllDocuments(collectionId, queries = [], limit = 100) {
-        
+
         await this.initialize();
         try {
             const response = await this.databases.listDocuments(
@@ -272,7 +272,7 @@ class AppwriteService {
                 throw new Error('Admin privileges required');
             }
 
-            
+
             const profiles = await this.databases.listDocuments(
                 this.config.databaseId,
                 this.config.collections.USER_PROFILES,
@@ -287,8 +287,8 @@ class AppwriteService {
                 );
             }
 
-            
-            
+
+
             console.log(`✅ Deleted profile for user ${userId}`);
             return true;
         } catch (error) {
@@ -297,14 +297,14 @@ class AppwriteService {
         }
     }
 
-    
+
 
     async createUserProfile(userId, name, email, currency = 'PKR') {
         await this.initialize();
         try {
             console.log('🔄 Creating profile for user:', userId);
 
-            
+
             const existing = await this.databases.listDocuments(
                 this.config.databaseId,
                 this.config.collections.USER_PROFILES,
@@ -318,7 +318,7 @@ class AppwriteService {
                 return this.userProfile;
             }
 
-            
+
             const profileData = {
                 user_id: userId,
                 full_name: name,
@@ -369,7 +369,7 @@ class AppwriteService {
     async updateUserProfile(profileId, data) {
         await this.initialize();
         try {
-            
+
             const currentProfile = await this.databases.getDocument(
                 this.config.databaseId,
                 this.config.collections.USER_PROFILES,
@@ -380,7 +380,7 @@ class AppwriteService {
             const newCurrency = data.currency || oldCurrency;
             const isCurrencyChanging = oldCurrency !== newCurrency;
 
-            
+
             const allowedFields = ['full_name', 'email', 'currency'];
             const updateData = {};
 
@@ -390,7 +390,7 @@ class AppwriteService {
                 }
             }
 
-            
+
             const profile = await this.databases.updateDocument(
                 this.config.databaseId,
                 this.config.collections.USER_PROFILES,
@@ -403,11 +403,11 @@ class AppwriteService {
                 this.userCurrency = profile.currency;
             }
 
-            
+
             if (isCurrencyChanging && this.currentUser) {
                 console.log(`🔄 Currency changed from ${oldCurrency} to ${newCurrency}. Updating financial data...`);
 
-                
+
                 this.updateAllFinancialDataForCurrencyChange(
                     this.currentUser.$id,
                     oldCurrency,
@@ -445,41 +445,41 @@ class AppwriteService {
         }
     }
 
-    
 
-    
+
+
     getCurrencyRates() {
         return {
-            'PKR': 1,      
-            'USD': 0.0036, 
-            'EUR': 0.0033, 
-            'GBP': 0.0028, 
-            'JPY': 0.54    
+            'PKR': 1,
+            'USD': 0.0036,
+            'EUR': 0.0033,
+            'GBP': 0.0028,
+            'JPY': 0.54
         };
     }
 
-    
+
     convertCurrency(amount, fromCurrency, toCurrency) {
         if (fromCurrency === toCurrency) return amount;
 
         const rates = this.getCurrencyRates();
 
-        
+
         const inPkr = amount / (rates[fromCurrency] || 1);
 
-        
+
         const converted = inPkr * (rates[toCurrency] || 1);
 
-        return Math.round(converted * 100) / 100; 
+        return Math.round(converted * 100) / 100;
     }
 
-    
+
     async updateTransactionsForCurrencyChange(userId, oldCurrency, newCurrency) {
         try {
-            
+
             const transactions = await this.getTransactions(userId, 1000);
 
-            
+
             for (const transaction of transactions) {
                 const convertedAmount = this.convertCurrency(
                     transaction.amount,
@@ -488,7 +488,7 @@ class AppwriteService {
                 );
 
                 await this.updateTransaction(transaction.$id, {
-                    amount: Math.round(convertedAmount) 
+                    amount: Math.round(convertedAmount)
                 });
 
                 console.log(`Converted transaction ${transaction.$id}: ${transaction.amount} ${oldCurrency} -> ${Math.round(convertedAmount)} ${newCurrency}`);
@@ -499,27 +499,27 @@ class AppwriteService {
 
         } catch (error) {
             console.error('❌ Error converting transactions:', error);
-            
+
             return false;
         }
     }
 
-    
+
     async updateBudgetsForCurrencyChange(userId, oldCurrency, newCurrency) {
         try {
-            
+
             const budgets = await this.getBudgets(userId);
 
-            
+
             for (const budget of budgets) {
-                
+
                 const convertedTotalAmount = this.convertCurrency(
                     budget.total_amount,
                     oldCurrency,
                     newCurrency
                 );
 
-                
+
                 const convertedSpentAmount = this.convertCurrency(
                     budget.spent_amount || 0,
                     oldCurrency,
@@ -543,22 +543,22 @@ class AppwriteService {
         }
     }
 
-    
+
     async updateSavingsGoalsForCurrencyChange(userId, oldCurrency, newCurrency) {
         try {
-            
+
             const savingsGoals = await this.getSavingsGoals(userId);
 
-            
+
             for (const goal of savingsGoals) {
-                
+
                 const convertedTargetAmount = this.convertCurrency(
                     goal.target_amount,
                     oldCurrency,
                     newCurrency
                 );
 
-                
+
                 const convertedCurrentAmount = this.convertCurrency(
                     goal.current_amount || 0,
                     oldCurrency,
@@ -582,19 +582,19 @@ class AppwriteService {
         }
     }
 
-    
+
     async updateAllFinancialDataForCurrencyChange(userId, oldCurrency, newCurrency) {
         try {
             console.log(`🔄 Starting currency conversion for user ${userId} from ${oldCurrency} to ${newCurrency}`);
 
-            
+
             const results = await Promise.allSettled([
                 this.updateTransactionsForCurrencyChange(userId, oldCurrency, newCurrency),
                 this.updateBudgetsForCurrencyChange(userId, oldCurrency, newCurrency),
                 this.updateSavingsGoalsForCurrencyChange(userId, oldCurrency, newCurrency)
             ]);
 
-            
+
             const successful = results.filter(r => r.status === 'fulfilled' && r.value).length;
             const failed = results.filter(r => r.status === 'rejected').length;
 
@@ -607,13 +607,13 @@ class AppwriteService {
         }
     }
 
-    
+
     convertToUserCurrency(amount, fromCurrency = 'PKR') {
         if (!this.userProfile) return amount;
         return this.convertCurrency(amount, fromCurrency, this.userCurrency);
     }
 
-    
+
 
     async createDefaultCategories(userId) {
         await this.initialize();
@@ -631,7 +631,7 @@ class AppwriteService {
                 { name: 'Investment', icon: '📈', color: '#2196F3', type: 'income' }
             ];
 
-            
+
             const existing = await this.databases.listDocuments(
                 this.config.databaseId,
                 this.config.collections.CATEGORIES,
@@ -643,7 +643,7 @@ class AppwriteService {
                 return;
             }
 
-            
+
             for (const cat of defaultCategories) {
                 try {
                     await this.databases.createDocument(
@@ -668,7 +668,7 @@ class AppwriteService {
 
         } catch (error) {
             console.error('❌ Error creating categories:', error);
-            
+
         }
     }
 
@@ -778,20 +778,20 @@ class AppwriteService {
         }
     }
 
-    
+
 
     async createTransaction(userId, transactionData) {
         await this.initialize();
         try {
-            
+
             const profile = await this.getUserProfile(userId);
             const userCurrency = profile?.currency || 'PKR';
 
-            
+
             let amount = parseInt(transactionData.amount, 10);
 
-            
-            
+
+
 
             const transaction = await this.databases.createDocument(
                 this.config.databaseId,
@@ -902,16 +902,16 @@ class AppwriteService {
         }
     }
 
-    
+
 
     async createBudget(userId, budgetData) {
         await this.initialize();
         try {
-            
+
             const profile = await this.getUserProfile(userId);
             const userCurrency = profile?.currency || 'PKR';
 
-            
+
 
             const budget = await this.databases.createDocument(
                 this.config.databaseId,
@@ -959,9 +959,9 @@ class AppwriteService {
     async getAllUserBudgets(userId) {
         await this.initialize();
         try {
-            
-            
-            
+
+
+
             const documents = await this.fetchAllDocuments(
                 this.config.collections.BUDGETS,
                 [this.Query.equal('user_id', userId)]
@@ -1022,16 +1022,16 @@ class AppwriteService {
         }
     }
 
-    
+
 
     async createSavingsGoal(userId, goalData) {
         await this.initialize();
         try {
-            
+
             const profile = await this.getUserProfile(userId);
             const userCurrency = profile?.currency || 'PKR';
 
-            
+
 
             const goal = await this.databases.createDocument(
                 this.config.databaseId,
@@ -1139,7 +1139,7 @@ class AppwriteService {
     }
 
 
-    
+
 
     async getFinancialOverview(userId, period = 'month') {
         await this.initialize();
@@ -1340,7 +1340,7 @@ class AppwriteService {
         }
     }
 
-    
+
 
     getUserInitials(name) {
         if (!name || name === 'Loading...') return '?';
@@ -1370,7 +1370,7 @@ class AppwriteService {
         })}`;
     }
 
-    
+
     handleError(error, action = 'performing action') {
         console.error(`❌ Error ${action}:`, error);
 
@@ -1383,7 +1383,7 @@ class AppwriteService {
         } else if (error.code === 404) {
             errorMessage = 'Resource not found.';
         } else if (error.code === 429) {
-            errorMessage = 'Too many requests. Please try again later.';
+            errorMessage = 'Too many requests. Please try again in 60 seconds.';
         } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
             errorMessage = 'Network error. Please check your connection.';
         } else if (error.code === 400) {
@@ -1396,16 +1396,20 @@ class AppwriteService {
             errorMessage = 'Server error. Please try again later.';
         }
 
-        
+
         const enhancedError = new Error(errorMessage);
         enhancedError.originalError = error;
         enhancedError.code = error.code;
         enhancedError.action = action;
 
+        if (error.code === 429) {
+            enhancedError.retryAfter = 60;
+        }
+
         return enhancedError;
     }
 
-    
+
     checkAdminPrivileges() {
         if (!this.isAdmin) {
             throw new Error('Admin privileges required for this action');
@@ -1413,7 +1417,7 @@ class AppwriteService {
         return true;
     }
 
-    
+
     formatDate(dateString) {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);

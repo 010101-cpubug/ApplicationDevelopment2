@@ -1,18 +1,18 @@
 ﻿
 window.addEventListener('DOMContentLoaded', async () => {
     try {
-        
+
         if (window.appwriteService) {
             await window.appwriteService.initialize();
 
-            
+
             try {
                 const user = await window.appwriteService.getCurrentUser();
                 if (user) {
                     window.location.href = 'dashboard.html';
                 }
             } catch (error) {
-                
+
                 console.log('No active session, showing login page');
             }
         } else {
@@ -104,7 +104,7 @@ loginTab.addEventListener('click', () => {
     registerTab.classList.remove('bg-gradient-to-r', 'from-purple-900/30', 'to-transparent', 'text-purple-300');
     registerTab.classList.add('text-gray-400');
 
-    
+
     loginError.classList.add('hidden');
     loginSuccess.classList.add('hidden');
 });
@@ -117,7 +117,7 @@ registerTab.addEventListener('click', () => {
     loginTab.classList.remove('bg-gradient-to-r', 'from-purple-900/30', 'to-transparent', 'text-purple-300');
     loginTab.classList.add('text-gray-400');
 
-    
+
     registerError.classList.add('hidden');
     registerSuccess.classList.add('hidden');
 });
@@ -142,7 +142,7 @@ loginFormElement.addEventListener('submit', async (e) => {
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
 
-    
+
     if (!email || !password) {
         showLoginError('Please fill in all required fields');
         return;
@@ -157,49 +157,77 @@ loginFormElement.addEventListener('submit', async (e) => {
         setButtonLoading(loginButton, true);
         showLoginError('');
 
-        
+
         await window.appwriteService.login(email, password);
 
-        
+
         const loggedInUser = await appwriteService.getCurrentUser();
         if (!loggedInUser) {
             throw new Error("Login failed: Could not retrieve user.");
         }
 
-        
+
         if (email.toLowerCase() === 'admin@gmail.com' && loggedInUser.$id === "1") {
-            
+
             modalTitle.textContent = 'Admin Login Successful!';
             modalMessage.textContent = 'Welcome to Admin Dashboard. Redirecting...';
             successModal.classList.remove('hidden');
 
-            
+
             setTimeout(() => {
                 window.location.href = 'admin.html';
             }, 1500);
         } else {
-            
+
             modalTitle.textContent = 'Login Successful!';
             modalMessage.textContent = 'Redirecting to your financial dashboard...';
             successModal.classList.remove('hidden');
 
-            
+
             setTimeout(() => {
                 window.location.href = 'dashboard.html';
             }, 1500);
         }
 
     } catch (error) {
-        
+
         successModal.classList.add('hidden');
 
         console.error('Login error:', error);
 
-        
+        if (error.code === 429 || error.message?.includes('rate limit')) {
+            const retrySeconds = error.retryAfter || 60;
+            let remaining = retrySeconds;
+
+            // Function to update the countdown
+            const updateTimer = () => {
+                loginButton.disabled = true;
+                loginButton.classList.add('btn-disabled');
+                loginButton.innerHTML = `<i class="fas fa-hourglass-half mr-2"></i> Try again in ${remaining}s`;
+                showLoginError(`Too many attempts. Please wait ${remaining} seconds before trying again.`);
+            };
+
+            updateTimer();
+
+            // Start countdown
+            const timerInterval = setInterval(() => {
+                remaining--;
+                if (remaining <= 0) {
+                    clearInterval(timerInterval);
+                    setButtonLoading(loginButton, false); // Re-enable button
+                    showLoginError(''); // Clear the error message
+                } else {
+                    updateTimer();
+                }
+            }, 1000);
+
+            // Don't reset button loading state yet
+            return;
+        }
+
+
         if (error.code === 401 || error.message?.includes('401')) {
             showLoginError('Invalid email or password. Please try again.');
-        } else if (error.message?.includes('rate limit') || error.code === 429) {
-            showLoginError('Too many attempts. Please try again later.');
         } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
             showLoginError('Network error. Please check your connection.');
         } else if (error.message?.includes('permission') || error.message?.includes('unauthorized')) {
@@ -222,7 +250,7 @@ registerFormElement.addEventListener('submit', async (e) => {
     const confirmPassword = document.getElementById('registerConfirmPassword').value;
     const currency = document.getElementById('registerCurrency').value;
 
-    
+
     if (!name || !email || !password || !confirmPassword) {
         showRegisterError('Please fill in all required fields');
         return;
@@ -247,19 +275,19 @@ registerFormElement.addEventListener('submit', async (e) => {
         setButtonLoading(registerButton, true);
         showRegisterError('');
 
-        
+
         await window.appwriteService.createAccount(email, password, name, currency);
 
-        
+
         showRegisterSuccess('Account created successfully! Redirecting to login...');
 
-        
+
         document.getElementById('registerName').value = '';
         document.getElementById('registerEmail').value = '';
         document.getElementById('registerPassword').value = '';
         document.getElementById('registerConfirmPassword').value = '';
 
-        
+
         setTimeout(() => {
             loginTab.click();
             document.getElementById('loginEmail').value = email;
@@ -270,7 +298,7 @@ registerFormElement.addEventListener('submit', async (e) => {
     } catch (error) {
         console.error('Registration error:', error);
 
-        
+
         if (error.code === 409 || error.message?.includes('already exists')) {
             showRegisterError('An account with this email already exists.');
         } else if (error.code === 400 || error.message?.includes('invalid')) {
