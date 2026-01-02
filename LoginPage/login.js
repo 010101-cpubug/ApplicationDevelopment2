@@ -46,6 +46,56 @@ const loginSuccess = document.getElementById('loginSuccess');
 const registerError = document.getElementById('registerError');
 const registerSuccess = document.getElementById('registerSuccess');
 
+let rateLimitCountdownInterval = null;
+let pendingLoginCredentials = null;
+
+function startRateLimitCountdown(email, password, seconds = 60) {
+    pendingLoginCredentials = { email, password };
+
+    if (rateLimitCountdownInterval) {
+        clearInterval(rateLimitCountdownInterval);
+    }
+
+    let remainingSeconds = seconds;
+
+
+    const updateCountdown = () => {
+        if (remainingSeconds > 0) {
+            showLoginError(`Too many attempts. Please wait ${remainingSeconds} seconds before trying again...`);
+            loginButton.innerHTML = `<i class="fas fa-clock mr-2"></i> Retry in ${remainingSeconds}s`;
+            loginButton.disabled = true;
+            loginButton.classList.add('btn-disabled');
+            remainingSeconds--;
+        } else {
+
+            clearInterval(rateLimitCountdownInterval);
+            rateLimitCountdownInterval = null;
+
+            if (pendingLoginCredentials) {
+                showLoginSuccess('Retrying login automatically...');
+                loginButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Retrying...';
+
+                setTimeout(() => {
+                    attemptLogin(pendingLoginCredentials.email, pendingLoginCredentials.password);
+                    pendingLoginCredentials = null;
+                }, 500);
+            }
+        }
+    };
+
+
+    updateCountdown();
+    rateLimitCountdownInterval = setInterval(updateCountdown, 1000);
+}
+
+
+function cancelRateLimitCountdown() {
+    if (rateLimitCountdownInterval) {
+        clearInterval(rateLimitCountdownInterval);
+        rateLimitCountdownInterval = null;
+    }
+    pendingLoginCredentials = null;
+}
 
 function showLoginError(message) {
     if (loginError) {
@@ -136,20 +186,10 @@ toggleRegisterPassword.addEventListener('click', () => {
 });
 
 
-loginFormElement.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-
-
-    if (!email || !password) {
-        showLoginError('Please fill in all required fields');
-        return;
-    }
-
+async function attemptLogin(email, password) {
     if (!window.appwriteService) {
         showLoginError('Backend service not available. Please refresh the page.');
+        setButtonLoading(loginButton, false);
         return;
     }
 
@@ -157,32 +197,26 @@ loginFormElement.addEventListener('submit', async (e) => {
         setButtonLoading(loginButton, true);
         showLoginError('');
 
-
         await window.appwriteService.login(email, password);
-
 
         const loggedInUser = await appwriteService.getCurrentUser();
         if (!loggedInUser) {
             throw new Error("Login failed: Could not retrieve user.");
         }
 
-
+        // Check for admin login
         if (email.toLowerCase() === 'admin@gmail.com' && loggedInUser.$id === "1") {
-
             modalTitle.textContent = 'Admin Login Successful!';
             modalMessage.textContent = 'Welcome to Admin Dashboard. Redirecting...';
             successModal.classList.remove('hidden');
-
 
             setTimeout(() => {
                 window.location.href = 'admin.html';
             }, 1500);
         } else {
-
             modalTitle.textContent = 'Login Successful!';
             modalMessage.textContent = 'Redirecting to your financial dashboard...';
             successModal.classList.remove('hidden');
-
 
             setTimeout(() => {
                 window.location.href = 'dashboard.html';
@@ -190,54 +224,41 @@ loginFormElement.addEventListener('submit', async (e) => {
         }
 
     } catch (error) {
-
         successModal.classList.add('hidden');
-
         console.error('Login error:', error);
-
-        if (error.code === 429 || error.message?.includes('rate limit')) {
-            const retrySeconds = error.retryAfter || 60;
-            let remaining = retrySeconds;
-
-            // Function to update the countdown
-            const updateTimer = () => {
-                loginButton.disabled = true;
-                loginButton.classList.add('btn-disabled');
-                loginButton.innerHTML = `<i class="fas fa-hourglass-half mr-2"></i> Try again in ${remaining}s`;
-                showLoginError(`Too many attempts. Please wait ${remaining} seconds before trying again.`);
-            };
-
-            updateTimer();
-
-            // Start countdown
-            const timerInterval = setInterval(() => {
-                remaining--;
-                if (remaining <= 0) {
-                    clearInterval(timerInterval);
-                    setButtonLoading(loginButton, false); // Re-enable button
-                    showLoginError(''); // Clear the error message
-                } else {
-                    updateTimer();
-                }
-            }, 1000);
-
-            // Don't reset button loading state yet
-            return;
-        }
-
 
         if (error.code === 401 || error.message?.includes('401')) {
             showLoginError('Invalid email or password. Please try again.');
+            setButtonLoading(loginButton, false);
+        } else if (error.message?.includes('rate limit') || error.code === 429) {
+            startRateLimitCountdown(email, password, 60);
         } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
             showLoginError('Network error. Please check your connection.');
+            setButtonLoading(loginButton, false);
         } else if (error.message?.includes('permission') || error.message?.includes('unauthorized')) {
             showLoginError('You are not authorized for this action.');
+            setButtonLoading(loginButton, false);
         } else {
             showLoginError(`Error: ${error.message || 'Login failed. Please try again.'}`);
+            setButtonLoading(loginButton, false);
         }
-
-        setButtonLoading(loginButton, false);
     }
+}
+
+loginFormElement.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    cancelRateLimitCountdown();
+
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    if (!email || !password) {
+        showLoginError('Please fill in all required fields');
+        return;
+    }
+
+    attemptLogin(email, password);
 });
 
 

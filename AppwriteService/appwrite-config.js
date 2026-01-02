@@ -1383,7 +1383,7 @@ class AppwriteService {
         } else if (error.code === 404) {
             errorMessage = 'Resource not found.';
         } else if (error.code === 429) {
-            errorMessage = 'Too many requests. Please try again in 60 seconds.';
+            errorMessage = 'Too many requests. Please try again later.';
         } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
             errorMessage = 'Network error. Please check your connection.';
         } else if (error.code === 400) {
