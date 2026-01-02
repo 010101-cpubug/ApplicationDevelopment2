@@ -2280,7 +2280,9 @@ function setupSettings() {
 
             try {
                 const newName = document.getElementById('settingAdminName').value;
+                const newName = document.getElementById('settingAdminName').value;
                 const newPass = document.getElementById('settingAdminPassword').value;
+                const currentPass = document.getElementById('settingAdminCurrentPassword').value;
 
                 if (newName && newName !== adminState.user.name) {
                     await appwriteService.account.updateName(newName);
@@ -2288,13 +2290,14 @@ function setupSettings() {
                 }
 
                 if (newPass) {
-                    await appwriteService.account.updatePassword(newPass, null); // oldPassword is null/not required for admin update usually if session is active? Appwrite requires old password for security usually.
-                    // Actually, updatePassword(password, oldPassword)
-                    // If we don't prompt for old password, this might fail unless we are using a specific API. 
-                    // Let's assume standard client SDK requires old password. 
-                    // If this fails, we need to prompt user.
-                    // For now, let's try.
+                    if (!currentPass) {
+                        throw new Error('Current password is required to set a new password');
+                    }
+                    await appwriteService.account.updatePassword(newPass, currentPass);
                     showToast('Password updated (re-login might be required)', 'success');
+                    // clear fields
+                    document.getElementById('settingAdminPassword').value = '';
+                    document.getElementById('settingAdminCurrentPassword').value = '';
                 }
 
                 // Refresh user data
