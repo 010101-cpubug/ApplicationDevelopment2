@@ -13,7 +13,7 @@ const transactionsState = {
     currentPage: 1,
     itemsPerPage: 10,
     currentFilters: {
-        date: 'all',
+        date: 'month',
         type: 'all',
         category: 'all',
         budget: 'all'
@@ -117,7 +117,7 @@ async function loadTransactionsFromDB() {
 async function loadAllTransactions() {
     try {
         const userId = transactionsState.user.$id;
-        const transactions = await appwriteService.getTransactions(userId, 5000);
+        const transactions = await appwriteService.getTransactions(userId, 1000);
 
         // Map to frontend format (schema fields only)
         transactionsState.allTransactions = transactions.map(t => ({
