@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="Admin/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="text-gray-200">
@@ -111,6 +112,30 @@
                         class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
                         <i class="fas fa-tags w-5 text-center"></i>
                         <span>Categories</span>
+                    </button>
+
+                    <button data-tab="general-ledger"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-book w-5 text-center"></i>
+                        <span>General Ledger</span>
+                    </button>
+
+                    <button data-tab="financials"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-chart-line w-5 text-center"></i>
+                        <span>Financials (AP/AR)</span>
+                    </button>
+
+                    <button data-tab="budget-analytics"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-chart-pie w-5 text-center"></i>
+                        <span>Budget Analytics</span>
+                    </button>
+
+                    <button data-tab="settings"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-cog w-5 text-center"></i>
+                        <span>Settings</span>
                     </button>
                 </div>
             </div>
@@ -500,6 +525,150 @@
                                 <!-- Categories loaded here -->
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- General Ledger Tab -->
+            <div id="general-ledgerTab" class="hidden">
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mobile-stack">
+                            <h2 class="text-xl font-bold">General Ledger</h2>
+                            <div class="text-sm text-gray-400">Master Record of all Debits and Credits</div>
+                        </div>
+                    </div>
+                    <div class="table-container max-h-[700px] overflow-y-auto">
+                        <table class="w-full">
+                            <thead class="table-header sticky top-0 z-10">
+                                <tr>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Date</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Reference ID
+                                    </th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Transaction
+                                        Details</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Debit (Dr)</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Credit (Cr)
+                                    </th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledgerTableBody">
+                                <!-- Ledger entries loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financials (AP/AR) Tab -->
+            <div id="financialsTab" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <h3 class="text-lg font-bold mb-4 text-green-400">Accounts Receivable (Income)</h3>
+                        <div class="h-64">
+                            <canvas id="receivablesChart"></canvas>
+                        </div>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-gray-400">Total Inflow</span>
+                            <span class="text-xl font-bold text-green-400" id="totalReceivables">Rs 0</span>
+                        </div>
+                    </div>
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <h3 class="text-lg font-bold mb-4 text-red-400">Accounts Payable (Expenses)</h3>
+                        <div class="h-64">
+                            <canvas id="payablesChart"></canvas>
+                        </div>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-gray-400">Total Outflow</span>
+                            <span class="text-xl font-bold text-red-400" id="totalPayables">Rs 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card glow-border rounded-2xl overflow-hidden p-6">
+                    <h3 class="text-lg font-bold mb-6">Net Cash Flow Analysis</h3>
+                    <div class="h-80">
+                        <canvas id="cashFlowChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Analytics Tab -->
+            <div id="budget-analyticsTab" class="hidden">
+                <div class="grid grid-cols-1 gap-6 mb-6">
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-bold">Budget Variance Analysis</h2>
+                            <div class="flex gap-2">
+                                <span class="px-3 py-1 rounded-full bg-green-900/30 text-green-400 text-sm">Under
+                                    Budget</span>
+                                <span class="px-3 py-1 rounded-full bg-red-900/30 text-red-400 text-sm">Over
+                                    Budget</span>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="border-b border-gray-800">
+                                    <tr>
+                                        <th class="py-3 text-left">Budget Name</th>
+                                        <th class="py-3 text-right">Allocated</th>
+                                        <th class="py-3 text-right">Actual Spent</th>
+                                        <th class="py-3 text-right">Variance</th>
+                                        <th class="py-3 text-center">Performance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="budgetVarianceBody">
+                                    <!-- Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="hidden">
+                <div class="max-w-2xl mx-auto space-y-6">
+                    <!-- Profile Settings -->
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-6">Admin Profile</h2>
+                        <form id="adminProfileForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Display Name</label>
+                                <input type="text" id="settingAdminName"
+                                    class="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">New Password (leave blank to keep
+                                    current)</label>
+                                <input type="password" id="settingAdminPassword"
+                                    class="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none">
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="btn-primary px-6 py-2 rounded-xl">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Data Management -->
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-4">Data Management</h2>
+                        <p class="text-gray-400 text-sm mb-6">Export all system data including users, transactions,
+                            budgets, and savings goals for backup or external analysis.</p>
+
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button onclick="exportSystemData('json')"
+                                class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 transition border border-gray-700">
+                                <i class="fas fa-file-code text-yellow-400"></i>
+                                <span>Export as JSON</span>
+                            </button>
+                            <button onclick="exportSystemData('csv')"
+                                class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 transition border border-gray-700">
+                                <i class="fas fa-file-csv text-green-400"></i>
+                                <span>Export as CSV</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
