@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Bareera Intl.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="Dashboard/dashboard.css">
+</head>
+<body class="text-gray-200">
+    <div class="lg:hidden fixed top-4 left-4 z-50">
+        <button id="menuToggle" class="glass-card w-12 h-12 rounded-xl flex items-center justify-center hover:scale-105 transition-transform">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </div>
+    
+    <div id="overlay" class="overlay"></div>
+    
+    <div class="flex min-h-screen">
+        <div class="sidebar glass-card flex flex-col">
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-300 bg-clip-text text-transparent">
+                        Bareera Intl.
+                    </h1>
+                </div>
+                <div class="text-xs text-gray-500 mt-1">Financial Intelligence Platform</div>
+            </div>
+            
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-700 to-pink-600 flex items-center justify-center">
+                        <span id="userInitials" class="text-white font-semibold">?</span>
+                    </div>
+                    <div>
+                        <div class="font-semibold" id="userName">Loading...</div>
+                        <div class="text-sm text-gray-400" id="userEmail">Loading...</div>
+                    </div>
+                    
+                </div>
+                <div class="text-sm">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-gray-400">Currency</span>
+                        <span class="text-purple-400 font-semibold" id="userCurrency">PKR</span>
+                    </div>
+                    <div class="progress-bar bg-gray-800">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex-1 p-4 overflow-y-auto">
+                <div class="space-y-2">
+                    <a href="dashboard.html" class="nav-link active flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-tachometer-alt w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="transactions.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-exchange-alt w-5 text-center"></i>
+                        <span>Transactions</span>
+                    </a>
+                    <a href="budgets.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-wallet w-5 text-center"></i>
+                        <span>Budgets</span>
+                    </a>
+                    <a href="categories.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-tags w-5 text-center"></i>
+                        <span>Categories</span>
+                    </a>
+                    <a href="savings.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-bullseye w-5 text-center"></i>
+                        <span>Savings Goals</span>
+                    </a>
+                    <a href="profile.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-user-cog w-5 text-center"></i>
+                        <span>Profile & Settings</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="p-6 border-t border-gray-800">
+                <button id="logoutBtn" class="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-gray-900/50 hover:bg-gray-800 transition">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex-1 p-4 lg:p-8 overflow-x-hidden">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold">Financial Dashboard</h1>
+                    <p class="text-gray-400" id="dashboardSubtitle">Loading your financial overview...</p>
+                </div>
+                <div class="flex items-center gap-4 mt-4 lg:mt-0">
+                    <div class="hidden lg:block">
+                        <div class="text-sm text-right">
+                            <div class="font-semibold" id="headerUserName">Loading...</div>
+                            <div class="text-gray-400" id="headerDate">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="glass-card glow-border rounded-2xl p-6 fade-in">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-900/30 to-purple-700/20 flex items-center justify-center">
+                            <i class="fas fa-wallet text-2xl text-purple-400"></i>
+                        </div>
+                        <div class="text-sm text-gray-400">Current Balance</div>
+                    </div>
+                    <div class="text-3xl font-bold mb-1" id="currentBalance">
+                        <div class="skeleton h-10 w-32 rounded"></div>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <div class="skeleton h-4 w-24 rounded"></div>
+                    </div>
+                </div>
+                
+                <div class="glass-card glow-border rounded-2xl p-6 fade-in" style="animation-delay: 0.1s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-900/30 to-blue-700/20 flex items-center justify-center">
+                            <i class="fas fa-arrow-down text-2xl text-blue-400"></i>
+                        </div>
+                        <div class="text-sm text-gray-400">Monthly Expenses</div>
+                    </div>
+                    <div class="text-3xl font-bold mb-1" id="monthlyExpenses">
+                        <div class="skeleton h-10 w-32 rounded"></div>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <div class="skeleton h-4 w-24 rounded"></div>
+                    </div>
+                </div>
+                
+                <div class="glass-card glow-border rounded-2xl p-6 fade-in" style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-900/30 to-green-700/20 flex items-center justify-center">
+                            <i class="fas fa-arrow-up text-2xl text-green-400"></i>
+                        </div>
+                        <div class="text-sm text-gray-400">Monthly Income</div>
+                    </div>
+                    <div class="text-3xl font-bold mb-1" id="monthlyIncome">
+                        <div class="skeleton h-10 w-32 rounded"></div>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <div class="skeleton h-4 w-24 rounded"></div>
+                    </div>
+                </div>
+                
+                <div class="glass-card glow-border rounded-2xl p-6 fade-in" style="animation-delay: 0.3s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-900/30 to-yellow-700/20 flex items-center justify-center">
+                            <i class="fas fa-bullseye text-2xl text-yellow-400"></i>
+                        </div>
+                        <div class="text-sm text-gray-400">Savings Progress</div>
+                    </div>
+                    <div class="text-3xl font-bold mb-1" id="savingsProgress">0%</div>
+                    <div class="flex items-center text-sm">
+                        <div class="progress-bar bg-gray-800 flex-1 mr-2">
+                            <div class="progress-fill" style="width: 0%" id="savingsProgressBar"></div>
+                        </div>
+                        <span class="text-gray-400" id="savingsAmount">
+                            <div class="skeleton h-4 w-20 rounded"></div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <div class="lg:col-span-2">
+                    <div class="glass-card glow-border rounded-2xl p-6 h-full">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-bold">Spending Overview</h2>
+                            <select class="bg-gray-900/50 border border-gray-700 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" id="chartPeriod">
+                                <option value="7">Last 7 Days</option>
+                                <option value="30" selected>This Month</option>
+                                <option value="90">Last 3 Months</option>
+                                <option value="365">Last Year</option>
+                            </select>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="spendingChart"></canvas>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6" id="categoryBreakdown">
+                            <div class="text-center p-3 bg-gray-900/30 rounded-xl">
+                                <div class="skeleton h-8 w-20 mx-auto rounded mb-2"></div>
+                                <div class="skeleton h-4 w-16 mx-auto rounded"></div>
+                            </div>
+                            <div class="text-center p-3 bg-gray-900/30 rounded-xl">
+                                <div class="skeleton h-8 w-20 mx-auto rounded mb-2"></div>
+                                <div class="skeleton h-4 w-16 mx-auto rounded"></div>
+                            </div>
+                            <div class="text-center p-3 bg-gray-900/30 rounded-xl">
+                                <div class="skeleton h-8 w-20 mx-auto rounded mb-2"></div>
+                                <div class="skeleton h-4 w-16 mx-auto rounded"></div>
+                            </div>
+                            <div class="text-center p-3 bg-gray-900/30 rounded-xl">
+                                <div class="skeleton h-8 w-20 mx-auto rounded mb-2"></div>
+                                <div class="skeleton h-4 w-16 mx-auto rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="glass-card glow-border rounded-2xl p-6 h-full">
+                        <h2 class="text-xl font-bold mb-6">Budget Progress</h2>
+                        
+                        <div class="space-y-6" id="budgetProgressList">
+                            <div class="text-center py-8">
+                                <i class="fas fa-spinner fa-spin text-3xl text-purple-400 mb-3"></i>
+                                <p class="text-gray-400">Loading budgets...</p>
+                            </div>
+                        </div>
+                        
+                        <a href="budgets.html" class="w-full mt-6 py-2 rounded-xl border border-dashed border-gray-700 text-gray-400 hover:text-purple-400 hover:border-purple-500 transition flex items-center justify-center">
+                            <i class="fas fa-external-link-alt mr-2"></i> Go to Budgets
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card glow-border rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold">Recent Transactions</h2>
+                    <a href="transactions.html" class="text-purple-400 hover:text-purple-300 transition text-sm">View All</a>
+                </div>
+                
+                <div class="space-y-4" id="recentTransactions">
+                    <div class="text-center py-8">
+                        <i class="fas fa-spinner fa-spin text-3xl text-purple-400 mb-3"></i>
+                        <p class="text-gray-400">Loading transactions...</p>
+                    </div>
+                </div>
+                
+                <a href="transactions.html" class="w-full mt-6 btn-primary text-white font-semibold py-3 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-exchange-alt mr-2"></i> Go to Transactions
+                </a>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
+                <p>Bareera Intl. Financial Platform • Data updated in real-time • <span id="lastUpdated">Loading...</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="logoutModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="glass-card glow-border rounded-2xl p-8 max-w-md w-full mx-4 fade-in">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-900/30 to-pink-900/30 flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-sign-out-alt text-3xl text-purple-400"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-center mb-3">Confirm Logout</h3>
+            <p class="text-gray-400 text-center mb-6">Are you sure you want to log out of your account?</p>
+            <div class="flex gap-4">
+                <button id="cancelLogout" class="flex-1 py-3 rounded-xl border border-gray-700 text-gray-300 hover:bg-gray-800 transition">
+                    Cancel
+                </button>
+                <button id="confirmLogout" class="flex-1 py-3 rounded-xl btn-primary text-white font-semibold">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
+    <script src="AppwriteService/appwrite-config.js"></script>
+    <script src="Dashboard/dashboard.js"></script>
+</body>
+</html>

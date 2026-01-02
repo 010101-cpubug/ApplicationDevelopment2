@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savings Goals | Bareera Intl.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="Savings/savings.css">
+</head>
+<body class="text-gray-200">
+    <div class="lg:hidden fixed top-4 left-4 z-50">
+        <button id="menuToggle" class="glass-card w-12 h-12 rounded-xl flex items-center justify-center">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </div>
+    
+    <div id="overlay" class="overlay"></div>
+    
+    <div class="flex min-h-screen">
+        <div class="sidebar glass-card flex flex-col z-40">
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-300 bg-clip-text text-transparent">
+                        Bareera Intl.
+                    </h1>
+                </div>
+                <div class="text-xs text-gray-500 mt-1">Financial Intelligence Platform</div>
+            </div>
+            
+            
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-700 to-pink-600 flex items-center justify-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold" id="userName">Loading...</div>
+                        <div class="text-sm text-gray-400" id="userEmail">Loading...</div>
+                    </div>
+                </div>
+                <div class="text-sm">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-gray-400">Active Goals</span>
+                        <span class="text-purple-300 font-semibold" id="activeGoalsCount">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex-1 p-4 overflow-y-auto">
+                <div class="space-y-2">
+                    <a href="dashboard.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-tachometer-alt w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="transactions.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-exchange-alt w-5 text-center"></i>
+                        <span>Transactions</span>
+                    </a>
+                    <a href="budgets.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-wallet w-5 text-center"></i>
+                        <span>Budgets</span>
+                    </a>
+                    <a href="categories.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-tags w-5 text-center"></i>
+                        <span>Categories</span>
+                    </a>
+                    <a href="savings.html" class="nav-link active flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-bullseye w-5 text-center"></i>
+                        <span>Savings Goals</span>
+                    </a>
+                    <a href="profile.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-user-cog w-5 text-center"></i>
+                        <span>Profile & Settings</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="p-6 border-t border-gray-800">
+                <button id="logoutBtn" class="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-gray-900/50 hover:bg-gray-800 transition">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex-1 p-4 lg:p-8 overflow-x-hidden">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold">Savings Goals</h1>
+                    <p class="text-gray-400">Track progress towards your financial objectives</p>
+                </div>
+                <div class="flex items-center gap-4 mt-4 lg:mt-0">
+                    <button id="addGoalBtn" class="px-6 py-2 rounded-xl btn-primary text-white font-semibold">
+                        <i class="fas fa-plus mr-2"></i> New Goal
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="glass-card glow-border rounded-2xl p-6 fade-in">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-lg font-semibold">Total Goals</div>
+                        <div class="w-10 h-10 rounded-lg bg-purple-900/30 flex items-center justify-center">
+                            <i class="fas fa-bullseye text-purple-400"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold" id="totalGoals">0</div>
+                    <div class="text-sm text-gray-400 mt-2">Active savings goals</div>
+                </div>
+                
+                <div class="glass-card glow-border rounded-2xl p-6 fade-in" style="animation-delay: 0.1s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-lg font-semibold">Total Target</div>
+                        <div class="w-10 h-10 rounded-lg bg-blue-900/30 flex items-center justify-center">
+                            <i class="fas fa-flag text-blue-400"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold" id="totalTarget">$0</div>
+                    <div class="text-sm text-gray-400 mt-2">Across all goals</div>
+                </div>
+                
+                <div class="glass-card glow-border rounded-2xl p-6 fade-in" style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-lg font-semibold">Total Saved</div>
+                        <div class="w-10 h-10 rounded-lg bg-green-900/30 flex items-center justify-center">
+                            <i class="fas fa-piggy-bank text-green-400"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold" id="totalSaved">$0</div>
+                    <div class="text-sm text-gray-400 mt-2" id="totalProgress">0% of target amount</div>
+                </div>
+            </div>
+            
+            <div class="glass-card glow-border rounded-2xl p-6 mb-8 fade-in" id="goalsProgressSection">
+                <h2 class="text-xl font-bold mb-6">Goals Progress Overview</h2>
+                <div id="progressContainer" class="text-center py-8">
+                    <div class="text-gray-500">
+                        <i class="fas fa-bullseye text-4xl mb-4"></i>
+                        <div>No goals yet. Create your first savings goal!</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card glow-border rounded-2xl overflow-hidden fade-in">
+                <div class="p-6 border-b border-gray-800">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between">
+                        <h2 class="text-xl font-bold mb-4 lg:mb-0">Your Savings Goals</h2>
+                        <div class="flex items-center gap-2">
+                            <div class="text-sm text-gray-400">Filter by:</div>
+                            <select id="goalFilter" class="py-1 px-3 bg-gray-900/50 border border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="all">All Goals</option>
+                                <option value="active">Active</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-900/50 text-left text-gray-400 text-sm">
+                                <th class="py-4 px-6 font-medium">Goal Name</th>
+                                <th class="py-4 px-6 font-medium">Target Amount</th>
+                                <th class="py-4 px-6 font-medium">Current Amount</th>
+                                <th class="py-4 px-6 font-medium">Progress</th>
+                                <th class="py-4 px-6 font-medium">Deadline</th>
+                                <th class="py-4 px-6 font-medium">Status</th>
+                                <th class="py-4 px-6 font-medium text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="goalsTableBody">
+                            <tr>
+                                <td colspan="7" class="py-8 text-center text-gray-500">
+                                    <i class="fas fa-bullseye text-3xl mb-2"></i>
+                                    <div>No goals found</div>
+                                    <div class="text-sm mt-2">Create your first savings goal</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-8 glass-card glow-border rounded-2xl p-6 fade-in">
+                <h2 class="text-xl font-bold mb-6">Contribution Calculator</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <div class="mb-6">
+                            <label class="block text-gray-300 mb-2">Goal Amount (<span id="currencySymbol">$</span>)</label>
+                            <input type="number" id="calcGoalAmount" value="5000" min="1"
+                                   class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-300 mb-2">Months to Save</label>
+                            <input type="number" id="calcMonths" value="12" min="1"
+                                   class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+                        </div>
+                        
+                        <button id="calculateBtn" class="w-full py-3 rounded-xl btn-primary text-white font-semibold">
+                            Calculate Monthly Contribution
+                        </button>
+                    </div>
+                    
+                    <div class="p-6 bg-gray-900/30 rounded-xl">
+                        <h3 class="font-semibold mb-4">Calculation Results</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Monthly Contribution:</span>
+                                <span class="text-xl font-bold text-purple-300" id="monthlyContribution">$416.67</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Weekly Contribution:</span>
+                                <span class="text-lg font-semibold" id="weeklyContribution">$96.15</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Daily Contribution:</span>
+                                <span class="text-lg font-semibold" id="dailyContribution">$13.70</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 bg-purple-900/20 rounded-lg">
+                            <div class="text-sm text-purple-300">
+                                <i class="fas fa-lightbulb mr-2"></i>
+                                <span id="savingsTip">Setting aside $13.70 daily can help you reach your goal!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="goalModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="glass-card glow-border rounded-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto fade-in">
+            <div class="p-6 border-b border-gray-800 flex items-center justify-between">
+                <h2 class="text-2xl font-bold" id="modalTitle">Create New Savings Goal</h2>
+                <button id="closeModal" class="w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <form id="goalForm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-gray-300 mb-2">Goal Name *</label>
+                            <input type="text" id="goalName" required
+                                   class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                   placeholder="e.g., Vacation Fund">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-300 mb-2">Target Amount (<span id="modalCurrencySymbol">$</span>) *</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500" id="targetAmountSymbol">$</span>
+                                </div>
+                                <input type="number" id="goalTargetAmount" required step="0.01" min="0.01"
+                                       class="w-full pl-8 pr-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                       placeholder="0.00">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-300 mb-2">Current Amount (<span id="currentAmountSymbol">$</span>)</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500" id="currentAmountSymbolInline">$</span>
+                                </div>
+                                <input type="number" id="goalCurrentAmount" step="0.01" min="0"
+                                       class="w-full pl-8 pr-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                       placeholder="0.00" value="0">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-300 mb-2">Target Date *</label>
+                            <input type="date" id="goalDeadline" required
+                                   class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-300 mb-2">Description</label>
+                        <textarea id="goalDescription" rows="3"
+                                  class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                  placeholder="Describe your savings goal..."></textarea>
+                    </div>
+                    
+                    <input type="hidden" id="goalId" value="">
+                    
+                    <div class="flex gap-4">
+                        <button type="button" id="cancelGoal" class="flex-1 py-3 rounded-xl border border-gray-700 text-gray-300 hover:bg-gray-800 transition">
+                            Cancel
+                        </button>
+                        <button type="submit" id="saveGoal" class="flex-1 py-3 rounded-xl btn-primary text-white font-semibold">
+                            Save Goal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
+    <script src="AppwriteService/appwrite-config.js"></script>
+    <script src="Savings/savings.js"></script>
+</body>
+</html>

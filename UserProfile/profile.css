@@ -1,0 +1,118 @@
+:root {
+    --primary-purple: #8b5cf6;
+    --primary-glow: rgba(139, 92, 246, 0.5);
+    --glass-bg: rgba(30, 30, 46, 0.7);
+}
+
+body {
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.36);
+}
+
+.glow-border {
+    border: 1px solid transparent;
+    background: linear-gradient(var(--glass-bg), var(--glass-bg)) padding-box,
+                linear-gradient(135deg, var(--primary-purple), transparent) border-box;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-purple), #7c3aed);
+    transition: all 0.3s ease;
+}
+
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px var(--primary-glow);
+}
+
+.sidebar {
+    width: 260px;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        height: 100vh;
+        z-index: 40;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 30;
+    }
+    
+    .overlay.active {
+        display: block;
+    }
+}
+
+.nav-link {
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-left-color: var(--primary-purple);
+}
+
+.nav-link.active {
+    background: rgba(139, 92, 246, 0.15);
+    border-left-color: var(--primary-purple);
+    color: var(--primary-purple);
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border: 4px solid rgba(139, 92, 246, 0.3);
+}
+
+.tab-button {
+    transition: all 0.2s ease;
+}
+
+.tab-button.active {
+    background: rgba(139, 92, 246, 0.15);
+    color: var(--primary-purple);
+    border-bottom-color: var(--primary-purple);
+}
+
+.password-toggle {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+    color: var(--primary-purple);
+}
+
+.toast {
+    z-index: 100;
+}

@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Bareera Intl.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="Admin/admin.css">
+</head>
+
+<body class="text-gray-200">
+    <div class="lg:hidden fixed top-4 left-4 z-50">
+        <button id="menuToggle"
+            class="glass-card w-12 h-12 rounded-xl flex items-center justify-center hover:scale-105 transition-transform">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+
+    <div class="flex min-h-screen">
+        <div class="sidebar glass-card flex flex-col">
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                    <h1
+                        class="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-300 bg-clip-text text-transparent">
+                        Admin Panel
+                    </h1>
+                </div>
+                <div class="text-xs text-gray-500 mt-1">System Management</div>
+            </div>
+
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center gap-3 mb-4">
+                    <div
+                        class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-700 to-pink-600 flex items-center justify-center">
+                        <span id="adminInitials" class="text-white font-semibold">A</span>
+                    </div>
+                    <div>
+                        <div class="font-semibold truncate" id="adminName">Loading...</div>
+                        <div class="text-sm text-gray-400 truncate">Administrator</div>
+                    </div>
+                </div>
+                <div class="text-sm">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-gray-400">Role</span>
+                        <span class="text-purple-400 font-semibold">Bareera Admin</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-b border-gray-800">
+                <label class="block text-sm font-medium mb-2 text-gray-300">Display Currency</label>
+                <select id="currencySelector"
+                    class="currency-switcher glass-card w-full px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm">
+                    <option value="PKR">PKR - Pakistani Rupee</option>
+                    <option value="USD">USD - US Dollar</option>
+                    <option value="EUR">EUR - Euro</option>
+                    <option value="GBP">GBP - British Pound</option>
+                    <option value="JPY">JPY - Japanese Yen</option>
+                </select>
+                <div class="text-xs text-gray-500 mt-2">All amounts will be converted to this currency</div>
+            </div>
+
+            <div class="flex-1 p-4 overflow-y-auto">
+                <div class="space-y-2">
+                    <button data-tab="dashboard"
+                        class="nav-link active flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-tachometer-alt w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </button>
+
+                    <button data-tab="users"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-users w-5 text-center"></i>
+                        <span>Users</span>
+                    </button>
+
+
+                    <button data-tab="transactions"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-exchange-alt w-5 text-center"></i>
+                        <span>Transactions</span>
+                    </button>
+
+                    <button data-tab="budgets"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-wallet w-5 text-center"></i>
+                        <span>Budgets</span>
+                    </button>
+
+                    <button data-tab="savings"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-piggy-bank w-5 text-center"></i>
+                        <span>Savings Goals</span>
+                    </button>
+
+                    <button data-tab="categories"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-tags w-5 text-center"></i>
+                        <span>Categories</span>
+                    </button>
+
+                    <div class="my-3 border-t border-gray-800"></div>
+                    <div class="text-xs text-gray-500 px-3 mb-2 uppercase tracking-wider">Admin Tools</div>
+
+                    <button data-tab="adminSettings"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-cog w-5 text-center"></i>
+                        <span>Admin Settings</span>
+                    </button>
+
+                    <button data-tab="generalLedger"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-book w-5 text-center"></i>
+                        <span>General Ledger</span>
+                    </button>
+
+                    <button data-tab="payableReceivable"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-hand-holding-usd w-5 text-center"></i>
+                        <span>Payable/Receivable</span>
+                    </button>
+
+                    <button data-tab="adminBudgeting"
+                        class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent w-full text-left">
+                        <i class="fas fa-chart-bar w-5 text-center"></i>
+                        <span>Budgeting</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-gray-800">
+                <button id="logoutBtn"
+                    class="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-gray-900/50 hover:bg-gray-800 transition">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content p-4 lg:p-8 overflow-x-hidden">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8">
+                <div class="mb-4 lg:mb-0">
+                    <h1 class="text-2xl lg:text-3xl font-bold truncate" id="pageTitle">Admin Dashboard</h1>
+                    <p class="text-gray-400 truncate" id="pageSubtitle">System overview and management</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-sm text-gray-500">Displaying in:</span>
+                        <span id="currentCurrencyDisplay" class="text-sm font-semibold text-purple-400">PKR</span>
+                        <span class="text-xs text-gray-500">(All amounts converted from original currencies)</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="hidden lg:block">
+                        <div class="text-sm text-right">
+                            <div class="font-semibold" id="headerDate">--:--</div>
+                            <div class="text-gray-400">Last updated: <span id="lastUpdated">just now</span></div>
+                        </div>
+                    </div>
+                    <button id="refreshBtn"
+                        class="glass-card w-10 h-10 rounded-xl flex items-center justify-center hover:scale-105 transition-transform">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="loadingState" class="flex items-center justify-center h-96">
+                <div class="text-center">
+                    <div class="w-16 h-16 loading-spinner mx-auto mb-4"></div>
+                    <div class="text-gray-400">Loading admin data...</div>
+                </div>
+            </div>
+
+            <div id="dashboardTab" class="space-y-8 hidden">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 stats-grid">
+                    <div class="glass-card glow-border rounded-2xl p-6 fade-in">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-900/30 to-purple-700/20 flex items-center justify-center">
+                                <i class="fas fa-users text-2xl text-purple-400"></i>
+                            </div>
+                            <div class="text-sm text-gray-400">Total Users</div>
+                        </div>
+                        <div class="text-3xl font-bold mb-1" id="statUsers">0</div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="fas fa-user-plus mr-2"></i>
+                            <span>Registered accounts</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card glow-border rounded-2xl p-6 fade-in" style="animation-delay: 0.1s">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-900/30 to-blue-700/20 flex items-center justify-center">
+                                <i class="fas fa-exchange-alt text-2xl text-blue-400"></i>
+                            </div>
+                            <div class="text-sm text-gray-400">Transactions</div>
+                        </div>
+                        <div class="text-3xl font-bold mb-1" id="statTransactions">0</div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="fas fa-history mr-2"></i>
+                            <span>All transactions</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card glow-border rounded-2xl p-6 fade-in" style="animation-delay: 0.2s">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-900/30 to-green-700/20 flex items-center justify-center">
+                                <i class="fas fa-wallet text-2xl text-green-400"></i>
+                            </div>
+                            <div class="text-sm text-gray-400">Active Budgets</div>
+                        </div>
+                        <div class="text-3xl font-bold mb-1" id="statBudgets">0</div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            <span>Currently active</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card glow-border rounded-2xl p-6 fade-in" style="animation-delay: 0.3s">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-900/30 to-yellow-700/20 flex items-center justify-center">
+                                <i class="fas fa-piggy-bank text-2xl text-yellow-400"></i>
+                            </div>
+                            <div class="text-sm text-gray-400">Savings Goals</div>
+                        </div>
+                        <div class="text-3xl font-bold mb-1" id="statSavings">0</div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="fas fa-bullseye mr-2"></i>
+                            <span>Total goals</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-6">Platform Statistics</h2>
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-300">Total Income</span>
+                                    <div class="text-right">
+                                        <div class="font-bold text-green-400" id="totalIncome">Rs 0</div>
+                                        <div id="incomeConversion" class="text-xs text-gray-500">Converted from original
+                                            currencies</div>
+                                    </div>
+                                </div>
+                                <div class="progress-bar bg-gray-800">
+                                    <div id="incomeBar"
+                                        class="progress-fill bg-gradient-to-r from-green-500 to-emerald-500"
+                                        style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-300">Total Expenses</span>
+                                    <div class="text-right">
+                                        <div class="font-bold text-red-400" id="totalExpenses">Rs 0</div>
+                                        <div id="expensesConversion" class="text-xs text-gray-500">Converted from
+                                            original currencies</div>
+                                    </div>
+                                </div>
+                                <div class="progress-bar bg-gray-800">
+                                    <div id="expensesBar"
+                                        class="progress-fill bg-gradient-to-r from-red-500 to-pink-500"
+                                        style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-300">Net Balance</span>
+                                    <div class="text-right">
+                                        <div class="font-bold text-purple-400" id="netBalance">Rs 0</div>
+                                        <div id="balanceConversion" class="text-xs text-gray-500">Converted from
+                                            original currencies</div>
+                                    </div>
+                                </div>
+                                <div class="progress-bar bg-gray-800">
+                                    <div id="balanceBar"
+                                        class="progress-fill bg-gradient-to-r from-purple-500 to-pink-500"
+                                        style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-6">Recent Activity</h2>
+                        <div class="space-y-4 max-h-[400px] overflow-y-auto" id="recentActivity">
+                            <div class="text-center py-8 text-gray-500">
+                                <i class="fas fa-history text-2xl mb-3"></i>
+                                <div>No recent activity</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="usersTab" class="hidden">
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mobile-stack">
+                            <h2 class="text-xl font-bold">User Management</h2>
+                            <div class="flex items-center gap-3 mobile-stack">
+                                <div class="relative flex-1 md:flex-none">
+                                    <i
+                                        class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                                    <input type="text" id="userSearch" placeholder="Search users..."
+                                        class="glass-card pl-10 pr-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-full md:w-48">
+                                </div>
+                                <button id="refreshUsers"
+                                    class="glass-card w-10 h-10 rounded-xl flex items-center justify-center hover:scale-105 transition-transform">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="w-full">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">User</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300 mobile-hidden">
+                                        Email</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300 mobile-hidden">
+                                        Currency</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Joined</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="transactionsTab" class="hidden">
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mobile-stack">
+                            <h2 class="text-xl font-bold">Transaction History</h2>
+                            <div class="flex flex-wrap gap-3 mobile-stack">
+                                <select id="transactionFilter"
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
+                                    <option value="all">All Types</option>
+                                    <option value="income">Income</option>
+                                    <option value="expense">Expense</option>
+                                </select>
+                                <input type="date" id="transactionDate"
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
+                                <input type="text" id="transactionSearch" placeholder="Search..."
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container max-h-[600px] overflow-y-auto">
+                        <table class="w-full">
+                            <thead class="table-header sticky top-0">
+                                <tr>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Description</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300 mobile-hidden">
+                                        User</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Type</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Amount</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Date</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="budgetsTab" class="hidden">
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mobile-stack">
+                            <h2 class="text-xl font-bold">Budget Management</h2>
+                            <div class="flex items-center gap-3 mobile-stack">
+                                <select id="budgetFilter"
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
+                                    <option value="all">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                                <input type="text" id="budgetSearch" placeholder="Search..."
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="w-full">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Budget Name</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300 mobile-hidden">
+                                        User</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Total</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Spent</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Progress</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Status</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="budgetsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="savingsTab" class="hidden">
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mobile-stack">
+                            <h2 class="text-xl font-bold">Savings Goals</h2>
+                            <div class="flex items-center gap-3 mobile-stack">
+                                <select id="savingsFilter"
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
+                                    <option value="all">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                                <input type="text" id="savingsSearch" placeholder="Search..."
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="w-full">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Goal Name</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300 mobile-hidden">
+                                        User</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Target</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Saved</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Progress</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Status</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="savingsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="categoriesTab" class="hidden">
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mobile-stack">
+                            <h2 class="text-xl font-bold">Category Management</h2>
+                            <div class="flex items-center gap-3 mobile-stack">
+                                <select id="categoryFilter"
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
+                                    <option value="all">All Types</option>
+                                    <option value="income">Income</option>
+                                    <option value="expense">Expense</option>
+                                </select>
+                                <button id="createCategory"
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 hover:border-purple-500 transition flex items-center gap-2 mobile-full-width">
+                                    <i class="fas fa-plus"></i>
+                                    Add Category
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="w-full">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Name</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300 mobile-hidden">
+                                        User</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300 mobile-hidden">
+                                        Icon</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300 mobile-hidden">
+                                        Color</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Type</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Default</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categoriesTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="adminSettingsTab" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-6 flex items-center gap-3">
+                            <i class="fas fa-user-cog text-purple-400"></i>
+                            Profile Settings
+                        </h2>
+                        <form id="adminProfileForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-300">Admin Name</label>
+                                <input type="text" id="adminProfileName"
+                                    class="glass-card w-full px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    placeholder="Enter admin name">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-300">Email</label>
+                                <input type="email" id="adminProfileEmail"
+                                    class="glass-card w-full px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-800/50"
+                                    disabled>
+                                <div class="text-xs text-gray-500 mt-1">Email cannot be changed</div>
+                            </div>
+                            <button type="button" onclick="saveAdminProfile()"
+                                class="btn-primary w-full py-3 rounded-xl text-white font-semibold flex items-center justify-center gap-2">
+                                <i class="fas fa-save"></i>
+                                Save Profile Changes
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-6 flex items-center gap-3">
+                            <i class="fas fa-key text-yellow-400"></i>
+                            Change Password
+                        </h2>
+                        <form id="passwordChangeForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-300">Current Password</label>
+                                <input type="password" id="currentPassword"
+                                    class="glass-card w-full px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    placeholder="Enter current password">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-300">New Password</label>
+                                <input type="password" id="newPassword"
+                                    class="glass-card w-full px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    placeholder="Enter new password">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-300">Confirm New
+                                    Password</label>
+                                <input type="password" id="confirmNewPassword"
+                                    class="glass-card w-full px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    placeholder="Confirm new password">
+                            </div>
+                            <button type="button" onclick="changeAdminPassword()"
+                                class="btn-primary w-full py-3 rounded-xl text-white font-semibold flex items-center justify-center gap-2">
+                                <i class="fas fa-lock"></i>
+                                Update Password
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="glass-card glow-border rounded-2xl p-6 lg:col-span-2">
+                        <h2 class="text-xl font-bold mb-6 flex items-center gap-3">
+                            <i class="fas fa-download text-green-400"></i>
+                            Complete Data Export
+                        </h2>
+                        <p class="text-gray-400 mb-6">Export all platform data including users, transactions,
+                            budgets, savings goals, and categories as a JSON file.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                            <div class="glass-card p-4 rounded-xl text-center">
+                                <div class="text-2xl font-bold text-purple-400" id="exportUserCount">0</div>
+                                <div class="text-sm text-gray-400">Users</div>
+                            </div>
+                            <div class="glass-card p-4 rounded-xl text-center">
+                                <div class="text-2xl font-bold text-blue-400" id="exportTransactionCount">0</div>
+                                <div class="text-sm text-gray-400">Transactions</div>
+                            </div>
+                            <div class="glass-card p-4 rounded-xl text-center">
+                                <div class="text-2xl font-bold text-green-400" id="exportBudgetCount">0</div>
+                                <div class="text-sm text-gray-400">Budgets</div>
+                            </div>
+                            <div class="glass-card p-4 rounded-xl text-center">
+                                <div class="text-2xl font-bold text-yellow-400" id="exportSavingsCount">0</div>
+                                <div class="text-sm text-gray-400">Savings Goals</div>
+                            </div>
+                            <div class="glass-card p-4 rounded-xl text-center">
+                                <div class="text-2xl font-bold text-pink-400" id="exportCategoryCount">0</div>
+                                <div class="text-sm text-gray-400">Categories</div>
+                            </div>
+                        </div>
+                        <button onclick="exportAllData()"
+                            class="btn-primary px-6 py-3 rounded-xl text-white font-semibold flex items-center gap-2">
+                            <i class="fas fa-file-export"></i>
+                            Export All Data as JSON
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="generalLedgerTab" class="hidden">
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mobile-stack">
+                            <h2 class="text-xl font-bold flex items-center gap-3">
+                                <i class="fas fa-book text-blue-400"></i>
+                                General Ledger
+                            </h2>
+                            <div class="flex flex-wrap gap-3 mobile-stack">
+                                <input type="date" id="ledgerStartDate"
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
+                                <input type="date" id="ledgerEndDate"
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
+                                <button onclick="filterLedger()"
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 hover:border-purple-500 transition flex items-center gap-2 mobile-full-width">
+                                    <i class="fas fa-filter"></i>
+                                    Filter
+                                </button>
+                                <button onclick="exportLedgerCSV()"
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 hover:border-green-500 transition flex items-center gap-2 mobile-full-width">
+                                    <i class="fas fa-file-csv"></i>
+                                    Export CSV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 lg:p-6 border-b border-gray-800 bg-gray-900/30">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="glass-card p-4 rounded-xl">
+                                <div class="text-sm text-gray-400 mb-1">Total Debits (Expenses)</div>
+                                <div class="text-xl font-bold text-red-400" id="ledgerTotalDebits">Rs 0.00</div>
+                            </div>
+                            <div class="glass-card p-4 rounded-xl">
+                                <div class="text-sm text-gray-400 mb-1">Total Credits (Income)</div>
+                                <div class="text-xl font-bold text-green-400" id="ledgerTotalCredits">Rs 0.00</div>
+                            </div>
+                            <div class="glass-card p-4 rounded-xl">
+                                <div class="text-sm text-gray-400 mb-1">Net Balance</div>
+                                <div class="text-xl font-bold text-purple-400" id="ledgerNetBalance">Rs 0.00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container max-h-[600px] overflow-y-auto">
+                        <table class="w-full">
+                            <thead class="table-header sticky top-0">
+                                <tr>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Date</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Description
+                                    </th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300 mobile-hidden">
+                                        User</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300 text-red-400">
+                                        Debit</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300 text-green-400">
+                                        Credit</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Balance
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledgerTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="payableReceivableTab" class="hidden">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 mb-6">
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-900/30 to-green-700/20 flex items-center justify-center">
+                                <i class="fas fa-arrow-down text-2xl text-green-400"></i>
+                            </div>
+                            <div class="text-sm text-gray-400">Total Receivables</div>
+                        </div>
+                        <div class="text-3xl font-bold mb-1 text-green-400" id="totalReceivables">Rs 0.00</div>
+                        <div class="text-sm text-gray-400">Total income across all users</div>
+                    </div>
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-900/30 to-red-700/20 flex items-center justify-center">
+                                <i class="fas fa-arrow-up text-2xl text-red-400"></i>
+                            </div>
+                            <div class="text-sm text-gray-400">Total Payables</div>
+                        </div>
+                        <div class="text-3xl font-bold mb-1 text-red-400" id="totalPayables">Rs 0.00</div>
+                        <div class="text-sm text-gray-400">Total expenses across all users</div>
+                    </div>
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-900/30 to-purple-700/20 flex items-center justify-center">
+                                <i class="fas fa-balance-scale text-2xl text-purple-400"></i>
+                            </div>
+                            <div class="text-sm text-gray-400">Net Position</div>
+                        </div>
+                        <div class="text-3xl font-bold mb-1" id="netPosition">Rs 0.00</div>
+                        <div class="text-sm text-gray-400">Receivables - Payables</div>
+                    </div>
+                </div>
+
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <h2 class="text-xl font-bold flex items-center gap-3">
+                            <i class="fas fa-users text-purple-400"></i>
+                            User-by-User Breakdown
+                        </h2>
+                    </div>
+                    <div class="table-container">
+                        <table class="w-full">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">User</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300 text-green-400">
+                                        Receivables (Income)</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300 text-red-400">
+                                        Payables (Expenses)</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Net Balance
+                                    </th>
+                                    <th class="py-4 px-4 lg:px-6 text-center font-semibold text-gray-300">Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="arTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="adminBudgetingTab" class="hidden">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-900/30 to-blue-700/20 flex items-center justify-center">
+                                <i class="fas fa-wallet text-2xl text-blue-400"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold mb-1" id="totalBudgeted">Rs 0.00</div>
+                        <div class="text-sm text-gray-400">Total Budgeted</div>
+                    </div>
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-900/30 to-yellow-700/20 flex items-center justify-center">
+                                <i class="fas fa-receipt text-2xl text-yellow-400"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold mb-1" id="totalSpentBudget">Rs 0.00</div>
+                        <div class="text-sm text-gray-400">Total Spent</div>
+                    </div>
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-900/30 to-green-700/20 flex items-center justify-center">
+                                <i class="fas fa-coins text-2xl text-green-400"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold mb-1" id="totalRemainingBudget">Rs 0.00</div>
+                        <div class="text-sm text-gray-400">Total Remaining</div>
+                    </div>
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-900/30 to-purple-700/20 flex items-center justify-center">
+                                <i class="fas fa-percentage text-2xl text-purple-400"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold mb-1" id="avgUtilization">0%</div>
+                        <div class="text-sm text-gray-400">Avg. Utilization</div>
+                    </div>
+                </div>
+
+                <div class="glass-card glow-border rounded-2xl p-6 mb-6" id="budgetAlertsContainer">
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-3">
+                        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                        Budget Alerts
+                    </h2>
+                    <div id="budgetAlertsList" class="space-y-3">
+                        <div class="text-gray-500 text-center py-4">No budget alerts</div>
+                    </div>
+                </div>
+
+                <div class="glass-card glow-border rounded-2xl overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-gray-800">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mobile-stack">
+                            <h2 class="text-xl font-bold flex items-center gap-3">
+                                <i class="fas fa-chart-bar text-purple-400"></i>
+                                Budget vs Actual Comparison
+                            </h2>
+                            <div class="flex items-center gap-3 mobile-stack">
+                                <select id="budgetStatusFilter"
+                                    class="glass-card px-4 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-full-width">
+                                    <option value="all">All Budgets</option>
+                                    <option value="active">Active Only</option>
+                                    <option value="overspent">Overspent</option>
+                                    <option value="warning">Warning (>80%)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="w-full">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300">Budget</th>
+                                    <th class="py-4 px-4 lg:px-6 text-left font-semibold text-gray-300 mobile-hidden">
+                                        User</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Budgeted
+                                    </th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Actual
+                                        Spent</th>
+                                    <th class="py-4 px-4 lg:px-6 text-right font-semibold text-gray-300">Variance
+                                    </th>
+                                    <th class="py-4 px-4 lg:px-6 text-center font-semibold text-gray-300">
+                                        Utilization</th>
+                                    <th class="py-4 px-4 lg:px-6 text-center font-semibold text-gray-300">Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="budgetComparisonTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="modal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-content rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-4 lg:p-6">
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 max-w-md w-full md:w-auto"></div>
+
+    <div id="logoutModal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-content rounded-2xl max-w-md w-full mx-4">
+            <div class="p-6 lg:p-8">
+                <div
+                    class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-900/30 to-pink-900/30 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-sign-out-alt text-3xl text-purple-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-center mb-3">Confirm Logout</h3>
+                <p class="text-gray-400 text-center mb-6">Are you sure you want to log out of the admin panel?</p>
+                <div class="flex gap-4 mobile-stack">
+                    <button id="cancelLogout"
+                        class="flex-1 py-3 rounded-xl border border-gray-700 text-gray-300 hover:bg-gray-800 transition">
+                        Cancel
+                    </button>
+                    <button id="confirmLogout" class="flex-1 py-3 rounded-xl btn-primary text-white font-semibold">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
+    <script src="AppwriteService/appwrite-config.js" defer></script>
+    <script src="Admin/admin.js" defer></script>
+</body>
+
+</html>

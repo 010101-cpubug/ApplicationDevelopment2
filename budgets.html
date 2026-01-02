@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budgets | Bareera Intl.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="Budgets/budgets.css">
+</head>
+<body class="text-gray-200">
+    <div class="lg:hidden fixed top-4 left-4 z-50">
+        <button id="menuToggle" class="glass-card w-12 h-12 rounded-xl flex items-center justify-center">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </div>
+    
+    <div id="overlay" class="overlay"></div>
+    
+    <div class="flex min-h-screen">
+        <div class="sidebar glass-card flex flex-col z-40">
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-300 bg-clip-text text-transparent">
+                        Bareera Intl.
+                    </h1>
+                </div>
+                <div class="text-xs text-gray-500 mt-1">Financial Intelligence Platform</div>
+            </div>
+            
+            
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center gap-3 mb-4">
+                    <div id="userAvatar" class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-700 to-pink-600 flex items-center justify-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div>
+                        <div id="userName" class="font-semibold">Loading...</div>
+                        <div id="userEmail" class="text-sm text-gray-400">Loading...</div>
+                    </div>
+                </div>
+                <div class="text-sm">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-gray-400">Active Budgets</span>
+                        <span id="activeBudgetsCount" class="text-purple-300 font-semibold">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex-1 p-4 overflow-y-auto">
+                <div class="space-y-2">
+                    <a href="dashboard.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-tachometer-alt w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="transactions.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-exchange-alt w-5 text-center"></i>
+                        <span>Transactions</span>
+                    </a>
+                    <a href="budgets.html" class="nav-link active flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-wallet w-5 text-center"></i>
+                        <span>Budgets</span>
+                    </a>
+                    <a href="categories.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-tags w-5 text-center"></i>
+                        <span>Categories</span>
+                    </a>
+                    <a href="savings.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-bullseye w-5 text-center"></i>
+                        <span>Savings Goals</span>
+                    </a>
+                    <a href="profile.html" class="nav-link flex items-center gap-3 p-3 rounded-xl border-l-4 border-transparent">
+                        <i class="fas fa-user-cog w-5 text-center"></i>
+                        <span>Profile & Settings</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="p-6 border-t border-gray-800">
+                <button id="logoutBtn" class="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-gray-900/50 hover:bg-gray-800 transition">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex-1 p-4 lg:p-8 overflow-x-hidden">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold">Budgets</h1>
+                    <p class="text-gray-400">Track and manage your spending limits</p>
+                </div>
+                <div class="flex items-center gap-4 mt-4 lg:mt-0">
+                    <button id="insightsBtn" class="px-4 py-2 rounded-xl border border-gray-700 hover:border-purple-500 hover:text-purple-400 transition">
+                        <i class="fas fa-chart-pie mr-2"></i> Insights
+                    </button>
+                    <button id="addBudgetBtn" class="px-6 py-2 rounded-xl btn-primary text-white font-semibold">
+                        <i class="fas fa-plus mr-2"></i> Create Budget
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="glass-card glow-border rounded-2xl p-6 fade-in">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-lg font-semibold">Total Budgets</div>
+                        <div class="w-10 h-10 rounded-lg bg-purple-900/30 flex items-center justify-center">
+                            <i class="fas fa-wallet text-purple-400"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold" id="totalBudgets">0</div>
+                    <div class="text-sm text-gray-400 mt-2">Across all categories</div>
+                </div>
+                
+                <div class="glass-card glow-border rounded-2xl p-6 fade-in" style="animation-delay: 0.1s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-lg font-semibold">Total Allocated</div>
+                        <div class="w-10 h-10 rounded-lg bg-blue-900/30 flex items-center justify-center">
+                            <i class="fas fa-money-bill-wave text-blue-400"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold" id="totalAllocated">0</div>
+                    <div class="text-sm text-gray-400 mt-2">Monthly budget total</div>
+                </div>
+                
+                <div class="glass-card glow-border rounded-2xl p-6 fade-in" style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-lg font-semibold">Total Spent</div>
+                        <div class="w-10 h-10 rounded-lg bg-green-900/30 flex items-center justify-center">
+                            <i class="fas fa-shopping-cart text-green-400"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold" id="totalSpent">0</div>
+                    <div class="text-sm text-gray-400 mt-2" id="spentPercentage">0% of allocated amount</div>
+                </div>
+            </div>
+            
+            <div class="glass-card glow-border rounded-2xl p-6 mb-8 fade-in">
+                <h2 class="text-xl font-bold mb-6">Budget Status Overview</h2>
+                
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="font-medium">Overall Budget Health</div>
+                            <div id="overallHealth" class="px-3 py-1 rounded-full bg-green-900/30 text-green-400 text-sm font-medium">
+                                Loading...
+                            </div>
+                        </div>
+                        <div class="progress-bar bg-gray-800">
+                            <div id="overallProgress" class="progress-fill success-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-500 mt-2">
+                            <span id="spentText">0 spent of 0</span>
+                            <span id="remainingText">0% remaining</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="p-4 bg-gray-900/30 rounded-xl text-center">
+                            <div class="text-2xl font-bold text-green-400" id="onTrackCount">0</div>
+                            <div class="text-sm text-gray-400">On Track</div>
+                        </div>
+                        <div class="p-4 bg-gray-900/30 rounded-xl text-center">
+                            <div class="text-2xl font-bold text-yellow-400" id="atRiskCount">0</div>
+                            <div class="text-sm text-gray-400">At Risk</div>
+                        </div>
+                        <div class="p-4 bg-gray-900/30 rounded-xl text-center">
+                            <div class="text-2xl font-bold text-red-400" id="overBudgetCount">0</div>
+                            <div class="text-sm text-gray-400">Over Budget</div>
+                        </div>
+                        <div class="p-4 bg-gray-900/30 rounded-xl text-center">
+                            <div class="text-2xl font-bold text-blue-400" id="inactiveCount">0</div>
+                            <div class="text-sm text-gray-400">Inactive</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card glow-border rounded-2xl overflow-hidden fade-in">
+                <div class="p-6 border-b border-gray-800">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between">
+                        <h2 class="text-xl font-bold mb-4 lg:mb-0">Active Budgets</h2>
+                        <div class="flex items-center gap-2">
+                            <div class="text-sm text-gray-400">Filter by:</div>
+                            <select id="budgetFilter" class="py-1 px-3 bg-gray-900/50 border border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="all">All Status</option>
+                                <option value="ontrack">On Track</option>
+                                <option value="atrisk">At Risk</option>
+                                <option value="overbudget">Over Budget</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-900/50 text-left text-gray-400 text-sm">
+                                <th class="py-4 px-6 font-medium">Budget Name</th>
+                                <th class="py-4 px-6 font-medium">Period</th>
+                                <th class="py-4 px-6 font-medium">Amount</th>
+                                <th class="py-4 px-6 font-medium">Spent</th>
+                                <th class="py-4 px-6 font-medium">Remaining</th>
+                                <th class="py-4 px-6 font-medium">Progress</th>
+                                <th class="py-4 px-6 font-medium text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="budgetsTableBody">
+                            <tr>
+                                <td colspan="7" class="py-8 text-center text-gray-500">
+                                    <div class="animate-pulse">
+                                        <i class="fas fa-wallet text-3xl mb-2"></i>
+                                        <div>Loading budgets...</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="p-6 border-t border-gray-800">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between">
+                        <div class="text-sm text-gray-400 mb-4 lg:mb-0">
+                            Showing <span id="showingBudgets">0</span> active budgets
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 glass-card glow-border rounded-2xl p-6 fade-in">
+                <h2 class="text-xl font-bold mb-4">Budgeting Tips</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-4 bg-gray-900/30 rounded-xl">
+                        <div class="w-10 h-10 rounded-lg bg-purple-900/30 flex items-center justify-center mb-3">
+                            <i class="fas fa-bullseye text-purple-400"></i>
+                        </div>
+                        <h3 class="font-semibold mb-2">Set Realistic Goals</h3>
+                        <p class="text-sm text-gray-400">Start with achievable targets based on your past spending patterns.</p>
+                    </div>
+                    <div class="p-4 bg-gray-900/30 rounded-xl">
+                        <div class="w-10 h-10 rounded-lg bg-blue-900/30 flex items-center justify-center mb-3">
+                            <i class="fas fa-chart-line text-blue-400"></i>
+                        </div>
+                        <h3 class="font-semibold mb-2">Monitor Regularly</h3>
+                        <p class="text-sm text-gray-400">Check your budget progress weekly to stay on track.</p>
+                    </div>
+                    <div class="p-4 bg-gray-900/30 rounded-xl">
+                        <div class="w-10 h-10 rounded-lg bg-green-900/30 flex items-center justify-center mb-3">
+                            <i class="fas fa-adjust text-green-400"></i>
+                        </div>
+                        <h3 class="font-semibold mb-2">Adjust When Needed</h3>
+                        <p class="text-sm text-gray-400">Don't hesitate to modify budgets that aren't working for you.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="budgetModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="glass-card glow-border rounded-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto fade-in">
+            <div class="p-6 border-b border-gray-800 flex items-center justify-between">
+                <h2 class="text-2xl font-bold" id="modalTitle">Create New Budget</h2>
+                <button id="closeModal" class="w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <form id="budgetForm">
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <label class="block text-gray-300 mb-2">Budget Name *</label>
+                            <input type="text" id="budgetName" required
+                                   class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                   placeholder="e.g., Groceries Budget">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-300 mb-2">Total Amount *</label>
+                            <div class="relative">
+                                <input type="number" id="budgetAmount" required step="0.01" min="0.01"
+                                       class="w-full pl-10 pr-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                       placeholder="0.00">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500" id="currencySymbol">$</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-300 mb-2">Start Date *</label>
+                            <input type="date" id="budgetStartDate" required
+                                   class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-300 mb-2">End Date *</label>
+                            <input type="date" id="budgetEndDate" required
+                                   class="w-full py-3 px-4 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="budgetId" value="">
+                    
+                    <div class="flex gap-4">
+                        <button type="button" id="cancelBudget" class="flex-1 py-3 rounded-xl border border-gray-700 text-gray-300 hover:bg-gray-800 transition">
+                            Cancel
+                        </button>
+                        <button type="submit" id="saveBudget" class="flex-1 py-3 rounded-xl btn-primary text-white font-semibold">
+                            Save Budget
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div id="insightsModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="glass-card glow-border rounded-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto fade-in">
+            <div class="p-6 border-b border-gray-800 flex items-center justify-between">
+                <h2 class="text-2xl font-bold">Budget Insights</h2>
+                <button id="closeInsightsModal" class="w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold mb-4">Budget Status Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-4 bg-gray-900/30 rounded-xl">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2">
+                            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                            Budgets at Risk
+                        </h4>
+                        <ul id="budgetsAtRisk" class="space-y-2">
+                            <li class="text-sm text-gray-400">No budgets at risk</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="p-4 bg-gray-900/30 rounded-xl">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2">
+                            <i class="fas fa-check-circle text-green-400"></i>
+                            Budgets on Track
+                        </h4>
+                        <ul id="budgetsOnTrack" class="space-y-2">
+                            <li class="text-sm text-gray-400">No budgets on track</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
+    <script src="AppwriteService/appwrite-config.js"></script>
+    <script src="Budgets/budgets.js"></script>
+</body>
+</html>
