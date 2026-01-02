@@ -362,3 +362,439 @@ body {
         text-align: center;
     }
 }
+
+/* ===== Enhanced Settings Panel Styles ===== */
+
+.settings-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-section-title i {
+    color: var(--primary-purple);
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+}
+
+.form-input {
+    width: 100%;
+    background: rgba(17, 24, 39, 0.5);
+    border: 1px solid rgba(107, 114, 128, 0.5);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #f3f4f6;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.form-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.375rem;
+}
+
+/* Password Strength Indicator */
+.password-strength-container {
+    margin-top: 0.5rem;
+}
+
+.password-strength-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+
+.password-strength-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+
+.password-strength-fill.strength-weak {
+    width: 33%;
+    background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.password-strength-fill.strength-medium {
+    width: 66%;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.password-strength-fill.strength-strong {
+    width: 100%;
+    background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.password-strength-text {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.password-strength-text.strength-weak {
+    color: #ef4444;
+}
+
+.password-strength-text.strength-medium {
+    color: #f59e0b;
+}
+
+.password-strength-text.strength-strong {
+    color: #10b981;
+}
+
+/* Export Options */
+.export-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.export-option {
+    background: rgba(17, 24, 39, 0.5);
+    border: 1px solid rgba(107, 114, 128, 0.3);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.export-option:hover {
+    border-color: var(--primary-purple);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.2);
+}
+
+.export-option i {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.export-option .export-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.export-option .export-desc {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.export-progress {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(139, 92, 246, 0.1);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.export-progress-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.export-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-purple), #a78bfa);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    animation: progress-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes progress-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* ===== Enhanced Financials Dashboard Styles ===== */
+
+.financials-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.financials-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    background: rgba(17, 24, 39, 0.5);
+    border: 1px solid rgba(107, 114, 128, 0.3);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-purple);
+    color: #f3f4f6;
+}
+
+.filter-btn.active {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: var(--primary-purple);
+    color: var(--primary-purple);
+}
+
+/* Metric Cards */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.metric-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.metric-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.metric-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.metric-card-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+}
+
+.trend-up {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.trend-down {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.metric-card-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.metric-card-label {
+    font-size: 0.875rem;
+    color: #9ca3af;
+}
+
+/* Aging Analysis */
+.aging-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .aging-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.aging-item {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    background: rgba(17, 24, 39, 0.5);
+}
+
+.aging-item .aging-label {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+}
+
+.aging-item .aging-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.aging-current {
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.aging-current .aging-value {
+    color: #10b981;
+}
+
+.aging-30 {
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.aging-30 .aging-value {
+    color: #f59e0b;
+}
+
+.aging-60 {
+    border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.aging-60 .aging-value {
+    color: #f97316;
+}
+
+.aging-90 {
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.aging-90 .aging-value {
+    color: #ef4444;
+}
+
+/* Financial Tables */
+.financial-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.financial-table th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #9ca3af;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.financial-table td {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.financial-table tr:hover td {
+    background: rgba(139, 92, 246, 0.05);
+}
+
+.financial-table .amount-positive {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.financial-table .amount-negative {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* Charts Container Enhancement */
+.chart-container {
+    position: relative;
+    height: 280px;
+    padding: 1rem 0;
+}
+
+.chart-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.chart-title i {
+    color: var(--primary-purple);
+}
+
+/* Split View for Tables */
+.financial-split {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .financial-split {
+        grid-template-columns: 1fr;
+    }
+}

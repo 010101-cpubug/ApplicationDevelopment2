@@ -563,33 +563,177 @@
 
             <!-- Financials (AP/AR) Tab -->
             <div id="financialsTab" class="hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <div class="glass-card glow-border rounded-2xl p-6">
-                        <h3 class="text-lg font-bold mb-4 text-green-400">Accounts Receivable (Income)</h3>
-                        <div class="h-64">
-                            <canvas id="receivablesChart"></canvas>
+                <!-- Header with Filters -->
+                <div class="financials-header glass-card glow-border rounded-2xl p-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold">Financial Overview</h2>
+                        <p class="text-sm text-gray-400">Accounts Payable & Receivable Analysis</p>
+                    </div>
+                    <div class="financials-filters">
+                        <button class="filter-btn active" data-period="all" onclick="setFinancialPeriod('all')">All
+                            Time</button>
+                        <button class="filter-btn" data-period="month" onclick="setFinancialPeriod('month')">This
+                            Month</button>
+                        <button class="filter-btn" data-period="quarter"
+                            onclick="setFinancialPeriod('quarter')">Quarter</button>
+                        <button class="filter-btn" data-period="year" onclick="setFinancialPeriod('year')">This
+                            Year</button>
+                    </div>
+                </div>
+
+                <!-- Summary Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-card-header">
+                            <div class="metric-card-icon bg-green-900/30">
+                                <i class="fas fa-arrow-down text-green-400"></i>
+                            </div>
+                            <div class="metric-card-trend trend-up" id="receivablesTrend">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+12%</span>
+                            </div>
                         </div>
-                        <div class="mt-4 flex justify-between items-center">
-                            <span class="text-gray-400">Total Inflow</span>
-                            <span class="text-xl font-bold text-green-400" id="totalReceivables">Rs 0</span>
+                        <div class="metric-card-value text-green-400" id="metricReceivables">Rs 0</div>
+                        <div class="metric-card-label">Total Receivables (Income)</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-card-header">
+                            <div class="metric-card-icon bg-red-900/30">
+                                <i class="fas fa-arrow-up text-red-400"></i>
+                            </div>
+                            <div class="metric-card-trend trend-down" id="payablesTrend">
+                                <i class="fas fa-arrow-down"></i>
+                                <span>-8%</span>
+                            </div>
+                        </div>
+                        <div class="metric-card-value text-red-400" id="metricPayables">Rs 0</div>
+                        <div class="metric-card-label">Total Payables (Expenses)</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-card-header">
+                            <div class="metric-card-icon bg-purple-900/30">
+                                <i class="fas fa-balance-scale text-purple-400"></i>
+                            </div>
+                        </div>
+                        <div class="metric-card-value text-purple-400" id="metricNetPosition">Rs 0</div>
+                        <div class="metric-card-label">Net Cash Position</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-card-header">
+                            <div class="metric-card-icon bg-blue-900/30">
+                                <i class="fas fa-chart-bar text-blue-400"></i>
+                            </div>
+                        </div>
+                        <div class="metric-card-value text-blue-400" id="metricMonthlyAvg">Rs 0</div>
+                        <div class="metric-card-label">Monthly Average Flow</div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <div class="chart-title">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Accounts Receivable Trend</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="receivablesChart"></canvas>
                         </div>
                     </div>
                     <div class="glass-card glow-border rounded-2xl p-6">
-                        <h3 class="text-lg font-bold mb-4 text-red-400">Accounts Payable (Expenses)</h3>
-                        <div class="h-64">
-                            <canvas id="payablesChart"></canvas>
+                        <div class="chart-title">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Accounts Payable Trend</span>
                         </div>
-                        <div class="mt-4 flex justify-between items-center">
-                            <span class="text-gray-400">Total Outflow</span>
-                            <span class="text-xl font-bold text-red-400" id="totalPayables">Rs 0</span>
+                        <div class="chart-container">
+                            <canvas id="payablesChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <div class="glass-card glow-border rounded-2xl overflow-hidden p-6">
-                    <h3 class="text-lg font-bold mb-6">Net Cash Flow Analysis</h3>
-                    <div class="h-80">
+                <!-- Cash Flow Chart -->
+                <div class="glass-card glow-border rounded-2xl p-6 mb-6">
+                    <div class="chart-title">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Net Cash Flow Analysis</span>
+                    </div>
+                    <div class="chart-container" style="height: 300px;">
                         <canvas id="cashFlowChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Aging Analysis -->
+                <div class="glass-card glow-border rounded-2xl p-6 mb-6">
+                    <div class="chart-title mb-4">
+                        <i class="fas fa-clock"></i>
+                        <span>Transaction Aging Analysis</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-4">Distribution of transactions by age since occurrence</p>
+                    <div class="aging-grid" id="agingAnalysis">
+                        <div class="aging-item aging-current">
+                            <div class="aging-label">Current (0-30 days)</div>
+                            <div class="aging-value" id="aging0">Rs 0</div>
+                        </div>
+                        <div class="aging-item aging-30">
+                            <div class="aging-label">31-60 days</div>
+                            <div class="aging-value" id="aging30">Rs 0</div>
+                        </div>
+                        <div class="aging-item aging-60">
+                            <div class="aging-label">61-90 days</div>
+                            <div class="aging-value" id="aging60">Rs 0</div>
+                        </div>
+                        <div class="aging-item aging-90">
+                            <div class="aging-label">Over 90 days</div>
+                            <div class="aging-value" id="aging90">Rs 0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown Tables -->
+                <div class="financial-split">
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <div class="chart-title mb-4">
+                            <i class="fas fa-arrow-circle-down text-green-400"></i>
+                            <span>Top Income Sources</span>
+                        </div>
+                        <table class="financial-table">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Count</th>
+                                    <th class="text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topIncomeTable">
+                                <tr>
+                                    <td colspan="3" class="text-center text-gray-500 py-4">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="glass-card glow-border rounded-2xl p-6">
+                        <div class="chart-title mb-4">
+                            <i class="fas fa-arrow-circle-up text-red-400"></i>
+                            <span>Top Expense Categories</span>
+                        </div>
+                        <table class="financial-table">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Count</th>
+                                    <th class="text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topExpenseTable">
+                                <tr>
+                                    <td colspan="3" class="text-center text-gray-500 py-4">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -629,45 +773,149 @@
 
             <!-- Settings Tab -->
             <div id="settingsTab" class="hidden">
-                <div class="max-w-2xl mx-auto space-y-6">
-                    <!-- Profile Settings -->
-                    <div class="glass-card glow-border rounded-2xl p-6">
-                        <h2 class="text-xl font-bold mb-6">Admin Profile</h2>
-                        <form id="adminProfileForm" class="space-y-4">
-                            <div>
-                                <label class="block text-sm text-gray-400 mb-1">Display Name</label>
-                                <input type="text" id="settingAdminName"
-                                    class="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none">
+                <div class="settings-container">
+                    <!-- Profile Settings Section -->
+                    <div class="glass-card glow-border rounded-2xl p-6 settings-section">
+                        <h2 class="settings-section-title">
+                            <i class="fas fa-user-circle"></i>
+                            Admin Profile
+                        </h2>
+
+                        <!-- Profile Header -->
+                        <div class="flex items-center gap-6 mb-6 pb-6 border-b border-gray-800">
+                            <div
+                                class="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg">
+                                <span id="settingsAdminInitials" class="text-white text-2xl font-bold">A</span>
                             </div>
                             <div>
-                                <label class="block text-sm text-gray-400 mb-1">New Password (leave blank to keep
-                                    current)</label>
-                                <input type="password" id="settingAdminPassword"
-                                    class="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none">
+                                <div class="text-xl font-bold" id="settingsAdminDisplayName">Admin User</div>
+                                <div class="text-gray-400 text-sm" id="settingsAdminEmail">admin@example.com</div>
+                                <div class="mt-2">
+                                    <span
+                                        class="px-3 py-1 rounded-full bg-purple-900/30 text-purple-400 text-xs font-semibold border border-purple-700/50">
+                                        <i class="fas fa-shield-alt mr-1"></i> Administrator
+                                    </span>
+                                </div>
                             </div>
-                            <div class="flex justify-end">
-                                <button type="submit" class="btn-primary px-6 py-2 rounded-xl">Save Changes</button>
+                        </div>
+
+                        <form id="adminProfileForm">
+                            <div class="form-group">
+                                <label class="form-label" for="settingAdminName">
+                                    <i class="fas fa-user mr-2 text-purple-400"></i>Display Name
+                                </label>
+                                <input type="text" id="settingAdminName" class="form-input"
+                                    placeholder="Enter your display name">
+                                <p class="form-hint">This name will be displayed in the admin panel</p>
+                            </div>
+
+                            <div class="flex justify-end mt-6">
+                                <button type="submit" id="saveProfileBtn"
+                                    class="btn-primary px-6 py-2.5 rounded-xl flex items-center gap-2 font-semibold">
+                                    <i class="fas fa-save"></i>
+                                    Save Profile
+                                </button>
                             </div>
                         </form>
                     </div>
 
-                    <!-- Data Management -->
-                    <div class="glass-card glow-border rounded-2xl p-6">
-                        <h2 class="text-xl font-bold mb-4">Data Management</h2>
-                        <p class="text-gray-400 text-sm mb-6">Export all system data including users, transactions,
-                            budgets, and savings goals for backup or external analysis.</p>
+                    <!-- Security Section -->
+                    <div class="glass-card glow-border rounded-2xl p-6 settings-section">
+                        <h2 class="settings-section-title">
+                            <i class="fas fa-lock"></i>
+                            Security
+                        </h2>
 
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <button onclick="exportSystemData('json')"
-                                class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 transition border border-gray-700">
+                        <form id="passwordChangeForm">
+                            <div class="form-group">
+                                <label class="form-label" for="currentPassword">
+                                    <i class="fas fa-key mr-2 text-purple-400"></i>Current Password
+                                </label>
+                                <input type="password" id="currentPassword" class="form-input"
+                                    placeholder="Enter current password">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="newPassword">
+                                    <i class="fas fa-lock mr-2 text-purple-400"></i>New Password
+                                </label>
+                                <input type="password" id="newPassword" class="form-input"
+                                    placeholder="Enter new password">
+                                <div class="password-strength-container" id="passwordStrengthContainer"
+                                    style="display: none;">
+                                    <div class="password-strength-bar">
+                                        <div id="passwordStrengthFill" class="password-strength-fill"></div>
+                                    </div>
+                                    <span id="passwordStrengthText" class="password-strength-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="confirmPassword">
+                                    <i class="fas fa-check-circle mr-2 text-purple-400"></i>Confirm New Password
+                                </label>
+                                <input type="password" id="confirmPassword" class="form-input"
+                                    placeholder="Confirm new password">
+                                <p id="passwordMatchError" class="form-hint text-red-400" style="display: none;">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>Passwords do not match
+                                </p>
+                            </div>
+
+                            <div class="flex justify-end mt-6">
+                                <button type="submit" id="changePasswordBtn"
+                                    class="btn-primary px-6 py-2.5 rounded-xl flex items-center gap-2 font-semibold">
+                                    <i class="fas fa-key"></i>
+                                    Change Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Data Management Section -->
+                    <div class="glass-card glow-border rounded-2xl p-6 settings-section">
+                        <h2 class="settings-section-title">
+                            <i class="fas fa-database"></i>
+                            Data Management
+                        </h2>
+
+                        <p class="text-gray-400 text-sm mb-6">
+                            Export all system data including users, transactions, budgets, savings goals, and categories
+                            for backup or external analysis.
+                        </p>
+
+                        <div class="export-grid">
+                            <button onclick="exportSystemData('json')" class="export-option" id="exportJsonBtn">
                                 <i class="fas fa-file-code text-yellow-400"></i>
-                                <span>Export as JSON</span>
+                                <div class="export-title">Export as JSON</div>
+                                <div class="export-desc">Structured data format for developers</div>
                             </button>
-                            <button onclick="exportSystemData('csv')"
-                                class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 transition border border-gray-700">
+                            <button onclick="exportSystemData('csv')" class="export-option" id="exportCsvBtn">
                                 <i class="fas fa-file-csv text-green-400"></i>
-                                <span>Export as CSV</span>
+                                <div class="export-title">Export as CSV</div>
+                                <div class="export-desc">Spreadsheet compatible format</div>
                             </button>
+                        </div>
+
+                        <div id="exportProgress" class="export-progress" style="display: none;">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium" id="exportProgressText">Preparing export...</span>
+                                <span class="text-sm text-gray-400" id="exportProgressPercent">0%</span>
+                            </div>
+                            <div class="export-progress-bar">
+                                <div id="exportProgressFill" class="export-progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div id="exportSuccess" class="mt-4 p-4 bg-green-900/20 border border-green-700/50 rounded-xl"
+                            style="display: none;">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                                <div>
+                                    <div class="font-semibold text-green-400">Export Successful!</div>
+                                    <div class="text-sm text-gray-400" id="exportSuccessMessage">Your data has been
+                                        exported.</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

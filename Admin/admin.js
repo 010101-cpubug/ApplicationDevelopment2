@@ -2135,18 +2135,69 @@ function renderBudgetAnalytics() {
 let receivablesChartInstance = null;
 let payablesChartInstance = null;
 let cashFlowChartInstance = null;
+let financialPeriod = 'all';
+
+// Financial period filter
+function setFinancialPeriod(period) {
+    financialPeriod = period;
+
+    // Update filter button states
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.period === period) {
+            btn.classList.add('active');
+        }
+    });
+
+    renderFinancials();
+}
+
+// Filter transactions by period
+function filterTransactionsByPeriod(transactions) {
+    if (financialPeriod === 'all') return transactions;
+
+    const now = new Date();
+    let startDate;
+
+    switch (financialPeriod) {
+        case 'month':
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            break;
+        case 'quarter':
+            const quarter = Math.floor(now.getMonth() / 3);
+            startDate = new Date(now.getFullYear(), quarter * 3, 1);
+            break;
+        case 'year':
+            startDate = new Date(now.getFullYear(), 0, 1);
+            break;
+        default:
+            return transactions;
+    }
+
+    return transactions.filter(tx => new Date(tx.transaction_date) >= startDate);
+}
 
 function renderFinancials() {
+    const filteredTransactions = filterTransactionsByPeriod(adminState.transactions);
+
+    // Calculate totals
+    let totalIncome = 0;
+    let totalExpense = 0;
+    const incomeByDescription = {};
+    const expenseByDescription = {};
+
+    // Aging buckets
+    const now = new Date();
+    const aging = { current: 0, d30: 0, d60: 0, d90: 0 };
+
     // Group transactions by month
     const monthlyData = {};
 
     // Sort transactions by date
-    const sortedTx = [...adminState.transactions].sort((a, b) => new Date(a.transaction_date) - new Date(b.transaction_date));
+    const sortedTx = [...filteredTransactions].sort((a, b) => new Date(a.transaction_date) - new Date(b.transaction_date));
 
     sortedTx.forEach(tx => {
         const date = new Date(tx.transaction_date);
-        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        // Use month name for display
         const monthLabel = date.toLocaleString('default', { month: 'short', year: 'numeric' });
 
         if (!monthlyData[monthLabel]) {
@@ -2158,10 +2209,36 @@ function renderFinancials() {
 
         if (tx.type === 'income') {
             monthlyData[monthLabel].income += amount;
+            totalIncome += amount;
+
+            // Track by description
+            const desc = tx.description || 'Other Income';
+            if (!incomeByDescription[desc]) incomeByDescription[desc] = { count: 0, amount: 0 };
+            incomeByDescription[desc].count++;
+            incomeByDescription[desc].amount += amount;
         } else {
             monthlyData[monthLabel].expense += amount;
+            totalExpense += amount;
+
+            // Track by description
+            const desc = tx.description || 'Other Expense';
+            if (!expenseByDescription[desc]) expenseByDescription[desc] = { count: 0, amount: 0 };
+            expenseByDescription[desc].count++;
+            expenseByDescription[desc].amount += amount;
         }
         monthlyData[monthLabel].net = monthlyData[monthLabel].income - monthlyData[monthLabel].expense;
+
+        // Calculate aging
+        const daysDiff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+        if (daysDiff <= 30) {
+            aging.current += amount;
+        } else if (daysDiff <= 60) {
+            aging.d30 += amount;
+        } else if (daysDiff <= 90) {
+            aging.d60 += amount;
+        } else {
+            aging.d90 += amount;
+        }
     });
 
     const labels = Object.keys(monthlyData);
@@ -2169,20 +2246,104 @@ function renderFinancials() {
     const expenseData = Object.values(monthlyData).map(d => d.expense);
     const netData = Object.values(monthlyData).map(d => d.net);
 
+    const netPosition = totalIncome - totalExpense;
+    const monthlyAvg = labels.length > 0 ? Math.abs(netPosition) / labels.length : 0;
+
+    // Update metric cards
+    const symbol = getCurrencySymbol(adminState.adminCurrency);
+
+    const metricReceivables = document.getElementById('metricReceivables');
+    const metricPayables = document.getElementById('metricPayables');
+    const metricNetPosition = document.getElementById('metricNetPosition');
+    const metricMonthlyAvg = document.getElementById('metricMonthlyAvg');
+
+    if (metricReceivables) {
+        metricReceivables.textContent = `${symbol} ${totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    if (metricPayables) {
+        metricPayables.textContent = `${symbol} ${totalExpense.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    if (metricNetPosition) {
+        metricNetPosition.textContent = `${symbol} ${netPosition.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        metricNetPosition.className = `metric-card-value ${netPosition >= 0 ? 'text-green-400' : 'text-red-400'}`;
+    }
+    if (metricMonthlyAvg) {
+        metricMonthlyAvg.textContent = `${symbol} ${monthlyAvg.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    // Update aging analysis
+    document.getElementById('aging0').textContent = `${symbol} ${aging.current.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('aging30').textContent = `${symbol} ${aging.d30.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('aging60').textContent = `${symbol} ${aging.d60.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('aging90').textContent = `${symbol} ${aging.d90.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    // Update top income table
+    const topIncomeTable = document.getElementById('topIncomeTable');
+    if (topIncomeTable) {
+        const sortedIncome = Object.entries(incomeByDescription)
+            .sort((a, b) => b[1].amount - a[1].amount)
+            .slice(0, 5);
+
+        if (sortedIncome.length === 0) {
+            topIncomeTable.innerHTML = '<tr><td colspan="3" class="text-center text-gray-500 py-4">No income data</td></tr>';
+        } else {
+            topIncomeTable.innerHTML = sortedIncome.map(([desc, data]) => `
+                <tr>
+                    <td class="truncate max-w-[150px]" title="${desc}">${desc}</td>
+                    <td>${data.count}</td>
+                    <td class="text-right amount-positive">${symbol} ${data.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                </tr>
+            `).join('');
+        }
+    }
+
+    // Update top expense table
+    const topExpenseTable = document.getElementById('topExpenseTable');
+    if (topExpenseTable) {
+        const sortedExpense = Object.entries(expenseByDescription)
+            .sort((a, b) => b[1].amount - a[1].amount)
+            .slice(0, 5);
+
+        if (sortedExpense.length === 0) {
+            topExpenseTable.innerHTML = '<tr><td colspan="3" class="text-center text-gray-500 py-4">No expense data</td></tr>';
+        } else {
+            topExpenseTable.innerHTML = sortedExpense.map(([desc, data]) => `
+                <tr>
+                    <td class="truncate max-w-[150px]" title="${desc}">${desc}</td>
+                    <td>${data.count}</td>
+                    <td class="text-right amount-negative">${symbol} ${data.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                </tr>
+            `).join('');
+        }
+    }
+
+    // Chart options
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { labels: { color: '#9ca3af' } }
+            legend: {
+                display: true,
+                labels: { color: '#9ca3af', font: { size: 11 } }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(30, 30, 46, 0.95)',
+                titleColor: '#fff',
+                bodyColor: '#9ca3af',
+                borderColor: 'rgba(139, 92, 246, 0.3)',
+                borderWidth: 1,
+                padding: 12,
+                cornerRadius: 8
+            }
         },
         scales: {
             y: {
-                grid: { color: '#374151' },
-                ticks: { color: '#9ca3af' }
+                grid: { color: 'rgba(55, 65, 81, 0.5)' },
+                ticks: { color: '#9ca3af', font: { size: 11 } }
             },
             x: {
                 grid: { display: false },
-                ticks: { color: '#9ca3af' }
+                ticks: { color: '#9ca3af', font: { size: 11 } }
             }
         }
     };
@@ -2198,17 +2359,19 @@ function renderFinancials() {
                 datasets: [{
                     label: 'Income (Receivables)',
                     data: incomeData,
-                    borderColor: '#4ade80',
-                    backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.15)',
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#10b981',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 }]
             },
             options: commonOptions
         });
-
-        const totalInc = incomeData.reduce((a, b) => a + b, 0);
-        document.getElementById('totalReceivables').textContent = formatConvertedAmount({ converted: totalInc }, false);
     }
 
     // Payables Chart
@@ -2222,17 +2385,19 @@ function renderFinancials() {
                 datasets: [{
                     label: 'Expenses (Payables)',
                     data: expenseData,
-                    borderColor: '#f87171',
-                    backgroundColor: 'rgba(248, 113, 113, 0.1)',
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.15)',
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#ef4444',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 }]
             },
             options: commonOptions
         });
-
-        const totalExp = expenseData.reduce((a, b) => a + b, 0);
-        document.getElementById('totalPayables').textContent = formatConvertedAmount({ converted: totalExp }, false);
     }
 
     // Cash Flow Chart
@@ -2245,123 +2410,425 @@ function renderFinancials() {
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Net Cash Flow',
-                        data: netData,
-                        backgroundColor: netData.map(v => v >= 0 ? '#a78bfa' : '#f87171'),
-                        borderRadius: 4
+                        label: 'Income',
+                        data: incomeData,
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderRadius: 4,
+                        barPercentage: 0.6
+                    },
+                    {
+                        label: 'Expenses',
+                        data: expenseData.map(v => -v),
+                        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                        borderRadius: 4,
+                        barPercentage: 0.6
                     }
                 ]
             },
-            options: commonOptions
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    legend: {
+                        display: true,
+                        labels: { color: '#9ca3af' }
+                    }
+                },
+                scales: {
+                    ...commonOptions.scales,
+                    x: {
+                        ...commonOptions.scales.x,
+                        stacked: false
+                    },
+                    y: {
+                        ...commonOptions.scales.y,
+                        stacked: false
+                    }
+                }
+            }
         });
     }
+}
+
+// Password strength calculator
+function calculatePasswordStrength(password) {
+    let strength = 0;
+
+    if (password.length >= 8) strength += 1;
+    if (password.length >= 12) strength += 1;
+    if (/[a-z]/.test(password)) strength += 1;
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/[0-9]/.test(password)) strength += 1;
+    if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+
+    if (strength <= 2) return { level: 'weak', text: 'Weak password' };
+    if (strength <= 4) return { level: 'medium', text: 'Medium strength' };
+    return { level: 'strong', text: 'Strong password' };
 }
 
 function setupSettings() {
     // Fill current values
     const nameInput = document.getElementById('settingAdminName');
+    const settingsInitials = document.getElementById('settingsAdminInitials');
+    const settingsDisplayName = document.getElementById('settingsAdminDisplayName');
+    const settingsEmail = document.getElementById('settingsAdminEmail');
 
-    if (nameInput && adminState.user) {
-        nameInput.value = adminState.user.name || '';
+    if (adminState.user) {
+        const userName = adminState.user.name || adminState.user.email || 'Admin';
+        const userEmail = adminState.user.email || '';
+
+        if (nameInput) nameInput.value = userName;
+        if (settingsInitials) settingsInitials.textContent = userName.charAt(0).toUpperCase();
+        if (settingsDisplayName) settingsDisplayName.textContent = userName;
+        if (settingsEmail) settingsEmail.textContent = userEmail;
     }
 
-    const form = document.getElementById('adminProfileForm');
-    if (form) {
-        // Remove existing listeners to avoid duplicates if called multiple times
-        const newForm = form.cloneNode(true);
-        form.parentNode.replaceChild(newForm, form);
+    // Password strength indicator
+    const newPasswordInput = document.getElementById('newPassword');
+    const strengthContainer = document.getElementById('passwordStrengthContainer');
+    const strengthFill = document.getElementById('passwordStrengthFill');
+    const strengthText = document.getElementById('passwordStrengthText');
 
-        newForm.addEventListener('submit', async (e) => {
+    if (newPasswordInput) {
+        newPasswordInput.addEventListener('input', () => {
+            const password = newPasswordInput.value;
+
+            if (password.length === 0) {
+                strengthContainer.style.display = 'none';
+                return;
+            }
+
+            strengthContainer.style.display = 'block';
+            const strength = calculatePasswordStrength(password);
+
+            strengthFill.className = `password-strength-fill strength-${strength.level}`;
+            strengthText.className = `password-strength-text strength-${strength.level}`;
+            strengthText.textContent = strength.text;
+        });
+    }
+
+    // Password match validation
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const passwordMatchError = document.getElementById('passwordMatchError');
+
+    if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('input', () => {
+            const newPass = newPasswordInput.value;
+            const confirmPass = confirmPasswordInput.value;
+
+            if (confirmPass.length > 0 && newPass !== confirmPass) {
+                passwordMatchError.style.display = 'block';
+            } else {
+                passwordMatchError.style.display = 'none';
+            }
+        });
+    }
+
+    // Profile form submission
+    const profileForm = document.getElementById('adminProfileForm');
+    if (profileForm) {
+        const newProfileForm = profileForm.cloneNode(true);
+        profileForm.parentNode.replaceChild(newProfileForm, profileForm);
+
+        newProfileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = newForm.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = 'Saving...';
+            const btn = newProfileForm.querySelector('button[type="submit"]');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
             btn.disabled = true;
 
             try {
-                const newName = document.getElementById('settingAdminName').value;
-                const newPass = document.getElementById('settingAdminPassword').value;
+                const newName = document.getElementById('settingAdminName').value.trim();
 
                 if (newName && newName !== adminState.user.name) {
                     await appwriteService.account.updateName(newName);
-                    showToast('Display name updated', 'success');
-                }
 
-                if (newPass) {
-                    await appwriteService.account.updatePassword(newPass, null); // oldPassword is null/not required for admin update usually if session is active? Appwrite requires old password for security usually.
-                    // Actually, updatePassword(password, oldPassword)
-                    // If we don't prompt for old password, this might fail unless we are using a specific API. 
-                    // Let's assume standard client SDK requires old password. 
-                    // If this fails, we need to prompt user.
-                    // For now, let's try.
-                    showToast('Password updated (re-login might be required)', 'success');
-                }
+                    // Update UI immediately
+                    adminState.user.name = newName;
+                    document.getElementById('adminName').textContent = newName;
+                    document.getElementById('adminInitials').textContent = newName.charAt(0).toUpperCase();
+                    document.getElementById('settingsAdminInitials').textContent = newName.charAt(0).toUpperCase();
+                    document.getElementById('settingsAdminDisplayName').textContent = newName;
 
-                // Refresh user data
-                const user = await appwriteService.getCurrentUser();
-                adminState.user = user;
-                document.getElementById('adminName').textContent = user.name;
+                    showToast('Profile updated successfully!', 'success');
+                } else {
+                    showToast('No changes to save', 'info');
+                }
 
             } catch (error) {
-                console.error('Settings update error', error);
+                console.error('Profile update error:', error);
                 showToast('Update failed: ' + error.message, 'error');
             } finally {
-                btn.innerHTML = originalText;
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        });
+    }
+
+    // Password change form submission
+    const passwordForm = document.getElementById('passwordChangeForm');
+    if (passwordForm) {
+        const newPasswordForm = passwordForm.cloneNode(true);
+        passwordForm.parentNode.replaceChild(newPasswordForm, passwordForm);
+
+        // Re-attach event listeners after cloning
+        const newPassInput = newPasswordForm.querySelector('#newPassword');
+        const confirmPassInput = newPasswordForm.querySelector('#confirmPassword');
+        const strengthCont = newPasswordForm.querySelector('#passwordStrengthContainer');
+        const strengthFillEl = newPasswordForm.querySelector('#passwordStrengthFill');
+        const strengthTextEl = newPasswordForm.querySelector('#passwordStrengthText');
+        const matchError = newPasswordForm.querySelector('#passwordMatchError');
+
+        if (newPassInput) {
+            newPassInput.addEventListener('input', () => {
+                const password = newPassInput.value;
+
+                if (password.length === 0) {
+                    strengthCont.style.display = 'none';
+                    return;
+                }
+
+                strengthCont.style.display = 'block';
+                const strength = calculatePasswordStrength(password);
+
+                strengthFillEl.className = `password-strength-fill strength-${strength.level}`;
+                strengthTextEl.className = `password-strength-text strength-${strength.level}`;
+                strengthTextEl.textContent = strength.text;
+            });
+        }
+
+        if (confirmPassInput) {
+            confirmPassInput.addEventListener('input', () => {
+                const newPass = newPassInput.value;
+                const confirmPass = confirmPassInput.value;
+
+                if (confirmPass.length > 0 && newPass !== confirmPass) {
+                    matchError.style.display = 'block';
+                } else {
+                    matchError.style.display = 'none';
+                }
+            });
+        }
+
+        newPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = newPasswordForm.querySelector('button[type="submit"]');
+            const originalHTML = btn.innerHTML;
+
+            const currentPass = newPasswordForm.querySelector('#currentPassword').value;
+            const newPass = newPassInput.value;
+            const confirmPass = confirmPassInput.value;
+
+            // Validation
+            if (!currentPass) {
+                showToast('Please enter your current password', 'error');
+                return;
+            }
+            if (!newPass) {
+                showToast('Please enter a new password', 'error');
+                return;
+            }
+            if (newPass.length < 8) {
+                showToast('Password must be at least 8 characters long', 'error');
+                return;
+            }
+            if (newPass !== confirmPass) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Changing...';
+            btn.disabled = true;
+
+            try {
+                await appwriteService.account.updatePassword(newPass, currentPass);
+                showToast('Password changed successfully!', 'success');
+
+                // Clear form
+                newPasswordForm.querySelector('#currentPassword').value = '';
+                newPassInput.value = '';
+                confirmPassInput.value = '';
+                strengthCont.style.display = 'none';
+                matchError.style.display = 'none';
+
+            } catch (error) {
+                console.error('Password change error:', error);
+                if (error.message.includes('Invalid credentials')) {
+                    showToast('Current password is incorrect', 'error');
+                } else {
+                    showToast('Password change failed: ' + error.message, 'error');
+                }
+            } finally {
+                btn.innerHTML = originalHTML;
                 btn.disabled = false;
             }
         });
     }
 }
 
-function exportSystemData(format) {
-    const data = {
-        users: adminState.users,
-        transactions: adminState.transactions,
-        budgets: adminState.budgets,
-        savings: adminState.savings,
-        categories: adminState.categories,
-        exportedAt: new Date().toISOString()
-    };
+async function exportSystemData(format) {
+    const exportProgress = document.getElementById('exportProgress');
+    const exportProgressText = document.getElementById('exportProgressText');
+    const exportProgressPercent = document.getElementById('exportProgressPercent');
+    const exportProgressFill = document.getElementById('exportProgressFill');
+    const exportSuccess = document.getElementById('exportSuccess');
+    const exportSuccessMessage = document.getElementById('exportSuccessMessage');
 
-    let content = '';
-    let mimeType = '';
-    let extension = '';
-
-    if (format === 'json') {
-        content = JSON.stringify(data, null, 2);
-        mimeType = 'application/json';
-        extension = 'json';
-    } else if (format === 'csv') {
-        // Simple CSV export for Transactions only as it's the most critical
-        // Supporting multi-table CSV in one file is hard, usually zip is used.
-        // Let's export Transactions as the primary CSV.
-        const header = ['ID', 'Date', 'User', 'Description', 'Type', 'Amount', 'Currency', 'Category'];
-        const rows = adminState.transactions.map(tx => {
-            const user = adminState.userMap.get(tx.user_id);
-            return [
-                tx.$id,
-                tx.transaction_date,
-                user?.name || 'Unknown',
-                `"${(tx.description || '').replace(/"/g, '""')}"`,
-                tx.type,
-                tx.amount,
-                user?.currency || 'PKR',
-                tx.category_id || ''
-            ].join(',');
-        });
-        content = header.join(',') + '\n' + rows.join('\n');
-        mimeType = 'text/csv';
-        extension = 'csv';
-        showToast('Exporting Transactions data as CSV', 'info');
+    // Show progress
+    if (exportProgress) {
+        exportProgress.style.display = 'block';
+        exportSuccess.style.display = 'none';
     }
 
-    const blob = new Blob([content], { type: mimeType });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `bareera_admin_export_${new Date().toISOString().split('T')[0]}.${extension}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+    const updateProgress = (percent, text) => {
+        if (exportProgressFill) exportProgressFill.style.width = `${percent}%`;
+        if (exportProgressPercent) exportProgressPercent.textContent = `${percent}%`;
+        if (exportProgressText) exportProgressText.textContent = text;
+    };
+
+    try {
+        updateProgress(10, 'Gathering user data...');
+        await new Promise(r => setTimeout(r, 200));
+
+        updateProgress(30, 'Processing transactions...');
+        await new Promise(r => setTimeout(r, 200));
+
+        updateProgress(50, 'Compiling budgets and savings...');
+        await new Promise(r => setTimeout(r, 200));
+
+        updateProgress(70, 'Preparing export file...');
+        await new Promise(r => setTimeout(r, 200));
+
+        const data = {
+            exportInfo: {
+                exportedAt: new Date().toISOString(),
+                format: format,
+                currency: adminState.adminCurrency,
+                totalUsers: adminState.users.length,
+                totalTransactions: adminState.transactions.length,
+                totalBudgets: adminState.budgets.length,
+                totalSavings: adminState.savings.length,
+                totalCategories: adminState.categories.length
+            },
+            users: adminState.users,
+            transactions: adminState.transactions,
+            budgets: adminState.budgets,
+            savings: adminState.savings,
+            categories: adminState.categories
+        };
+
+        let content = '';
+        let mimeType = '';
+        let extension = '';
+
+        if (format === 'json') {
+            content = JSON.stringify(data, null, 2);
+            mimeType = 'application/json';
+            extension = 'json';
+        } else if (format === 'csv') {
+            // Create comprehensive CSV with multiple sections
+            let csvContent = '# BAREERA ADMIN DATA EXPORT\n';
+            csvContent += `# Exported: ${new Date().toISOString()}\n`;
+            csvContent += `# Currency: ${adminState.adminCurrency}\n\n`;
+
+            // Transactions section
+            csvContent += '## TRANSACTIONS\n';
+            csvContent += 'ID,Date,User,Description,Type,Amount,Currency,Category\n';
+            adminState.transactions.forEach(tx => {
+                const user = adminState.userMap.get(tx.user_id);
+                csvContent += [
+                    tx.$id || '',
+                    tx.transaction_date || '',
+                    `"${(user?.name || 'Unknown').replace(/"/g, '""')}"`,
+                    `"${(tx.description || '').replace(/"/g, '""')}"`,
+                    tx.type || '',
+                    tx.amount || 0,
+                    user?.currency || 'PKR',
+                    tx.category_id || ''
+                ].join(',') + '\n';
+            });
+
+            csvContent += '\n## USERS\n';
+            csvContent += 'User ID,Full Name,Email,Currency,Created At\n';
+            adminState.users.forEach(user => {
+                csvContent += [
+                    user.user_id || '',
+                    `"${(user.full_name || '').replace(/"/g, '""')}"`,
+                    user.email || '',
+                    user.currency || 'PKR',
+                    user.created_at || ''
+                ].join(',') + '\n';
+            });
+
+            csvContent += '\n## BUDGETS\n';
+            csvContent += 'ID,User ID,Budget Name,Total Amount,Spent Amount,Is Active\n';
+            adminState.budgets.forEach(budget => {
+                csvContent += [
+                    budget.$id || '',
+                    budget.user_id || '',
+                    `"${(budget.budget_name || '').replace(/"/g, '""')}"`,
+                    budget.total_amount || 0,
+                    budget.spent_amount || 0,
+                    budget.is_active ? 'Yes' : 'No'
+                ].join(',') + '\n';
+            });
+
+            csvContent += '\n## SAVINGS GOALS\n';
+            csvContent += 'ID,User ID,Goal Name,Target Amount,Current Amount,Is Completed\n';
+            adminState.savings.forEach(goal => {
+                csvContent += [
+                    goal.$id || '',
+                    goal.user_id || '',
+                    `"${(goal.goal_name || '').replace(/"/g, '""')}"`,
+                    goal.target_amount || 0,
+                    goal.current_amount || 0,
+                    goal.is_completed ? 'Yes' : 'No'
+                ].join(',') + '\n';
+            });
+
+            content = csvContent;
+            mimeType = 'text/csv';
+            extension = 'csv';
+        }
+
+        updateProgress(90, 'Downloading file...');
+        await new Promise(r => setTimeout(r, 200));
+
+        const blob = new Blob([content], { type: mimeType });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bareera_admin_export_${new Date().toISOString().split('T')[0]}.${extension}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        updateProgress(100, 'Export complete!');
+
+        // Show success message
+        if (exportProgress) {
+            setTimeout(() => {
+                exportProgress.style.display = 'none';
+                exportSuccess.style.display = 'block';
+                exportSuccessMessage.textContent = `Successfully exported ${adminState.transactions.length} transactions, ${adminState.users.length} users, ${adminState.budgets.length} budgets, and ${adminState.savings.length} savings goals as ${format.toUpperCase()}.`;
+
+                // Hide success after 5 seconds
+                setTimeout(() => {
+                    exportSuccess.style.display = 'none';
+                }, 5000);
+            }, 500);
+        }
+
+        showToast(`Data exported as ${format.toUpperCase()} successfully!`, 'success');
+
+    } catch (error) {
+        console.error('Export error:', error);
+        showToast('Export failed: ' + error.message, 'error');
+        if (exportProgress) exportProgress.style.display = 'none';
+    }
 }
+
+// Make setFinancialPeriod available globally
+window.setFinancialPeriod = setFinancialPeriod;
+window.exportSystemData = exportSystemData;
