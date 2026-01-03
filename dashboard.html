@@ -12,7 +12,7 @@
 </head>
 
 <body class="text-gray-200">
-    
+
     <div class="lg:hidden fixed top-4 left-4 z-50">
         <button id="menuToggle"
             class="glass-card w-12 h-12 rounded-xl flex items-center justify-center hover:scale-105 transition-transform">
@@ -20,13 +20,13 @@
         </button>
     </div>
 
-    
+
     <div id="overlay" class="overlay"></div>
 
     <div class="flex min-h-screen">
-        
+
         <div class="sidebar glass-card flex flex-col">
-            
+
             <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center gap-3">
                     <div
@@ -41,7 +41,7 @@
                 <div class="text-xs text-gray-500 mt-1">Financial Management Platform</div>
             </div>
 
-            
+
             <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center gap-3 mb-4">
                     <div
@@ -64,7 +64,6 @@
                 </div>
             </div>
 
-            
             <div class="flex-1 p-4 overflow-y-auto">
                 <div class="space-y-2">
                     <a href="dashboard.html"
@@ -100,7 +99,7 @@
                 </div>
             </div>
 
-            
+
             <div class="p-6 border-t border-gray-800">
                 <button id="logoutBtn"
                     class="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-gray-900/50 hover:bg-gray-800 transition">
@@ -110,9 +109,9 @@
             </div>
         </div>
 
-        
+
         <div class="flex-1 p-4 lg:p-8 overflow-x-hidden">
-            
+
             <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8">
                 <div>
                     <h1 class="text-3xl font-bold">Financial Dashboard</h1>
@@ -128,7 +127,7 @@
                 </div>
             </div>
 
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="glass-card glow-border rounded-2xl p-6 fade-in">
                     <div class="flex items-center justify-between mb-4">
@@ -198,9 +197,9 @@
                 </div>
             </div>
 
-            
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                
+
                 <div class="lg:col-span-2">
                     <div class="glass-card glow-border rounded-2xl p-6 h-full">
                         <div class="flex items-center justify-between mb-6">
@@ -215,12 +214,12 @@
                             </select>
                         </div>
 
-                        
+
                         <div class="chart-container">
                             <canvas id="spendingChart"></canvas>
                         </div>
 
-                        
+
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6" id="categoryBreakdown">
                             <div class="text-center p-3 bg-gray-900/30 rounded-xl">
                                 <div class="skeleton h-8 w-20 mx-auto rounded mb-2"></div>
@@ -242,7 +241,7 @@
                     </div>
                 </div>
 
-                
+
                 <div>
                     <div class="glass-card glow-border rounded-2xl p-6 h-full">
                         <h2 class="text-xl font-bold mb-6">Budget Progress</h2>
@@ -262,7 +261,7 @@
                 </div>
             </div>
 
-            
+
             <div class="glass-card glow-border rounded-2xl p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-bold">Recent Transactions</h2>
@@ -283,7 +282,7 @@
                 </a>
             </div>
 
-            
+
             <div class="mt-8 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
                 <p>Bareera Intl. Financial Platform • Data updated in real-time • <span
                         id="lastUpdated">Loading...</span></p>
@@ -291,7 +290,7 @@
         </div>
     </div>
 
-    
+
     <div id="logoutModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
         <div class="glass-card glow-border rounded-2xl p-8 max-w-md w-full mx-4 fade-in">
             <div
